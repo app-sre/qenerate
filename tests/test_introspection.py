@@ -2,7 +2,7 @@ from json import JSONDecodeError
 import requests_mock
 from pytest import raises
 
-from qenerate.introspection import introspection_query
+from qenerate.core.introspection import introspection_query
 
 
 TEST_URL = "http://my-url.zzzzz"
