@@ -1,6 +1,6 @@
 import argparse
 
-from qenerate.introspection import query_schema
+from qenerate.introspection import introspection_query
 
 
 parser = argparse.ArgumentParser(prog="qenerate")
@@ -21,4 +21,6 @@ parser_generator.add_argument("-i", type=str, help="Specify introspection query 
 args = parser.parse_args()
 
 if args.subcommand == "introspection":
-    query_schema(args.url)
+    introspection_query(args.url)
+elif args.subcommand == "code":
+    print("TODO")
