@@ -4,7 +4,7 @@ import requests
 from graphql import get_introspection_query
 
 
-def query_schema(url: str):
+def introspection_query(url: str):
     query = get_introspection_query()
     request = requests.post(url, json={"query": query})
     if request.status_code == 200:

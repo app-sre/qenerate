@@ -3,7 +3,7 @@ venv:
 	poetry install
 
 format:
-	poetry run black .
+	poetry run black qenerate tests
 
 test:
 	poetry run pytest
