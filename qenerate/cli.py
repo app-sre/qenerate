@@ -1,6 +1,6 @@
 import argparse
 
-from qenerate.introspection import introspection_query
+from qenerate.core.introspection import introspection_query
 
 
 parser = argparse.ArgumentParser(prog="qenerate")
