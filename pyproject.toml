@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "qenerate"
+version = "0.1.0"
+description = ""
+authors = ["Karl Fischer <kfischer@redhat.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28"
+graphql-core = "^3.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^22.3"
+requests-mock = "^1.9"
+types-requests = "^2.27"
+flake8 = "^4.0"
+mypy = "0.961"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '^.*\.py$'
+
+[tool.flake8]
+max-line-length = 88
