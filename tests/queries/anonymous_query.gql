@@ -1,0 +1,10 @@
+query {
+  apps_v1 {
+    saasFiles {
+      name
+      pipelinesProvider {
+        name
+      }
+    }
+  }
+}
