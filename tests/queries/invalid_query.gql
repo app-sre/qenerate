@@ -1,0 +1,10 @@
+query SaasFilesSimple {
+  doesNotExist {
+    saasFiles {
+      name
+      pipelinesProvider {
+        name
+      }
+    }
+  }
+}
