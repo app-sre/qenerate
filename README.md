@@ -60,3 +60,10 @@ Currently available plugins are:
 ### Formatting
 
 `qenerate` uses [black](https://github.com/psf/black) for formatting.
+
+### Generating setup.py
+
+```
+pip install poetry2setup
+poetry2setup .
+```

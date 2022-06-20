@@ -8,7 +8,7 @@ I.e., no custom mapping functions are required.
 
 ### Hero
 
-**hero.gql**
+**hero.gql:**
 ```gql
 query HeroForEpisode {
   hero {
