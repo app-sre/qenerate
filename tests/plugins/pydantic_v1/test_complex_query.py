@@ -1,4 +1,4 @@
-from qenerate.plugins.pydantic_v1.query_parser import PydanticV1Plugin
+from qenerate.plugins.pydantic_v1.plugin import PydanticV1Plugin
 from tests.util import get_introspection, get_query, get_result
 
 

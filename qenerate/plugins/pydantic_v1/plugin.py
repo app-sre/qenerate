@@ -21,6 +21,7 @@ from graphql import (
     get_operation_ast,
     validate,
 )
+from qenerate.core.plugin import Plugin
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_primitive_to_python,
@@ -337,7 +338,7 @@ class QueryParser:
         return visitor.parsed
 
 
-class PydanticV1Plugin:
+class PydanticV1Plugin(Plugin):
     def _traverse(self, node: ParsedNode) -> str:
         """
         Pydantic doesnt play well with from __future__ import annotations
