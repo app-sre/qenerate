@@ -6,6 +6,11 @@ def get_query(filename: str) -> str:
         return f.read()
 
 
+def get_result(plugin: str, filename: str) -> str:
+    with open(f"tests/results/{plugin}/{filename}") as f:
+        return f.read()
+
+
 def get_introspection() -> dict:
     with open(f"tests/queries/introspection.json") as f:
         return json.loads(f.read())["data"]
