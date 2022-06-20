@@ -1,6 +1,6 @@
 import pytest
 
-from qenerate.plugins.pydantic_v1.query_parser import (
+from qenerate.plugins.pydantic_v1.plugin import (
     AnonymousQueryError,
     InvalidQueryError,
     PydanticV1Plugin,
