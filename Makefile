@@ -6,7 +6,7 @@ format:
 	poetry run black qenerate tests
 
 test:
-	poetry run pytest
+	poetry run pytest -vv
 	poetry run flake8 qenerate
 	poetry run mypy qenerate
 	poetry run black --check qenerate tests

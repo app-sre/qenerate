@@ -1,0 +1,54 @@
+"""
+THIS IS AN AUTO-GENERATED FILE. DO NOT MODIFY MANUALLY!
+"""
+from typing import Optional, Union  # noqa: F401 # pylint: disable=W0611
+
+from pydantic import BaseModel, Extra, Field, Json  # noqa: F401  # pylint: disable=W0611
+
+
+class ClusterAuthV1(BaseModel):
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterAuthGithubOrgV1(ClusterAuthV1):
+    org: str = Field(..., alias="org")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterAuthGithubOrgTeamV1(ClusterAuthV1):
+    org: str = Field(..., alias="org")
+    team: str = Field(..., alias="team")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterV1(BaseModel):
+    auth: Optional[Union[ClusterAuthGithubOrgTeamV1, ClusterAuthGithubOrgV1, ClusterAuthV1]] = Field(..., alias="auth")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class OcpReleaseMirrorV1(BaseModel):
+    hive_cluster: ClusterV1 = Field(..., alias="hiveCluster")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class OCPWithInterfaceQuery(BaseModel):
+    ocp_release_mirror_v1: Optional[list[OcpReleaseMirrorV1]] = Field(..., alias="ocp_release_mirror")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
