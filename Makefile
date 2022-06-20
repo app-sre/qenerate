@@ -1,9 +1,15 @@
+.PHONY: venv format setup.py test
+
 venv:
 	poetry config virtualenvs.in-project true
 	poetry install
+	. .venv/bin/activate && pip install poetry2setup
 
 format:
 	poetry run black qenerate tests
+
+setup.py:
+	. .venv/bin/activate && poetry2setup > setup.py
 
 test:
 	poetry run pytest -vv

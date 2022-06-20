@@ -11,3 +11,14 @@ def test_interface_valid_query():
         plugin="pydantic_v1",
         filename="complex_inline_fragments_and_collisions.py.txt",
     )
+
+
+def test_interface_humongous_query():
+    schema_raw = get_introspection()
+    query = get_query(filename="saas_humongous.gql")
+    plugin = PydanticV1Plugin()
+    result = plugin.generate(query=query, raw_schema=schema_raw)
+    assert result == get_result(
+        plugin="pydantic_v1",
+        filename="saas_humongous.py.txt",
+    )
