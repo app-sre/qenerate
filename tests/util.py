@@ -7,7 +7,7 @@ def get_query(filename: str) -> str:
 
 
 def get_result(plugin: str, filename: str) -> str:
-    with open(f"tests/results/{plugin}/{filename}") as f:
+    with open(f"tests/queries/expected/{plugin}/{filename}") as f:
         return f.read()
 
 

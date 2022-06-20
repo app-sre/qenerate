@@ -8,5 +8,6 @@ def test_interface_valid_query():
     plugin = PydanticV1Plugin()
     result = plugin.generate(query=query, raw_schema=schema_raw)
     assert result == get_result(
-        plugin="pydantic_v1", filename="complex_inline_fragments_and_collisions.py.txt"
+        plugin="pydantic_v1",
+        filename="complex_inline_fragments_and_collisions.py.txt",
     )

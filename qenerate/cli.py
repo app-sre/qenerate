@@ -1,7 +1,7 @@
 import argparse
-from qenerate.core.code import generate_code
+from qenerate.core.code_command import CodeCommand
 
-from qenerate.core.introspection import introspection_query
+from qenerate.core.introspection_command import IntrospectionCommand
 
 
 parser = argparse.ArgumentParser(prog="qenerate")
@@ -28,9 +28,9 @@ parser_generator.add_argument("dir", type=str, help="Specify introspection query
 args = parser.parse_args()
 
 if args.subcommand == "introspection":
-    introspection_query(args.url)
+    IntrospectionCommand.introspection_query(args.url)
 elif args.subcommand == "code":
-    generate_code(
+    CodeCommand.generate_code(
         introspection_file_path=args.introspection,
         dir=args.dir,
     )

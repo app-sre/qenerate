@@ -8,5 +8,6 @@ def test_interface_valid_query():
     plugin = PydanticV1Plugin()
     result = plugin.generate(query=query, raw_schema=schema_raw)
     assert result == get_result(
-        plugin="pydantic_v1", filename="ocp_with_inline_fragments.py.txt"
+        plugin="pydantic_v1",
+        filename="ocp_with_inline_fragments.py.txt",
     )
