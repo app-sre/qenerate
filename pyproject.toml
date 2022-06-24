@@ -6,7 +6,7 @@ authors = ["Karl Fischer <kfischer@redhat.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-requests = "^2.28"
+requests = "^2.22"
 graphql-core = "^3.2"
 
 [tool.poetry.dev-dependencies]
