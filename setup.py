@@ -11,7 +11,7 @@ package_data = \
 {'': ['*']}
 
 install_requires = \
-['graphql-core>=3.2,<4.0', 'requests>=2.28,<3.0']
+['graphql-core>=3.2,<4.0', 'requests>=2.22,<3.0']
 
 entry_points = \
 {'console_scripts': ['qenerate = qenerate.cli:run']}
