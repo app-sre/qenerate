@@ -28,6 +28,23 @@ def test_single_file(fs):
     assert os.path.exists("/tmp/my_query.py")
 
 
+def test_single_file_no_plugin_flag(fs):
+    fs.add_real_directory("tests/queries")
+    fs.create_file(
+        "/tmp/my_query.gql",
+        contents="# qenerate",
+    )
+
+    plugins["fake"] = FakePlugin()
+
+    CodeCommand.generate_code(
+        introspection_file_path="tests/queries/introspection.json",
+        dir="/tmp",
+    )
+
+    assert not os.path.exists("/tmp/my_query.py")
+
+
 def test_dir_tree(fs):
     fs.add_real_directory("tests/queries")
     fs.create_file(
