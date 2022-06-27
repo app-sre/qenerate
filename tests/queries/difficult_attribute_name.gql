@@ -1,0 +1,7 @@
+query DifficultAttributeName {
+  app_interface_settings_v1{
+    pushGatewayCluster{
+      elbFQDN
+    }
+  }
+}
