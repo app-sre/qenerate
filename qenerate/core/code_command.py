@@ -7,7 +7,7 @@ from qenerate.plugins.pydantic_v1.plugin import (
     InvalidQueryError,
     PydanticV1Plugin,
 )
-from qenerate.core.feature_flag_parser import FeatureFlagParser
+from qenerate.core.feature_flag_parser import FeatureFlagError, FeatureFlagParser
 
 
 plugins: dict[str, Plugin] = {
@@ -33,13 +33,22 @@ class CodeCommand:
         for file in CodeCommand._find_query_files(dir):
             with open(file, "r") as f:
                 content = f.read()
-                feature_flags = FeatureFlagParser.parse(content)
-                plugin = plugins[feature_flags.plugin]
                 try:
+                    feature_flags = FeatureFlagParser.parse(
+                        query=content,
+                    )
+                    plugin = plugins[feature_flags.plugin]
                     code = plugin.generate(
                         query=content,
                         raw_schema=introspection,
                     )
+                except FeatureFlagError:
+                    print(
+                        f"[Skipping File] Query in {file} does not "
+                        "specify generator plugin via "
+                        '"# qenerate: plugin=<plugin_id>" set.'
+                    )
+                    continue
                 except AnonymousQueryError:
                     print(
                         f"[Skipping File] Query in {file} is anonymous. "
@@ -48,9 +57,7 @@ class CodeCommand:
                     )
                     continue
                 except InvalidQueryError:
-                    print(
-                        "[Skipping File] Schema validation failed for " f"query {file}."
-                    )
+                    print(f"[Skipping File] Schema validation failed for query {file}.")
                     continue
                 with open(f"{file[:-3]}py", "w") as out_file:
                     out_file.write(code)
