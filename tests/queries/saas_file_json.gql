@@ -1,0 +1,9 @@
+query SaasFilesWithEnum {
+  apps_v1 {
+    saasFiles {
+      pipelinesProvider {
+        labels
+      }
+    }
+  }
+}

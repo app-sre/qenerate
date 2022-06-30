@@ -9,7 +9,8 @@ I.e., no custom mapping functions are required.
 ### Hero
 
 **hero.gql:**
-```gql
+```graphql
+# qenerate: plugin=pydantic_v1
 query HeroForEpisode {
   hero {
     name
@@ -47,3 +48,8 @@ class HeroForEpisodeData(BaseModel):
     smart_union = True
     extra = Extra.forbid
 ```
+
+## Missing Features / TODOs
+
+- support fragment queries
+- support enums
