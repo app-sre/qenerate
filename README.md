@@ -37,7 +37,7 @@ while traversing the given directory.
 Choosing a code generator is done inside the query file, e.g., the following example will
 generate data classes using the `pydantic_v1` plugin:
 
-```gql
+```graphql
 # qenerate: plugin=pydantic_v1
 query {
     ...
@@ -63,7 +63,7 @@ Currently available plugins are:
 
 ### Generating setup.py
 
-```
+```sh
 pip install poetry2setup
 poetry2setup .
 ```
