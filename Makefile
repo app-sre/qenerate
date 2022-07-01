@@ -11,7 +11,7 @@ format:
 
 setup.py:
 	. .venv/bin/activate && poetry2setup > setup.py
-
+	
 test:
 	poetry run pytest -vv
 	poetry run flake8 qenerate
