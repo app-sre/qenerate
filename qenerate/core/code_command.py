@@ -37,6 +37,13 @@ class CodeCommand:
                     feature_flags = FeatureFlagParser.parse(
                         query=content,
                     )
+                    if feature_flags.plugin not in plugins:
+                        print(
+                            f"[Skipping File] Query in {file} specifies "
+                            "unknown plugin: "
+                            f'"# qenerate: plugin={feature_flags.plugin}".'
+                        )
+                        continue
                     plugin = plugins[feature_flags.plugin]
                     code = plugin.generate(
                         query=content,
