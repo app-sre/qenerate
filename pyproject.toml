@@ -1,8 +1,17 @@
 [tool.poetry]
 name = "qenerate"
 version = "0.1.0"
-description = ""
-authors = ["Service Delivery AppSRE <sd-app-sre@redhat.com>"]
+description = "Code Generator for GraphQL Query Data Classes"
+authors = [
+    "Service Delivery - AppSRE <sd-app-sre@redhat.com>"
+]
+maintainers = [
+    "Service Delivery - AppSRE <sd-app-sre@redhat.com>"
+]
+license = "Apache-2.0"
+homepage = "https://github.com/app-sre/qenerate"
+repository = "https://github.com/app-sre/qenerate"
+documentation = "https://github.com/app-sre/qenerate"
 
 [tool.poetry.dependencies]
 python = "^3.9"
