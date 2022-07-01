@@ -1,6 +1,4 @@
-![CI](https://github.com/fishi0x01/qenerate/workflows/CI/badge.svg)
-
-**Disclaimer:** :warning: This is a PoC under heavy development. It is planned that this repository will be transfered to a proper Github Org.
+**Disclaimer:** :warning: This is in alpha stage. Breaking changes could occur any time.
 
 # qenerate
 

@@ -1,8 +1,9 @@
 .PHONY: venv format setup.py test
 
 venv:
-	poetry config virtualenvs.in-project true
+	poetry config --local virtualenvs.in-project true
 	poetry install
+	. .venv/bin/activate && pip install --upgrade pip
 	. .venv/bin/activate && pip install poetry2setup
 
 format:

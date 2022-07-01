@@ -2,7 +2,7 @@
 name = "qenerate"
 version = "0.1.0"
 description = ""
-authors = ["Karl Fischer <kfischer@redhat.com>"]
+authors = ["Service Delivery AppSRE <sd-app-sre@redhat.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
