@@ -11,6 +11,11 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
+def query_string() -> str:
+    with open("tests/queries/ocp_with_inline_fragments.gql", "r") as f:
+        return f.read()
+
+
 class ClusterAuthV1(BaseModel):
 
     class Config:

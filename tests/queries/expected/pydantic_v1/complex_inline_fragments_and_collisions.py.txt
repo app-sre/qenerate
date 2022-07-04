@@ -11,6 +11,11 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
+def query_string() -> str:
+    with open("tests/queries/complex_inline_fragments_and_collisions.gql", "r") as f:
+        return f.read()
+
+
 class VaultSecretV1(BaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
