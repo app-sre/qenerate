@@ -553,7 +553,7 @@ class SaasFileV2(BaseModel):
 
 
 class SaasFilesV2XXLQuery(BaseModel):
-    saas_files_v2: Optional[list[SaasFileV2]] = Field(..., alias="saas_files")
+    saas_files: Optional[list[SaasFileV2]] = Field(..., alias="saas_files")
 
     class Config:
         smart_union = True
