@@ -11,6 +11,11 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
+def query_string() -> str:
+    with open("tests/queries/difficult_attribute_name.gql", "r") as f:
+        return f.read()
+
+
 class ClusterV1(BaseModel):
     elb_fqdn: str = Field(..., alias="elbFQDN")
 

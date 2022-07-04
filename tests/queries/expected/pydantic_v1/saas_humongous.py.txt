@@ -11,6 +11,11 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
+def query_string() -> str:
+    with open("tests/queries/saas_humongous.gql", "r") as f:
+        return f.read()
+
+
 class AppV1(BaseModel):
     name: str = Field(..., alias="name")
 
