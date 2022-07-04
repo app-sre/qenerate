@@ -231,8 +231,8 @@ class FieldToTypeMatcherVisitor(Visitor):
         if not graphql_type:
             raise ValueError(f"{node} does not have a graphql type")
         field_type = self._parse_type(graphql_type=graphql_type)
-        py_key = graphql_field_name_to_python(node.name.value)
         gql_key = node.alias.value if node.alias else node.name.value
+        py_key = graphql_field_name_to_python(gql_key)
         current = ParsedClassNode(
             fields=[],
             parent=self.parent,

@@ -47,7 +47,7 @@ class OcpReleaseMirrorV1(BaseModel):
 
 
 class OCPWithInterfaceQuery(BaseModel):
-    ocp_release_mirror_v1: Optional[list[OcpReleaseMirrorV1]] = Field(..., alias="ocp_release_mirror")
+    ocp_release_mirror: Optional[list[OcpReleaseMirrorV1]] = Field(..., alias="ocp_release_mirror")
 
     class Config:
         smart_union = True
