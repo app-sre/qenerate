@@ -11,18 +11,9 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
-QUERY: str = """
-query SaasFilesWithEnum {
-  apps_v1 {
-    saasFiles {
-      pipelinesProvider {
-        labels
-      }
-    }
-  }
-}
-
-"""
+def query_string() -> str:
+    with open("tests/queries/saas_file_json.gql", "r") as f:
+        return f.read()
 
 
 class PipelinesProviderV1(BaseModel):

@@ -365,12 +365,18 @@ class PydanticV1Plugin(Plugin):
                 result = f"{result}{self._traverse(child)}"
         return result
 
-    def generate(self, query: str, raw_schema: dict[Any, Any]) -> str:
+    def generate(self, query_file: str, raw_schema: dict[Any, Any]) -> str:
         result = HEADER + IMPORTS
         result += "\n\n\n"
-        result += 'QUERY: str = """\n' f"{query}\n" '"""'
+        result += (
+            "def query_string() -> str:\n"
+            f'{INDENT}with open("{query_file}", "r") as f:\n'
+            f"{INDENT}{INDENT}return f.read()"
+        )
         schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
         parser = QueryParser()
+        with open(query_file, "r") as f:
+            query = f.read()
         ast = parser.parse(query=query, schema=schema)
         result += self._traverse(ast)
         result += "\n"

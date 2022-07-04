@@ -46,7 +46,7 @@ class CodeCommand:
                         continue
                     plugin = plugins[feature_flags.plugin]
                     code = plugin.generate(
-                        query=content,
+                        query_file=file,
                         raw_schema=introspection,
                     )
                 except FeatureFlagError:

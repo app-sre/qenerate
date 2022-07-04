@@ -11,16 +11,9 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
-QUERY: str = """
-query DifficultAttributeName {
-  app_interface_settings_v1{
-    pushGatewayCluster{
-      elbFQDN
-    }
-  }
-}
-
-"""
+def query_string() -> str:
+    with open("tests/queries/difficult_attribute_name.gql", "r") as f:
+        return f.read()
 
 
 class ClusterV1(BaseModel):

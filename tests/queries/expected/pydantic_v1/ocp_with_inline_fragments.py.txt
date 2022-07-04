@@ -11,24 +11,9 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
-QUERY: str = """
-query OCPWithInterface {
-  ocp_release_mirror: ocp_release_mirror_v1 {
-    hiveCluster {
-      auth {
-        ... on ClusterAuthGithubOrg_v1 {
-          org
-        }
-        ... on ClusterAuthGithubOrgTeam_v1 {
-          org
-          team
-        }
-      }
-    }
-  }
-}
-
-"""
+def query_string() -> str:
+    with open("tests/queries/ocp_with_inline_fragments.gql", "r") as f:
+        return f.read()
 
 
 class ClusterAuthV1(BaseModel):
