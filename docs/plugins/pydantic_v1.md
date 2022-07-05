@@ -4,6 +4,8 @@ This plugin generates simple pydantic data classes for your queries.
 Pydantic is capable of mapping nested dictionaries to nested types.
 I.e., no custom mapping functions are required.
 
+This plugin expects exactly one `query` operation per `.gql` file.
+
 ## Examples
 
 ### Hero
@@ -51,5 +53,5 @@ class HeroForEpisodeData(BaseModel):
 
 ## Missing Features / TODOs
 
-- support fragment queries
+- support fragments
 - support enums
