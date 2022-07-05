@@ -147,7 +147,9 @@ class ParsedClassNode(ParsedNode):
 class ParsedOperationNode(ParsedNode):
     def class_code_string(self) -> str:
         lines = ["\n\n"]
-        lines.append(f"class {self.parsed_type.unwrapped_python_type}Query(BaseModel):")
+        lines.append(
+            f"class {self.parsed_type.unwrapped_python_type}QueryData(BaseModel):"
+        )
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
@@ -363,18 +365,12 @@ class PydanticV1Plugin(Plugin):
                 result = f"{result}{self._traverse(child)}"
         return result
 
-    def generate(self, query_file: str, raw_schema: dict[Any, Any]) -> str:
+    def generate(self, query: str, raw_schema: dict[Any, Any]) -> str:
         result = HEADER + IMPORTS
         result += "\n\n\n"
-        result += (
-            "def query_string() -> str:\n"
-            f'{INDENT}with open("{query_file}", "r") as f:\n'
-            f"{INDENT}{INDENT}return f.read()"
-        )
+        result += 'QUERY: str = """\n' f"{query}\n" '"""'
         schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
         parser = QueryParser()
-        with open(query_file, "r") as f:
-            query = f.read()
         ast = parser.parse(query=query, schema=schema)
         result += self._traverse(ast)
         result += "\n"

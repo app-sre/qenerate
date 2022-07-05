@@ -11,9 +11,16 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
-def query_string() -> str:
-    with open("tests/queries/difficult_attribute_name.gql", "r") as f:
-        return f.read()
+QUERY: str = """
+query DifficultAttributeName {
+  app_interface_settings_v1{
+    pushGatewayCluster{
+      elbFQDN
+    }
+  }
+}
+
+"""
 
 
 class ClusterV1(BaseModel):
@@ -32,7 +39,7 @@ class AppInterfaceSettingsV1(BaseModel):
         extra = Extra.forbid
 
 
-class DifficultAttributeNameQuery(BaseModel):
+class DifficultAttributeNameQueryData(BaseModel):
     app_interface_settings_v1: Optional[list[AppInterfaceSettingsV1]] = Field(..., alias="app_interface_settings_v1")
 
     class Config:
