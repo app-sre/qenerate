@@ -4,7 +4,7 @@
 
 `qenerate` is a code generator for GraphQL Query Data Classes. 
 `qenerate` is not a GQL client. A GQL client normally returns data in the form
-of nested untyped dictionaries. `generate` solely focuses on generating code
+of nested untyped dictionaries. `qenerate` solely focuses on generating code
 for transforming those untyped dictionaries into concrete types.
 
 ## Usage
@@ -28,6 +28,8 @@ qenerate code -i introspection.json dir/to/gql/files
 An `introspection.json` and a directory holding `*.gql` files are given.
 `qenerate` then generates data classes for every `*.gql` file it encounters
 while traversing the given directory.
+
+`qenerate` expects that a `.gql` file contains exactly one `query` operation.
 
 ## Plugins
 
