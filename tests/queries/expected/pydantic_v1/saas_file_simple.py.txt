@@ -11,9 +11,19 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
-def query_string() -> str:
-    with open("tests/queries/saas_file_simple.gql", "r") as f:
-        return f.read()
+QUERY: str = """
+query SaasFilesSimple {
+  apps_v1 {
+    saasFiles {
+      name
+      pipelinesProvider {
+        name
+      }
+    }
+  }
+}
+
+"""
 
 
 class PipelinesProviderV1(BaseModel):
@@ -41,7 +51,7 @@ class AppV1(BaseModel):
         extra = Extra.forbid
 
 
-class SaasFilesSimpleQuery(BaseModel):
+class SaasFilesSimpleQueryData(BaseModel):
     apps_v1: Optional[list[AppV1]] = Field(..., alias="apps_v1")
 
     class Config:
