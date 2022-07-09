@@ -1,0 +1,8 @@
+query AWSAccountsByName ($name: String!) {
+  accounts: awsaccounts_v1 (name: $name)
+  {
+    automationToken {
+      ... VaultSecret
+    }
+  }
+}

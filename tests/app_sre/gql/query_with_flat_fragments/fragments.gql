@@ -1,0 +1,11 @@
+fragment VaultSecret on VaultSecret_v1 {
+    path
+    field
+    version
+    format
+}
+
+fragment VaultSecretPartial on VaultSecret_v1 {
+    path
+    field
+}

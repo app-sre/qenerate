@@ -1,7 +1,8 @@
 import json
 import os
+from typing import Any
 
-from qenerate.core.plugin import Plugin
+from qenerate.core.plugin import Fragment, Plugin
 from qenerate.plugins.pydantic_v1.plugin import (
     AnonymousQueryError,
     InvalidQueryError,
@@ -17,7 +18,7 @@ plugins: dict[str, Plugin] = {
 
 class CodeCommand:
     @staticmethod
-    def _find_query_files(dir: str) -> list[str]:
+    def _find_gql_files(dir: str) -> list[str]:
         result: list[str] = []
         for root, _, files in os.walk(dir):
             for name in files:
@@ -26,11 +27,48 @@ class CodeCommand:
         return result
 
     @staticmethod
-    def generate_code(introspection_file_path: str, dir: str):
-        with open(introspection_file_path) as f:
-            introspection = json.loads(f.read())["data"]
+    def generate_fragments(
+        dir: str, introspection: dict[Any, Any]
+    ) -> dict[str, Fragment]:
+        discovered_fragments: dict[str, Fragment] = {}
+        for file in CodeCommand._find_gql_files(dir):
+            import_path = os.path.relpath(file, dir)
+            with open(file, "r") as f:
+                content = f.read()
+                try:
+                    feature_flags = FeatureFlagParser.parse(
+                        query=content,
+                    )
+                    if feature_flags.plugin not in plugins:
+                        print(
+                            f"[Skipping File] Fragment in {file} specifies "
+                            "unknown plugin: "
+                            f'"# qenerate: plugin={feature_flags.plugin}".'
+                        )
+                        continue
+                    plugin = plugins[feature_flags.plugin]
+                    result = plugin.generate_fragment_classes(
+                        fragment=content,
+                        raw_schema=introspection,
+                        import_package=import_path,
+                    )
+                except FeatureFlagError:
+                    print(
+                        f"[Skipping File] Fragment in {file} does not "
+                        "specify generator plugin via "
+                        '"# qenerate: plugin=<plugin_id>" set.'
+                    )
+                    continue
+                with open(f"{file[:-3]}py", "w") as out_file:
+                    out_file.write(result.code)
+                discovered_fragments = dict(discovered_fragments, **result.fragments)
+        return discovered_fragments
 
-        for file in CodeCommand._find_query_files(dir):
+    @staticmethod
+    def generate_queries(
+        dir: str, introspection: dict[Any, Any], fragments: dict[str, Fragment]
+    ):
+        for file in CodeCommand._find_gql_files(dir):
             with open(file, "r") as f:
                 content = f.read()
                 try:
@@ -45,8 +83,9 @@ class CodeCommand:
                         )
                         continue
                     plugin = plugins[feature_flags.plugin]
-                    code = plugin.generate(
+                    code = plugin.generate_query_classes(
                         query=content,
+                        fragments=fragments,
                         raw_schema=introspection,
                     )
                 except FeatureFlagError:
@@ -68,3 +107,19 @@ class CodeCommand:
                     continue
                 with open(f"{file[:-3]}py", "w") as out_file:
                     out_file.write(code)
+
+    @staticmethod
+    def generate_code(
+        introspection_file_path: str, queries_dir: str, fragments_dir: str
+    ):
+        with open(introspection_file_path) as f:
+            introspection = json.loads(f.read())["data"]
+
+        fragments = CodeCommand.generate_fragments(
+            dir=fragments_dir, introspection=introspection
+        )
+        CodeCommand.generate_queries(
+            dir=queries_dir,
+            fragments=fragments,
+            introspection=introspection,
+        )

@@ -11,6 +11,7 @@ def _keyword_sanitizer(s: str) -> str:
         "id": "q_id",
         "to": "q_to",
         "format": "q_format",
+        "import": "q_import",
     }
     if s in keyword_remapping:
         return keyword_remapping[s]

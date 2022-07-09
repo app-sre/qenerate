@@ -14,3 +14,8 @@ def get_introspection() -> dict:
 def get_query(filename: str) -> str:
     with open(f"tests/queries/{filename}") as f:
         return f.read()
+
+
+def get_fragment(filename: str) -> str:
+    with open(f"tests/fragments/{filename}") as f:
+        return f.read()

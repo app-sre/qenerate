@@ -1,9 +1,11 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Optional, cast
+from typing import Any, Mapping, Optional, cast
 
 from graphql import (
     FieldNode,
+    FragmentDefinitionNode,
+    FragmentSpreadNode,
     GraphQLList,
     GraphQLNonNull,
     GraphQLOutputType,
@@ -21,7 +23,7 @@ from graphql import (
     get_operation_ast,
     validate,
 )
-from qenerate.core.plugin import Plugin
+from qenerate.core.plugin import Fragment, FragmentGeneratorResult, Plugin
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -101,8 +103,86 @@ class ParsedClassNode(ParsedNode):
         if self.parsed_type.is_primitive:
             return ""
 
+        # This is a FragmentSpreadNode -> it is defined in a fragment definition
+        if len(self.fields) == 1 and isinstance(
+            self.fields[0], ParsedFragmentSpreadNode
+        ):
+            return ""
+
+        fragment_spreads = []
+        for field in self.fields:
+            if isinstance(field, ParsedFragmentSpreadNode):
+                fragment_spreads.append(field.fragment.class_name)
+
+        kind = "BaseModel" if not fragment_spreads else ", ".join(fragment_spreads)
+
         lines = ["\n\n"]
-        lines.append(f"class {self.parsed_type.unwrapped_python_type}(BaseModel):")
+        lines.append(f"class {self.parsed_type.unwrapped_python_type}({kind}):")
+        for field in self.fields:
+            if isinstance(field, ParsedClassNode):
+                lines.append(
+                    (
+                        f"{INDENT}{field.py_key}: {field.field_type()} = "
+                        f'Field(..., alias="{field.gql_key}")'
+                    )
+                )
+
+        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+        # https://stackoverflow.com/a/69705356/4478420
+        lines.append("")
+        lines.append(f"{INDENT}class Config:")
+        lines.append(f"{INDENT}{INDENT}smart_union = True")
+        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
+
+        return "\n".join(lines)
+
+    def field_type(self) -> str:
+        # Handle fragment spreads
+        if len(self.fields) == 1 and isinstance(
+            self.fields[0], ParsedFragmentSpreadNode
+        ):
+            return self.fields[0].fragment.class_name
+
+        # Handle inline fragments
+        unions: list[str] = []
+        # TODO: sorting does not need to happen on each call
+        """
+        Pydantic does best-effort matching on Unions.
+        Declare most significant type first.
+        This, smart_union and disallowing extra fields gives high confidence
+        in matching.
+        https://pydantic-docs.helpmanual.io/usage/types/#unions
+        """
+        self.fields.sort(key=lambda a: len(a.fields), reverse=True)
+        for field in self.fields:
+            if isinstance(field, ParsedInlineFragmentNode):
+                unions.append(field.parsed_type.unwrapped_python_type)
+        if len(unions) > 0:
+            unions.append(self.parsed_type.unwrapped_python_type)
+            return self.parsed_type.wrapped_python_type.replace(
+                self.parsed_type.unwrapped_python_type, f"Union[{', '.join(unions)}]"
+            )
+        return self.parsed_type.wrapped_python_type
+
+
+@dataclass
+class ParsedFragmentSpreadNode(ParsedNode):
+    fragment: Fragment
+
+    def class_code_string(self) -> str:
+        return ""
+
+
+@dataclass
+class ParsedFragmentDefinitionNode(ParsedNode):
+    class_name: str
+
+    def class_code_string(self) -> str:
+        if self.parsed_type.is_primitive:
+            return ""
+
+        lines = ["\n\n"]
+        lines.append(f"class {self.class_name}(BaseModel):")
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
@@ -176,8 +256,20 @@ class ParsedFieldType:
     is_primitive: bool
 
 
+@dataclass
+class FragmentData:
+    name: str
+    definition: str
+
+
 class FieldToTypeMatcherVisitor(Visitor):
-    def __init__(self, schema: GraphQLSchema, type_info: TypeInfo, query: str):
+    def __init__(
+        self,
+        schema: GraphQLSchema,
+        fragments: Mapping[str, Fragment],
+        type_info: TypeInfo,
+        query: str,
+    ):
         # These are required for GQL Visitor to do its magic
         Visitor.__init__(self)
         self.schema = schema
@@ -185,6 +277,9 @@ class FieldToTypeMatcherVisitor(Visitor):
         self.query = query
 
         # These are our custom fields
+        self.given_fragments = fragments
+        self.used_fragments: list[Fragment] = []
+        self.discovered_fragments: list[FragmentData] = []
         self.parsed = ParsedNode(
             parent=None,
             fields=[],
@@ -228,7 +323,58 @@ class FieldToTypeMatcherVisitor(Visitor):
         self.parent.fields.append(current)
         self.parent = current
 
+    def enter_fragment_definition(self, node: FragmentDefinitionNode, *_):
+        graphql_type = self.type_info.get_type()
+        if not graphql_type:
+            raise ValueError(f"{node} does not have a graphql type")
+        field_type = self._parse_type(graphql_type=graphql_type)
+        name = node.name.value
+        current = ParsedFragmentDefinitionNode(
+            fields=[],
+            parent=self.parent,
+            parsed_type=field_type,
+            class_name=name,
+        )
+
+        if node.loc:
+            start = node.loc.start_token.start
+            end = node.loc.end_token.end
+            body = node.loc.source.body[start:end]
+            self.discovered_fragments.append(
+                FragmentData(
+                    name=name,
+                    definition=body,
+                )
+            )
+
+        self.parent.fields.append(current)
+        self.parent = current
+
+    def leave_fragment_definition(self, *_):
+        self.parent = self.parent.parent if self.parent else self.parent
+
     def leave_operation_definition(self, *_):
+        self.parent = self.parent.parent if self.parent else self.parent
+
+    def enter_fragment_spread(self, node: FragmentSpreadNode, *_):
+        fragment = self.given_fragments[node.name.value]
+        self.used_fragments.append(fragment)
+        class_name = node.name.value
+        field_type = ParsedFieldType(
+            is_primitive=False,
+            unwrapped_python_type=class_name,
+            wrapped_python_type=class_name,
+        )
+        current = ParsedFragmentSpreadNode(
+            fragment=fragment,
+            fields=[],
+            parent=self.parent,
+            parsed_type=field_type,
+        )
+        self.parent.fields.append(current)
+        self.parent = current
+
+    def leave_fragment_spread(self, *_):
         self.parent = self.parent.parent if self.parent else self.parent
 
     def enter_field(self, node: FieldNode, *_):
@@ -328,7 +474,9 @@ class InvalidQueryError(Exception):
 
 class QueryParser:
     @staticmethod
-    def parse(query: str, schema: GraphQLSchema) -> ParsedNode:
+    def parse_query(
+        query: str, schema: GraphQLSchema, fragments: Mapping[str, Fragment]
+    ) -> FieldToTypeMatcherVisitor:
         document_ast = parse(query)
         operation = get_operation_ast(document_ast)
 
@@ -337,12 +485,36 @@ class QueryParser:
 
         errors = validate(schema, document_ast)
         if errors:
-            raise InvalidQueryError(errors)
+            # The query does not contain fragment definitions at this
+            # pre-processing stage.
+            # We will validate the final query in post-processing stage.
+            if not (len(errors) == 1 and "Unknown fragment" in errors[0].message):
+                raise InvalidQueryError(errors)
 
         type_info = TypeInfo(schema)
-        visitor = FieldToTypeMatcherVisitor(schema, type_info, query)
+        visitor = FieldToTypeMatcherVisitor(
+            schema=schema,
+            fragments=fragments,
+            type_info=type_info,
+            query=query,
+        )
         visit(document_ast, TypeInfoVisitor(type_info, visitor))
-        return visitor.parsed
+        return visitor
+
+    @staticmethod
+    def parse_fragment(
+        fragment: str, schema: GraphQLSchema
+    ) -> FieldToTypeMatcherVisitor:
+        document_ast = parse(fragment)
+        type_info = TypeInfo(schema)
+        visitor = FieldToTypeMatcherVisitor(
+            schema=schema,
+            fragments={},
+            type_info=type_info,
+            query=fragment,
+        )
+        visit(document_ast, TypeInfoVisitor(type_info, visitor))
+        return visitor
 
 
 class PydanticV1Plugin(Plugin):
@@ -365,13 +537,61 @@ class PydanticV1Plugin(Plugin):
                 result = f"{result}{self._traverse(child)}"
         return result
 
-    def generate(self, query: str, raw_schema: dict[Any, Any]) -> str:
-        result = HEADER + IMPORTS
-        result += "\n\n\n"
-        result += 'QUERY: str = """\n' f"{query}\n" '"""'
+    def generate_query_classes(
+        self,
+        query: str,
+        raw_schema: Mapping[Any, Any],
+        fragments: Mapping[str, Fragment],
+    ) -> str:
         schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
         parser = QueryParser()
-        ast = parser.parse(query=query, schema=schema)
-        result += self._traverse(ast)
+
+        visitor = parser.parse_query(
+            query=query,
+            fragments=fragments,
+            schema=schema,
+        )
+        imports = IMPORTS
+        for fragment in visitor.used_fragments:
+            imports += f"\nfrom {fragment.import_package} import {fragment.class_name}"
+            query += f"\n{fragment.gql_query}"
+
+        result = HEADER + imports
+        result += "\n\n\n"
+        result += 'QUERY: str = """\n' f"{query}\n" '"""'
+        result += self._traverse(visitor.parsed)
         result += "\n"
+
+        # TODO: verify final query is valid
+        # document_ast = parse(query)
+        # errors = validate(schema, document_ast)
+        # if errors:
+        #     raise InvalidQueryError(errors)
+
         return result
+
+    def generate_fragment_classes(
+        self,
+        fragment: str,
+        raw_schema: Mapping[Any, Any],
+        import_package: str,
+    ) -> FragmentGeneratorResult:
+        result = HEADER + IMPORTS
+        schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
+        parser = QueryParser()
+        visitor = parser.parse_fragment(fragment=fragment, schema=schema)
+        result += self._traverse(visitor.parsed)
+        result += "\n"
+        # Preprocessor will ensure that there are no duplicates
+        fragments = {
+            frag.name: Fragment(
+                class_name=frag.name,
+                import_package=import_package,
+                gql_query=frag.definition,
+            )
+            for frag in visitor.discovered_fragments
+        }
+        return FragmentGeneratorResult(
+            code=result,
+            fragments=fragments,
+        )

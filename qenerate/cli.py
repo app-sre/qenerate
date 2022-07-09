@@ -25,7 +25,21 @@ def run():
         help="Specify introspection query json",
     )
     parser_generator.add_argument(
-        "dir", type=str, help="Specify introspection query json"
+        "-q",
+        dest="queries",
+        type=str,
+        help=(
+            "Specify directory with queries. " "The directory is traversed recursively."
+        ),
+    )
+    parser_generator.add_argument(
+        "-f",
+        dest="fragments",
+        type=str,
+        help=(
+            "Specify directory with fragments. "
+            "The directory is traversed recursively."
+        ),
     )
 
     args = parser.parse_args()
@@ -35,7 +49,8 @@ def run():
     elif args.subcommand == "code":
         CodeCommand.generate_code(
             introspection_file_path=args.introspection,
-            dir=args.dir,
+            fragments_dir=args.fragments,
+            queries_dir=args.queries,
         )
 
 

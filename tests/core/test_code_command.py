@@ -1,18 +1,35 @@
 import os
-from typing import Any
+from typing import Any, Mapping
 
-from qenerate.core.plugin import Plugin
+from qenerate.core.plugin import Fragment, Plugin
 from qenerate.core.code_command import CodeCommand
 from qenerate.core.code_command import plugins
 
 
 class FakePlugin(Plugin):
-    def generate(self, query: str, raw_schema: dict[Any, Any]) -> str:
+    def generate_query_classes(
+        self,
+        query: str,
+        fragments: Mapping[str, Fragment],
+        raw_schema: Mapping[Any, Any],
+    ) -> str:
         return "fake"
+
+    def generate_fragment_classes(
+        self, fragment: str, raw_schema: dict[Any, Any]
+    ) -> str:
+        return "fake_fragment"
+
+
+def add_introspection(fs):
+    fs.add_real_directory("tests/app_sre/gql")
+
+
+INTROSPECTION = "tests/app_sre/gql/introspection.json"
 
 
 def test_single_file(fs):
-    fs.add_real_directory("tests/queries")
+    add_introspection(fs)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="# qenerate: plugin=fake",
@@ -21,15 +38,16 @@ def test_single_file(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
-        dir="/tmp",
+        introspection_file_path=INTROSPECTION,
+        fragments_dir="/no",
+        queries_dir="/tmp",
     )
 
     assert os.path.exists("/tmp/my_query.py")
 
 
 def test_single_file_no_plugin_flag(fs):
-    fs.add_real_directory("tests/queries")
+    add_introspection(fs)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="# qenerate",
@@ -38,15 +56,16 @@ def test_single_file_no_plugin_flag(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
-        dir="/tmp",
+        introspection_file_path=INTROSPECTION,
+        fragments_dir="/no",
+        queries_dir="/tmp",
     )
 
     assert not os.path.exists("/tmp/my_query.py")
 
 
 def test_unknown_plugin_flag(fs):
-    fs.add_real_directory("tests/queries")
+    add_introspection(fs)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="# qenerate: plugin=does_not_exist",
@@ -55,15 +74,16 @@ def test_unknown_plugin_flag(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
-        dir="/tmp",
+        introspection_file_path=INTROSPECTION,
+        fragments_dir="/no",
+        queries_dir="/tmp",
     )
 
     assert not os.path.exists("/tmp/my_query.py")
 
 
 def test_dir_tree(fs):
-    fs.add_real_directory("tests/queries")
+    add_introspection(fs)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="# qenerate: plugin=fake",
@@ -80,8 +100,9 @@ def test_dir_tree(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
-        dir="/tmp",
+        introspection_file_path=INTROSPECTION,
+        fragments_dir="/no",
+        queries_dir="/tmp",
     )
 
     assert os.path.exists("/tmp/my_query.py")
