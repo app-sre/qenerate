@@ -2,7 +2,7 @@ import os
 from typing import Any, Mapping
 
 from qenerate.core.plugin import Fragment, Plugin
-from qenerate.core.code_command import CodeCommand
+from qenerate.core.code_command import CodeCommand, CodeCommandArgs
 from qenerate.core.code_command import plugins
 
 
@@ -38,9 +38,12 @@ def test_single_file(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path=INTROSPECTION,
-        fragments_dir="/no",
-        queries_dir="/tmp",
+        CodeCommandArgs(
+            introspection_file_path=INTROSPECTION,
+            fragments_dir="/no",
+            queries_dir="/tmp",
+            fragments_package_prefix="",
+        )
     )
 
     assert os.path.exists("/tmp/my_query.py")
@@ -56,9 +59,12 @@ def test_single_file_no_plugin_flag(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path=INTROSPECTION,
-        fragments_dir="/no",
-        queries_dir="/tmp",
+        CodeCommandArgs(
+            introspection_file_path=INTROSPECTION,
+            fragments_dir="/no",
+            queries_dir="/tmp",
+            fragments_package_prefix="",
+        )
     )
 
     assert not os.path.exists("/tmp/my_query.py")
@@ -74,9 +80,12 @@ def test_unknown_plugin_flag(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path=INTROSPECTION,
-        fragments_dir="/no",
-        queries_dir="/tmp",
+        CodeCommandArgs(
+            introspection_file_path=INTROSPECTION,
+            fragments_dir="/no",
+            queries_dir="/tmp",
+            fragments_package_prefix="",
+        )
     )
 
     assert not os.path.exists("/tmp/my_query.py")
@@ -100,9 +109,12 @@ def test_dir_tree(fs):
     plugins["fake"] = FakePlugin()
 
     CodeCommand.generate_code(
-        introspection_file_path=INTROSPECTION,
-        fragments_dir="/no",
-        queries_dir="/tmp",
+        CodeCommandArgs(
+            introspection_file_path=INTROSPECTION,
+            fragments_dir="/no",
+            queries_dir="/tmp",
+            fragments_package_prefix="",
+        )
     )
 
     assert os.path.exists("/tmp/my_query.py")
