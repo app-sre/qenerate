@@ -17,7 +17,9 @@ query AWSAccountsByName ($name: String!) {
   accounts: awsaccounts_v1 (name: $name)
   {
     automationToken {
-      ... VaultSecret
+      ... VaultSecretPartial
+      version
+      format
     }
   }
 }
@@ -30,8 +32,8 @@ fragment VaultSecretPartial on VaultSecret_v1 {
 
 
 class VaultSecretV1(VaultSecretPartial):
-    path: Optional[str] = Field(..., alias="path")
-    field: Optional[str] = Field(..., alias="field")
+    version: Optional[int] = Field(..., alias="version")
+    q_format: Optional[str] = Field(..., alias="format")
 
     class Config:
         smart_union = True
@@ -39,7 +41,7 @@ class VaultSecretV1(VaultSecretPartial):
 
 
 class AWSAccountV1(BaseModel):
-    automation_token: VaultSecret = Field(..., alias="automationToken")
+    automation_token: VaultSecretV1 = Field(..., alias="automationToken")
 
     class Config:
         smart_union = True

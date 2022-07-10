@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional, cast
 
@@ -56,6 +57,31 @@ class ParsedNode:
     def class_code_string(self) -> str:
         return ""
 
+    def needs_rendering(self) -> bool:
+        if self.parsed_type.is_primitive:
+            return False
+
+        return not self.get_fragment_class()
+
+    def get_fragment_class(self) -> str:
+        if len(self.fields) == 1 and isinstance(
+            self.fields[0], ParsedFragmentSpreadNode
+        ):
+            return self.fields[0].fragment.class_name
+
+        spreads = 0
+        non_interface = 0
+        class_name = ""
+        for field in self.fields:
+            if isinstance(field, ParsedFragmentSpreadNode):
+                spreads += 1
+                class_name = field.fragment.class_name
+            elif not isinstance(field, ParsedInlineFragmentNode):
+                non_interface += 1
+        if spreads == 1 and non_interface == 0:
+            return class_name
+        return ""
+
 
 @dataclass
 class ParsedInlineFragmentNode(ParsedNode):
@@ -64,15 +90,23 @@ class ParsedInlineFragmentNode(ParsedNode):
         if not (self.parent and self.parsed_type):
             return ""
 
-        if self.parsed_type.is_primitive:
+        if not self.needs_rendering():
             return ""
+
+        fragment_class = self.parent.get_fragment_class()
+        kinds = [self.parent.parsed_type.unwrapped_python_type]
+        if fragment_class:
+            kinds = [fragment_class]
+        for field in self.fields:
+            if isinstance(field, ParsedFragmentSpreadNode):
+                kinds.append(field.fragment.class_name)
 
         lines = ["\n\n"]
         lines.append(
             (
                 "class "
                 f"{self.parsed_type.unwrapped_python_type}"
-                f"({self.parent.parsed_type.unwrapped_python_type}):"
+                f"({', '.join(kinds)}):"
             )
         )
         for field in self.fields:
@@ -100,13 +134,7 @@ class ParsedClassNode(ParsedNode):
     py_key: str
 
     def class_code_string(self) -> str:
-        if self.parsed_type.is_primitive:
-            return ""
-
-        # This is a FragmentSpreadNode -> it is defined in a fragment definition
-        if len(self.fields) == 1 and isinstance(
-            self.fields[0], ParsedFragmentSpreadNode
-        ):
+        if not self.needs_rendering():
             return ""
 
         fragment_spreads = []
@@ -156,9 +184,20 @@ class ParsedClassNode(ParsedNode):
         self.fields.sort(key=lambda a: len(a.fields), reverse=True)
         for field in self.fields:
             if isinstance(field, ParsedInlineFragmentNode):
-                unions.append(field.parsed_type.unwrapped_python_type)
+                if len(field.fields) == 1 and isinstance(
+                    field.fields[0], ParsedFragmentSpreadNode
+                ):
+                    unions.append(field.fields[0].fragment.class_name)
+                else:
+                    unions.append(field.parsed_type.unwrapped_python_type)
         if len(unions) > 0:
-            unions.append(self.parsed_type.unwrapped_python_type)
+            fragment_class = self.get_fragment_class()
+            kind = (
+                self.parsed_type.unwrapped_python_type
+                if not fragment_class
+                else fragment_class
+            )
+            unions.append(kind)
             return self.parsed_type.wrapped_python_type.replace(
                 self.parsed_type.unwrapped_python_type, f"Union[{', '.join(unions)}]"
             )
@@ -484,12 +523,13 @@ class QueryParser:
             raise AnonymousQueryError()
 
         errors = validate(schema, document_ast)
+
+        # The query does not contain fragment definitions at this
+        # pre-processing stage.
+        # We will validate the final query in post-processing stage.
+        errors = [err for err in errors if "Unknown fragment" not in err.message]
         if errors:
-            # The query does not contain fragment definitions at this
-            # pre-processing stage.
-            # We will validate the final query in post-processing stage.
-            if not (len(errors) == 1 and "Unknown fragment" in errors[0].message):
-                raise InvalidQueryError(errors)
+            raise InvalidQueryError(errors)
 
         type_info = TypeInfo(schema)
         visitor = FieldToTypeMatcherVisitor(
@@ -552,9 +592,23 @@ class PydanticV1Plugin(Plugin):
             schema=schema,
         )
         imports = IMPORTS
+        seen: set[str] = set()
+        fragment_imports: dict[str, list[str]] = defaultdict(list)
         for fragment in visitor.used_fragments:
-            imports += f"\nfrom {fragment.import_package} import {fragment.class_name}"
+            if fragment.gql_query in seen:
+                continue
+            seen.add(fragment.gql_query)
+            fragment_imports[fragment.import_package].append(fragment.class_name)
             query += f"\n{fragment.gql_query}"
+
+        for package, classes in fragment_imports.items():
+            if len(classes) == 1:
+                imports += f"\nfrom {package} import {classes[0]}"
+            else:
+                imports += f"\nfrom {package} import (\n"
+                for cls in classes:
+                    imports += f"{INDENT}{cls},\n"
+                imports += ")"
 
         result = HEADER + imports
         result += "\n\n\n"

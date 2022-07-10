@@ -16,15 +16,10 @@ def get_expected(name: str) -> str:
         return f.read()
 
 
-def introsprection() -> str:
+def run_test(fragment_name: str, query_name: str):
     with open(f"tests/app_sre/gql/introspection.json") as f:
-        return json.loads(f.read())["data"]
+        schema = json.loads(f.read())["data"]
 
-
-def test_simple_query_with_flat_fragments():
-    fragment_name = "fragments"
-    query_name = "simple_query"
-    schema = introsprection()
     fragment_definition = get_gql_file(fragment_name)
     query_definition = get_gql_file(query_name)
     plugin = PydanticV1Plugin()
@@ -43,3 +38,38 @@ def test_simple_query_with_flat_fragments():
     )
 
     assert query_result == get_expected(query_name)
+
+
+def test_simple_query_with_flat_fragments():
+    run_test(
+        fragment_name="fragments",
+        query_name="simple_query",
+    )
+
+
+def test_interface_query_with_flat_fragments():
+    run_test(
+        fragment_name="fragments",
+        query_name="interface_query",
+    )
+
+
+def test_interface_inline_fragments_query_with_flat_fragments():
+    run_test(
+        fragment_name="fragments",
+        query_name="interface_inline_fragments_query",
+    )
+
+
+def test_partial_inline_fragments_query_with_flat_fragments():
+    run_test(
+        fragment_name="fragments",
+        query_name="partial_inline_fragments_query",
+    )
+
+
+def test_complex_inline_fragments_query_with_flat_fragments():
+    run_test(
+        fragment_name="fragments",
+        query_name="complex_inline_fragments_query",
+    )

@@ -9,3 +9,22 @@ fragment VaultSecretPartial on VaultSecret_v1 {
     path
     field
 }
+
+fragment TerraformECR on NamespaceTerraformResourceECR_v1 {
+    account
+    region
+    identifier
+}
+
+fragment ClusterAuth on ClusterAuth_v1 {
+    service
+}
+
+fragment GithubOrg on ClusterAuthGithubOrgTeam_v1 {
+    org
+    team
+}
+
+fragment GithubOrgPartial on ClusterAuthGithubOrgTeam_v1 {
+    org
+}

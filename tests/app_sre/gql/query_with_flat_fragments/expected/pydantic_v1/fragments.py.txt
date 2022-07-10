@@ -29,3 +29,38 @@ class VaultSecretPartial(BaseModel):
     class Config:
         smart_union = True
         extra = Extra.forbid
+
+
+class TerraformECR(BaseModel):
+    account: str = Field(..., alias="account")
+    region: Optional[str] = Field(..., alias="region")
+    identifier: str = Field(..., alias="identifier")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterAuth(BaseModel):
+    service: str = Field(..., alias="service")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class GithubOrg(BaseModel):
+    org: str = Field(..., alias="org")
+    team: str = Field(..., alias="team")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class GithubOrgPartial(BaseModel):
+    org: str = Field(..., alias="org")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
