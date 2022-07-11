@@ -39,7 +39,7 @@ fragment Jumphost on ClusterJumpHost_v1 {
 
 
 class ClusterV1(BaseModel):
-    jump_host: Jumphost = Field(..., alias="jumpHost")
+    jump_host: Optional[Jumphost] = Field(..., alias="jumpHost")
 
     class Config:
         smart_union = True

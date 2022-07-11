@@ -169,7 +169,10 @@ class ParsedClassNode(ParsedNode):
         if len(self.fields) == 1 and isinstance(
             self.fields[0], ParsedFragmentSpreadNode
         ):
-            return self.fields[0].fragment.class_name
+            return self.parsed_type.wrapped_python_type.replace(
+                self.parsed_type.unwrapped_python_type,
+                self.fields[0].fragment.class_name,
+            )
 
         # Handle inline fragments
         unions: list[str] = []

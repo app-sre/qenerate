@@ -36,7 +36,7 @@ def run_test(fragment_name: str, query_name: str):
         query=query_definition,
         fragments=fragments_result.fragments,
     )
-    print(query_result)
+
     assert query_result == get_expected(query_name)
 
 
@@ -44,4 +44,11 @@ def test_jumphost_query():
     run_test(
         fragment_name="fragments",
         query_name="jumphost_query",
+    )
+
+
+def test_emails_query():
+    run_test(
+        fragment_name="fragments",
+        query_name="emails_query",
     )

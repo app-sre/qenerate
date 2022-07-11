@@ -129,7 +129,7 @@ class OpenShiftClusterManagerV1(BaseModel):
     url: str = Field(..., alias="url")
     access_token_client_id: str = Field(..., alias="accessTokenClientId")
     access_token_url: str = Field(..., alias="accessTokenUrl")
-    offline_token: VaultSecret = Field(..., alias="offlineToken")
+    offline_token: Optional[VaultSecret] = Field(..., alias="offlineToken")
 
     class Config:
         smart_union = True

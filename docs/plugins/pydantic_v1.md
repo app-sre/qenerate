@@ -4,7 +4,8 @@ This plugin generates simple pydantic data classes for your queries.
 Pydantic is capable of mapping nested dictionaries to nested types.
 I.e., no custom mapping functions are required.
 
-This plugin expects exactly one `query` operation per `.gql` file.
+This plugin expects exactly one `query` operation or fragment definition
+per `.gql` file.
 
 ## Examples
 
