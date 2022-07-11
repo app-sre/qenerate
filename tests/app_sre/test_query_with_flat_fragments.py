@@ -73,3 +73,10 @@ def test_complex_inline_fragments_query_with_flat_fragments():
         fragment_name="fragments",
         query_name="complex_inline_fragments_query",
     )
+
+
+def test_collision_with_fragment_query():
+    run_test(
+        fragment_name="fragments_with_naming_collision",
+        query_name="collision_with_fragment_query",
+    )

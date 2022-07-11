@@ -6,6 +6,7 @@ from typing import Any
 from qenerate.core.plugin import Fragment, Plugin
 from qenerate.plugins.pydantic_v1.plugin import (
     AnonymousQueryError,
+    DuplicateFragmentDefinitionError,
     InvalidQueryError,
     PydanticV1Plugin,
 )
@@ -81,7 +82,14 @@ class CodeCommand:
                     continue
                 with open(f"{file[:-3]}py", "w") as out_file:
                     out_file.write(result.code)
-                discovered_fragments = dict(discovered_fragments, **result.fragments)
+
+                # We verify that no duplicates exist
+                for k, v in result.fragments.items():
+                    if k in discovered_fragments:
+                        raise DuplicateFragmentDefinitionError(
+                            f"fragment {k} defined multiple times"
+                        )
+                    discovered_fragments[k] = v
         return discovered_fragments
 
     @staticmethod

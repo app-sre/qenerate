@@ -1,0 +1,12 @@
+fragment Jumphost on ClusterJumpHost_v1 {
+    hostname
+    knownHosts
+    user
+    port
+    identity {
+        path
+        field
+        version
+        format
+    }
+}

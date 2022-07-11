@@ -10,12 +10,24 @@ This plugin expects exactly one `query` operation per `.gql` file.
 
 ### Hero
 
+**fragments.gql:**
+```graphql
+# qenerate: plugin=pydantic_v1
+fragment Hobby on HeroHobby {
+  name
+  interval
+}
+```
+
 **hero.gql:**
 ```graphql
 # qenerate: plugin=pydantic_v1
 query HeroForEpisode {
   hero {
     name
+    heroHobby {
+      ... Hobby
+    }
     ... on Droid {
       primaryFunction
     }
@@ -26,10 +38,21 @@ query HeroForEpisode {
 }
 ```
 
+**fragments.py:**
+```python
+class Hobby(BaseModel):
+  name: str = Field(..., alias="name")
+  interval: str = Field(..., alias="interval")
+```
+
 **hero.py:**
 ```python
+from fragments import Hobby
+
+
 class Hero(BaseModel):
   name: str = Field(..., alias="name")
+  hero_hobby: Hobby = Field(..., alias="heroHobby")
 
 
 class Droid(Hero):  # Note that Droid implements Hero
@@ -53,5 +76,20 @@ class HeroForEpisodeData(BaseModel):
 
 ## Missing Features / TODOs
 
-- support fragments
+- support for nested fragments
+
+```graphql
+fragment Identity on Identity_v1 {
+  key
+}
+
+fragment Jumphost on Jumphost_v1 {
+  host
+  identity {
+    ... Identity
+  }
+}
+```
+Currently, a fragment cannot use another fragment within its definition
+
 - support enums

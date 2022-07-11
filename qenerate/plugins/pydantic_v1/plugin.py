@@ -329,7 +329,9 @@ class FieldToTypeMatcherVisitor(Visitor):
             ),
         )
         self.parent = self.parsed
-        self.deduplication_cache: set[str] = set()
+        self.deduplication_cache: set[str] = {
+            class_name for class_name in fragments.keys()
+        }
 
     def enter_inline_fragment(self, node: InlineFragmentNode, *_):
         graphql_type = self.type_info.get_type()
@@ -511,6 +513,10 @@ class InvalidQueryError(Exception):
         super().__init__(message)
 
 
+class DuplicateFragmentDefinitionError(Exception):
+    pass
+
+
 class QueryParser:
     @staticmethod
     def parse_query(
@@ -636,15 +642,21 @@ class PydanticV1Plugin(Plugin):
         visitor = parser.parse_fragment(fragment=fragment, schema=schema)
         result += self._traverse(visitor.parsed)
         result += "\n"
-        # Preprocessor will ensure that there are no duplicates
-        fragments = {
-            frag.name: Fragment(
+
+        fragments = {}
+        for frag in visitor.discovered_fragments:
+            new_frag = Fragment(
                 class_name=frag.name,
                 import_package=import_package,
                 gql_query=frag.definition,
             )
-            for frag in visitor.discovered_fragments
-        }
+            if new_frag.class_name in fragments:
+                raise DuplicateFragmentDefinitionError(
+                    f"fragment {new_frag.class_name} defined multiple times"
+                )
+
+            fragments[new_frag.class_name] = new_frag
+
         return FragmentGeneratorResult(
             code=result,
             fragments=fragments,

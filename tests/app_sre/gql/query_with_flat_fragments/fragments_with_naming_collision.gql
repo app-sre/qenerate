@@ -1,0 +1,5 @@
+# This is named badly to trigger naming collisions
+fragment VaultSecretV1 on ClusterAuthGithubOrgTeam_v1 {
+    org
+    team
+}
