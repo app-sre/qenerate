@@ -47,6 +47,15 @@ IMPORTS = (
     ")"
 )
 
+# https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+# https://stackoverflow.com/a/69705356/4478420
+PYDANTIC_CLASS_CONFIG = (
+    "\n"
+    f"{INDENT}class Config:\n"
+    f"{INDENT}{INDENT}smart_union = True\n"
+    f"{INDENT}{INDENT}extra = Extra.forbid"
+)
+
 
 @dataclass
 class ParsedNode:
@@ -55,6 +64,9 @@ class ParsedNode:
     parsed_type: ParsedFieldType
 
     def class_code_string(self) -> str:
+        return ""
+
+    def field_type(self) -> str:
         return ""
 
     def needs_rendering(self) -> bool:
@@ -87,10 +99,7 @@ class ParsedNode:
 class ParsedInlineFragmentNode(ParsedNode):
     def class_code_string(self) -> str:
         # Assure not Optional[]
-        if not (self.parent and self.parsed_type):
-            return ""
-
-        if not self.needs_rendering():
+        if not (self.parent and self.parsed_type) or not self.needs_rendering():
             return ""
 
         fragment_class = self.parent.get_fragment_class()
@@ -118,13 +127,7 @@ class ParsedInlineFragmentNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
-        lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
-
+        lines.append(PYDANTIC_CLASS_CONFIG)
         return "\n".join(lines)
 
 
@@ -133,16 +136,23 @@ class ParsedClassNode(ParsedNode):
     gql_key: str
     py_key: str
 
+    def _get_fragment_spread_classes(self) -> list[str]:
+        fragment_spread_classes: list[str] = []
+        for field in self.fields:
+            if not isinstance(field, ParsedFragmentSpreadNode):
+                continue
+            fragment_spread_classes.append(field.fragment.class_name)
+        return fragment_spread_classes
+
+    def _inherited_classes(self) -> list[str]:
+        fragment_spreads = self._get_fragment_spread_classes()
+        return fragment_spreads if fragment_spreads else ["BaseModel"]
+
     def class_code_string(self) -> str:
         if not self.needs_rendering():
             return ""
 
-        fragment_spreads = []
-        for field in self.fields:
-            if isinstance(field, ParsedFragmentSpreadNode):
-                fragment_spreads.append(field.fragment.class_name)
-
-        kind = "BaseModel" if not fragment_spreads else ", ".join(fragment_spreads)
+        kind = ", ".join(self._inherited_classes())
 
         lines = ["\n\n"]
         lines.append(f"class {self.parsed_type.unwrapped_python_type}({kind}):")
@@ -155,13 +165,7 @@ class ParsedClassNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
-        lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
-
+        lines.append(PYDANTIC_CLASS_CONFIG)
         return "\n".join(lines)
 
     def field_type(self) -> str:
@@ -234,13 +238,7 @@ class ParsedFragmentDefinitionNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
-        lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
-
+        lines.append(PYDANTIC_CLASS_CONFIG)
         return "\n".join(lines)
 
     def field_type(self) -> str:
@@ -281,13 +279,7 @@ class ParsedOperationNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
-        lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
-
+        lines.append(PYDANTIC_CLASS_CONFIG)
         return "\n".join(lines)
 
 
@@ -360,7 +352,8 @@ class FieldToTypeMatcherVisitor(Visitor):
             fields=[],
             parsed_type=ParsedFieldType(
                 unwrapped_python_type=node.name.value,
-                wrapped_python_type=f"Optional[list[{node.name.value}]]",
+                # This is not actually being used, as operation is root level
+                wrapped_python_type=node.name.value,
                 is_primitive=False,
             ),
         )
