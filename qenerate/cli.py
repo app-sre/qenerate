@@ -1,5 +1,5 @@
 import argparse
-from qenerate.core.code_command import CodeCommand
+from qenerate.core.code_command import CodeCommand, CodeCommandArgs
 
 from qenerate.core.introspection_command import IntrospectionCommand
 
@@ -25,7 +25,31 @@ def run():
         help="Specify introspection query json",
     )
     parser_generator.add_argument(
-        "dir", type=str, help="Specify introspection query json"
+        "-q",
+        dest="queries",
+        type=str,
+        help=(
+            "Specify directory with queries. " "The directory is traversed recursively."
+        ),
+    )
+    parser_generator.add_argument(
+        "-f",
+        dest="fragments",
+        type=str,
+        help=(
+            "Specify directory with fragments. "
+            "The directory is traversed recursively."
+        ),
+    )
+    parser_generator.add_argument(
+        "-p",
+        dest="fragments_package_prefix",
+        type=str,
+        help=(
+            "The package prefix used to generate fragment imports. "
+            "E.g., -p my.package would result in "
+            "from my.package.path.to.fragment import MyFragment"
+        ),
     )
 
     args = parser.parse_args()
@@ -34,8 +58,12 @@ def run():
         IntrospectionCommand.introspection_query(args.url)
     elif args.subcommand == "code":
         CodeCommand.generate_code(
-            introspection_file_path=args.introspection,
-            dir=args.dir,
+            CodeCommandArgs(
+                introspection_file_path=args.introspection,
+                fragments_dir=args.fragments,
+                queries_dir=args.queries,
+                fragments_package_prefix=args.fragments_package_prefix,
+            )
         )
 
 

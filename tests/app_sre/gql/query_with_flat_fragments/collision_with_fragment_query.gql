@@ -1,0 +1,17 @@
+query OCPAuthFull {
+  ocp_release_mirror: ocp_release_mirror_v1 {
+    hiveCluster {
+      automationToken {
+        format
+      }
+      auth {
+        ... on ClusterAuthGithubOrg_v1 {
+          org
+        }
+        ... on ClusterAuthGithubOrgTeam_v1 {
+          ... VaultSecretV1
+        }
+      }
+    }
+  }
+}
