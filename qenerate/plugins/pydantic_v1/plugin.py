@@ -370,9 +370,10 @@ class PydanticV1Plugin(Plugin):
     def generate(self, query_file: str, raw_schema: dict[Any, Any]) -> str:
         result = HEADER + IMPORTS
         result += "\n\n\n"
+        qf = Path(query_file).name
         result += (
             "def query_string() -> str:\n"
-            f'{INDENT}with open(f"{{Path(__file__).parent}}/{Path(query_file).name}", "r") as f:\n'
+            f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf}", "r") as f:\n'
             f"{INDENT}{INDENT}return f.read()"
         )
         schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
