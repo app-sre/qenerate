@@ -22,7 +22,7 @@ from graphql import (
     get_operation_ast,
     validate,
 )
-from qenerate.core.plugin import Plugin
+from qenerate.core.plugin import Plugin, GeneratedFile
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -367,13 +367,15 @@ class PydanticV1Plugin(Plugin):
                 result = f"{result}{self._traverse(child)}"
         return result
 
-    def generate(self, query_file: str, raw_schema: dict[Any, Any]) -> str:
+    def generate(
+        self, query_file: str, raw_schema: dict[Any, Any]
+    ) -> list[GeneratedFile]:
         result = HEADER + IMPORTS
         result += "\n\n\n"
-        qf = Path(query_file).name
+        qf = Path(query_file)
         result += (
             "def query_string() -> str:\n"
-            f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf}", "r") as f:\n'
+            f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf.name}", "r") as f:\n'
             f"{INDENT}{INDENT}return f.read()"
         )
         schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
@@ -383,4 +385,10 @@ class PydanticV1Plugin(Plugin):
         ast = parser.parse(query=query, schema=schema)
         result += self._traverse(ast)
         result += "\n"
-        return result
+
+        return sorted(
+            [
+                GeneratedFile(file=qf.with_suffix(".py"), content=result),
+                GeneratedFile(file=qf.parent / "__init__.py", content=HEADER),
+            ]
+        )
