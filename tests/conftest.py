@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
+
 import pytest
+from qenerate.core.plugin import GeneratedFile
 
 
 @pytest.fixture()
 def expected_files():
     """Read fixture files from test/queries/expected/PLUGIN/QUERY and remove .txt suffix."""
-    from qenerate.core.plugin import GeneratedFile
 
     def _(plugin: str, query: str) -> list[GeneratedFile]:
         return sorted(

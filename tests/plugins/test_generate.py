@@ -1,22 +1,16 @@
-from qenerate.core.code_command import plugins
 import pytest
+from qenerate.core.code_command import plugins
 from qenerate.plugins.pydantic_v1.plugin import AnonymousQueryError, InvalidQueryError
 
 
 @pytest.mark.parametrize(
     "query",
     [
-        # simple query
         "saas_file_simple",
-        # interface query
         "complex_inline_fragments_and_collisions",
-        # interface humongous query
         "saas_humongous",
-        # difficult attribute name query
         "difficult_attribute_name",
-        # inline fragments
         "ocp_with_inline_fragments",
-        # json query
         "saas_file_json",
     ],
 )
@@ -32,9 +26,7 @@ def test_generate(schema_raw, expected_files, query, plugin_name):
 @pytest.mark.parametrize(
     "query, exception",
     [
-        # anonymous query
         ["anonymous_query", AnonymousQueryError],
-        # invalid query
         ["invalid_query", InvalidQueryError],
     ],
 )
