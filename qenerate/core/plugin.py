@@ -21,3 +21,15 @@ class Plugin:
         self, query_file: str, raw_schema: dict[Any, Any]
     ) -> list[GeneratedFile]:
         raise NotImplementedError
+
+
+class AnonymousQueryError(Exception):
+    def __init__(self):
+        super().__init__("All queries must be named")
+
+
+class InvalidQueryError(Exception):
+    def __init__(self, errors):
+        self.errors = errors
+        message = "\n".join(str(err) for err in errors)
+        super().__init__(message)

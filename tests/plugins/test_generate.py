@@ -1,6 +1,6 @@
 import pytest
 from qenerate.core.code_command import plugins
-from qenerate.plugins.pydantic_v1.plugin import AnonymousQueryError, InvalidQueryError
+from qenerate.core.plugin import AnonymousQueryError, InvalidQueryError
 
 
 @pytest.mark.parametrize(

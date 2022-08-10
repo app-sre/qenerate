@@ -22,7 +22,12 @@ from graphql import (
     get_operation_ast,
     validate,
 )
-from qenerate.core.plugin import Plugin, GeneratedFile
+from qenerate.core.plugin import (
+    Plugin,
+    GeneratedFile,
+    AnonymousQueryError,
+    InvalidQueryError,
+)
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -314,18 +319,6 @@ class FieldToTypeMatcherVisitor(Visitor):
 
             self.deduplication_cache.add(class_name)
             return class_name
-
-
-class AnonymousQueryError(Exception):
-    def __init__(self):
-        super().__init__("All queries must be named")
-
-
-class InvalidQueryError(Exception):
-    def __init__(self, errors):
-        self.errors = errors
-        message = "\n".join(str(err) for err in errors)
-        super().__init__(message)
 
 
 class QueryParser:
