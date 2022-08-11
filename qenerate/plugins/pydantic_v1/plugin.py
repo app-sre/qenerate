@@ -379,9 +379,4 @@ class PydanticV1Plugin(Plugin):
         result += self._traverse(ast)
         result += "\n"
 
-        return sorted(
-            [
-                GeneratedFile(file=qf.with_suffix(".py"), content=result),
-                GeneratedFile(file=qf.parent / "__init__.py", content=HEADER),
-            ]
-        )
+        return sorted([GeneratedFile(file=qf.with_suffix(".py"), content=result)])
