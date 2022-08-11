@@ -1,5 +1,4 @@
 from json import JSONDecodeError
-import requests_mock
 from pytest import raises
 
 from qenerate.core.introspection_command import IntrospectionCommand

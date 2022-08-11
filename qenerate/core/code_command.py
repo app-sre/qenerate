@@ -45,7 +45,7 @@ class CodeCommand:
                         )
                         continue
                     plugin = plugins[feature_flags.plugin]
-                    code = plugin.generate(
+                    generated_files = plugin.generate(
                         query_file=file,
                         raw_schema=introspection,
                     )
@@ -66,5 +66,6 @@ class CodeCommand:
                 except InvalidQueryError:
                     print(f"[Skipping File] Schema validation failed for query {file}.")
                     continue
-                with open(f"{file[:-3]}py", "w") as out_file:
-                    out_file.write(code)
+
+                for generated_file in generated_files:
+                    generated_file.save()
