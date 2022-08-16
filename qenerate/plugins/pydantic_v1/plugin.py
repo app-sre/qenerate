@@ -5,8 +5,6 @@ from typing import Any, Optional, cast
 
 from graphql import (
     FieldNode,
-    GraphQLList,
-    GraphQLNonNull,
     GraphQLOutputType,
     GraphQLScalarType,
     GraphQLSchema,
@@ -34,6 +32,7 @@ from qenerate.plugins.pydantic_v1.mapper import (
     graphql_primitive_to_python,
     graphql_field_name_to_python,
 )
+from ...core.unwrapper import Unwrapper, WrapperType
 
 INDENT = "    "
 
@@ -261,43 +260,15 @@ class FieldToTypeMatcherVisitor(Visitor):
 
     # Custom Functions
     def _parse_type(self, graphql_type: GraphQLOutputType) -> ParsedFieldType:
-        is_optional = True
-        if isinstance(graphql_type, GraphQLNonNull):
-            is_optional = False
-            graphql_type = graphql_type.of_type
-
-        is_list = False
-        if isinstance(graphql_type, GraphQLList):
-            is_list = True
-            graphql_type = graphql_type.of_type
-
-        needs_further_unwrapping = isinstance(
-            graphql_type, GraphQLNonNull
-        ) or isinstance(graphql_type, GraphQLList)
-        parsed_of_type = None
-        if needs_further_unwrapping:
-            parsed_of_type = self._parse_type(graphql_type=graphql_type)
-
-        unwrapped_type = (
-            self._to_python_type(graphql_type)
-            if not parsed_of_type
-            else parsed_of_type.unwrapped_python_type
-        )
-        wrapped_type = (
-            unwrapped_type if not parsed_of_type else parsed_of_type.wrapped_python_type
-        )
-        is_primitive = (
-            isinstance(graphql_type, GraphQLScalarType)
-            if not parsed_of_type
-            else parsed_of_type.is_primitive
-        )
-
-        if is_optional and is_list:
-            wrapped_type = f"Optional[list[{wrapped_type}]]"
-        elif is_optional:
-            wrapped_type = f"Optional[{wrapped_type}]"
-        elif is_list:
-            wrapped_type = f"list[{wrapped_type}]"
+        unwrapper_result = Unwrapper.unwrap(graphql_type)
+        unwrapped_type = self._to_python_type(unwrapper_result.inner_gql_type)
+        is_primitive = unwrapper_result.is_primitive
+        wrapped_type = unwrapped_type
+        for wrapper in reversed(unwrapper_result.wrapper_stack):
+            if wrapper == WrapperType.LIST:
+                wrapped_type = f"list[{wrapped_type}]"
+            elif wrapper == WrapperType.OPTIONAL:
+                wrapped_type = f"Optional[{wrapped_type}]"
 
         return ParsedFieldType(
             unwrapped_python_type=unwrapped_type,
