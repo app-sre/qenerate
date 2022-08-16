@@ -60,6 +60,15 @@ class ParsedNode:
     def class_code_string(self) -> str:
         return ""
 
+    def _pydantic_config_string(self) -> list[str]:
+        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+        # https://stackoverflow.com/a/69705356/4478420
+        lines: list[str] = []
+        lines.append(f"{INDENT}class Config:")
+        lines.append(f"{INDENT}{INDENT}smart_union = True")
+        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
+        return lines
+
 
 @dataclass
 class ParsedInlineFragmentNode(ParsedNode):
@@ -88,12 +97,8 @@ class ParsedInlineFragmentNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
         lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
+        lines.extend(self._pydantic_config_string())
 
         return "\n".join(lines)
 
@@ -118,12 +123,8 @@ class ParsedClassNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
         lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
+        lines.extend(self._pydantic_config_string())
 
         return "\n".join(lines)
 
@@ -165,12 +166,8 @@ class ParsedOperationNode(ParsedNode):
                     )
                 )
 
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
         lines.append("")
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
+        lines.extend(self._pydantic_config_string())
 
         return "\n".join(lines)
 
