@@ -75,7 +75,7 @@ class ClusterV1_VaultSecretV1(BaseModel):
 
 
 class DisableClusterAutomationsV1(BaseModel):
-    integrations: Optional[list[str]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
     class Config:
         smart_union = True
@@ -112,7 +112,7 @@ class ClusterV1(BaseModel):
     server_url: str = Field(..., alias="serverUrl")
     insecure_skip_tls_verify: Optional[bool] = Field(..., alias="insecureSkipTLSVerify")
     jump_host: Optional[ClusterJumpHostV1] = Field(..., alias="jumpHost")
-    managed_groups: Optional[list[str]] = Field(..., alias="managedGroups")
+    managed_groups: Optional[list[Optional[str]]] = Field(..., alias="managedGroups")
     ocm: Optional[OpenShiftClusterManagerV1] = Field(..., alias="ocm")
     automation_token: Optional[ClusterV1_VaultSecretV1] = Field(..., alias="automationToken")
     internal: Optional[bool] = Field(..., alias="internal")
@@ -168,7 +168,7 @@ class NamespaceV1_ClusterV1(BaseModel):
 class NamespaceV1(BaseModel):
     name: str = Field(..., alias="name")
     managed_terraform_resources: Optional[bool] = Field(..., alias="managedTerraformResources")
-    terraform_resources: Optional[list[Union[NamespaceTerraformResourceECRV1, NamespaceTerraformResourceAWSV1]]] = Field(..., alias="terraformResources")
+    terraform_resources: Optional[list[Optional[Union[NamespaceTerraformResourceECRV1, NamespaceTerraformResourceAWSV1]]]] = Field(..., alias="terraformResources")
     cluster: NamespaceV1_ClusterV1 = Field(..., alias="cluster")
 
     class Config:
@@ -207,7 +207,7 @@ class OcpReleaseMirrorV1(BaseModel):
 
 
 class OCPAuthFullQueryData(BaseModel):
-    ocp_release_mirror: Optional[list[OcpReleaseMirrorV1]] = Field(..., alias="ocp_release_mirror")
+    ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
 
     class Config:
         smart_union = True

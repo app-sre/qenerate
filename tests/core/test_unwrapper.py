@@ -25,7 +25,7 @@ from graphql import (
         [
             GraphQLNonNull(GraphQLList(GraphQLObjectType(name="MyObject", fields=[]))),
             UnwrapperResult(
-                wrapper_stack=[WrapperType.LIST],
+                wrapper_stack=[WrapperType.LIST, WrapperType.OPTIONAL],
                 inner_gql_type=GraphQLObjectType(name="MyObject", fields=[]),
                 is_primitive=False,
             ),
@@ -45,6 +45,7 @@ from graphql import (
                     WrapperType.OPTIONAL,
                     WrapperType.LIST,
                     WrapperType.LIST,
+                    WrapperType.OPTIONAL,
                 ],
                 inner_gql_type=GraphQLScalarType(name="Integer"),
                 is_primitive=True,

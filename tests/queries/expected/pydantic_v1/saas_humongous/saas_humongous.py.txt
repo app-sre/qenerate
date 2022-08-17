@@ -69,7 +69,7 @@ class ClusterV1_VaultSecretV1(BaseModel):
 
 
 class DisableClusterAutomationsV1(BaseModel):
-    integrations: Optional[list[str]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
     class Config:
         smart_union = True
@@ -202,7 +202,7 @@ class SlackWorkspaceIntegrationV1(BaseModel):
 
 class SlackWorkspaceV1(BaseModel):
     name: str = Field(..., alias="name")
-    integrations: Optional[list[SlackWorkspaceIntegrationV1]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
 
     class Config:
         smart_union = True
@@ -322,7 +322,7 @@ class EnvironmentV1_SaasSecretParametersV1(BaseModel):
 class EnvironmentV1(BaseModel):
     name: str = Field(..., alias="name")
     parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[EnvironmentV1_SaasSecretParametersV1]] = Field(..., alias="secretParameters")
+    secret_parameters: Optional[list[Optional[EnvironmentV1_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
 
     class Config:
         smart_union = True
@@ -383,7 +383,7 @@ class SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_Name
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1(BaseModel):
-    integrations: Optional[list[str]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
     class Config:
         smart_union = True
@@ -435,7 +435,7 @@ class ParentSaasPromotionV1(PromotionChannelDataV1):
 
 class PromotionDataV1(BaseModel):
     channel: Optional[str] = Field(..., alias="channel")
-    data: Optional[list[Union[ParentSaasPromotionV1, PromotionChannelDataV1]]] = Field(..., alias="data")
+    data: Optional[list[Optional[Union[ParentSaasPromotionV1, PromotionChannelDataV1]]]] = Field(..., alias="data")
 
     class Config:
         smart_union = True
@@ -444,9 +444,9 @@ class PromotionDataV1(BaseModel):
 
 class SaasResourceTemplateTargetPromotionV1(BaseModel):
     auto: Optional[bool] = Field(..., alias="auto")
-    publish: Optional[list[str]] = Field(..., alias="publish")
-    subscribe: Optional[list[str]] = Field(..., alias="subscribe")
-    promotion_data: Optional[list[PromotionDataV1]] = Field(..., alias="promotion_data")
+    publish: Optional[list[Optional[str]]] = Field(..., alias="publish")
+    subscribe: Optional[list[Optional[str]]] = Field(..., alias="subscribe")
+    promotion_data: Optional[list[Optional[PromotionDataV1]]] = Field(..., alias="promotion_data")
 
     class Config:
         smart_union = True
@@ -496,7 +496,7 @@ class SaasResourceTemplateTargetV2(BaseModel):
     ref: str = Field(..., alias="ref")
     promotion: Optional[SaasResourceTemplateTargetPromotionV1] = Field(..., alias="promotion")
     parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[SaasResourceTemplateTargetV2_SaasSecretParametersV1]] = Field(..., alias="secretParameters")
+    secret_parameters: Optional[list[Optional[SaasResourceTemplateTargetV2_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
     upstream: Optional[SaasResourceTemplateTargetUpstreamV1] = Field(..., alias="upstream")
     disable: Optional[bool] = Field(..., alias="disable")
     delete: Optional[bool] = Field(..., alias="delete")
@@ -513,7 +513,7 @@ class SaasResourceTemplateV2(BaseModel):
     provider: Optional[str] = Field(..., alias="provider")
     hash_length: Optional[int] = Field(..., alias="hash_length")
     parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[SaasResourceTemplateV2_SaasSecretParametersV1]] = Field(..., alias="secretParameters")
+    secret_parameters: Optional[list[Optional[SaasResourceTemplateV2_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
     targets: Optional[list[SaasResourceTemplateTargetV2]] = Field(..., alias="targets")
 
     class Config:
@@ -531,7 +531,7 @@ class UserV1(BaseModel):
 
 
 class RoleV1(BaseModel):
-    users: Optional[list[UserV1]] = Field(..., alias="users")
+    users: Optional[list[Optional[UserV1]]] = Field(..., alias="users")
 
     class Config:
         smart_union = True
@@ -554,9 +554,9 @@ class SaasFileV2(BaseModel):
     use_channel_in_image_tag: Optional[bool] = Field(..., alias="use_channel_in_image_tag")
     authentication: Optional[SaasFileAuthenticationV1] = Field(..., alias="authentication")
     parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[SaasSecretParametersV1]] = Field(..., alias="secretParameters")
+    secret_parameters: Optional[list[Optional[SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
     resource_templates: Optional[list[SaasResourceTemplateV2]] = Field(..., alias="resourceTemplates")
-    roles: Optional[list[RoleV1]] = Field(..., alias="roles")
+    roles: Optional[list[Optional[RoleV1]]] = Field(..., alias="roles")
 
     class Config:
         smart_union = True
@@ -564,7 +564,7 @@ class SaasFileV2(BaseModel):
 
 
 class SaasFilesV2XXLQueryData(BaseModel):
-    saas_files: Optional[list[SaasFileV2]] = Field(..., alias="saas_files")
+    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
 
     class Config:
         smart_union = True
