@@ -217,16 +217,14 @@ class FieldToTypeMatcherVisitor(Visitor):
         self.parent = self.parent.parent if self.parent else self.parent
 
     def enter_operation_definition(self, node: OperationDefinitionNode, *_):
-        graphql_type = self.type_info.get_type()
-        if not graphql_type:
-            raise ValueError(f"{node} does not have a graphql type")
-        field_type = self._parse_type(graphql_type=graphql_type)
+        if not node.name:
+            raise ValueError(f"{node} does not have a name")
         current = ParsedOperationNode(
             parent=self.parent,
             fields=[],
             parsed_type=ParsedFieldType(
-                unwrapped_python_type=field_type.unwrapped_python_type,
-                wrapped_python_type=field_type.wrapped_python_type,
+                unwrapped_python_type=node.name.value,
+                wrapped_python_type=node.name.value,
                 is_primitive=False,
             ),
         )

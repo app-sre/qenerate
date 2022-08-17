@@ -23,15 +23,19 @@ class Unwrapper:
     """
 
     @staticmethod
-    def unwrap(gql_type: GraphQLOutputType) -> UnwrapperResult:
+    def unwrap(
+        gql_type: GraphQLOutputType, parent_is_list: bool = False
+    ) -> UnwrapperResult:
         wrappers: list[WrapperType] = []
         if isinstance(gql_type, GraphQLNonNull):
             gql_type = gql_type.of_type
         else:
-            wrappers.append(WrapperType.OPTIONAL)
+            if not parent_is_list:
+                # Note, that GQL does not allow nullables in lists
+                wrappers.append(WrapperType.OPTIONAL)
 
         if isinstance(gql_type, GraphQLList):
-            res = Unwrapper.unwrap(gql_type.of_type)
+            res = Unwrapper.unwrap(gql_type.of_type, parent_is_list=True)
             wrappers.append(WrapperType.LIST)
             wrappers.extend(res.wrapper_stack)
             return UnwrapperResult(
