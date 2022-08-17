@@ -1,0 +1,12 @@
+# qenerate: plugin=test
+query FirstQuery {
+    some {
+        name
+    }
+}
+
+query SecondQuery {
+    other {
+        name
+    }
+}

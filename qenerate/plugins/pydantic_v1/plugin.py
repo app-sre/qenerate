@@ -1,6 +1,5 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Optional, cast
 
 from graphql import (
@@ -26,6 +25,7 @@ from qenerate.core.plugin import (
     AnonymousQueryError,
     InvalidQueryError,
 )
+from qenerate.core.preprocessor import GQLDefinition
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -331,11 +331,11 @@ class PydanticV1Plugin(Plugin):
         return result
 
     def generate(
-        self, query_file: str, raw_schema: dict[Any, Any]
+        self, definition: GQLDefinition, raw_schema: dict[Any, Any]
     ) -> list[GeneratedFile]:
         result = HEADER + IMPORTS
         result += "\n\n\n"
-        qf = Path(query_file)
+        qf = definition.source_file
         result += (
             "def query_string() -> str:\n"
             f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf.name}", "r") as f:\n'
@@ -343,8 +343,7 @@ class PydanticV1Plugin(Plugin):
         )
         schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
         parser = QueryParser()
-        with open(query_file, "r") as f:
-            query = f.read()
+        query = definition.definition
         ast = parser.parse(query=query, schema=schema)
         result += self._traverse(ast)
         result += "\n"
