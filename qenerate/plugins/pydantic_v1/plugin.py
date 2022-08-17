@@ -32,7 +32,7 @@ from qenerate.plugins.pydantic_v1.mapper import (
     graphql_primitive_to_python,
     graphql_field_name_to_python,
 )
-from ...core.unwrapper import Unwrapper, WrapperType
+from qenerate.core.unwrapper import Unwrapper, WrapperType
 
 INDENT = "    "
 
@@ -217,14 +217,16 @@ class FieldToTypeMatcherVisitor(Visitor):
         self.parent = self.parent.parent if self.parent else self.parent
 
     def enter_operation_definition(self, node: OperationDefinitionNode, *_):
-        if not node.name:
-            raise ValueError(f"{node} does not have a name defined")
+        graphql_type = self.type_info.get_type()
+        if not graphql_type:
+            raise ValueError(f"{node} does not have a graphql type")
+        field_type = self._parse_type(graphql_type=graphql_type)
         current = ParsedOperationNode(
             parent=self.parent,
             fields=[],
             parsed_type=ParsedFieldType(
-                unwrapped_python_type=node.name.value,
-                wrapped_python_type=f"Optional[list[{node.name.value}]]",
+                unwrapped_python_type=field_type.unwrapped_python_type,
+                wrapped_python_type=field_type.wrapped_python_type,
                 is_primitive=False,
             ),
         )
