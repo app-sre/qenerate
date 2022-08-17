@@ -11,8 +11,10 @@ class GeneratedFile:
     content: str
 
     def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GeneratedFile):
+            return False
         # ignore path in filename comparison
-        return self.content == self.content and self.file.name == self.file.name
+        return self.content == other.content and self.file.name == other.file.name
 
     def save(self):
         self.file.write_text(self.content)
