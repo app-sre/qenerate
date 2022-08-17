@@ -1,13 +1,15 @@
 import json
 import os
+from pathlib import Path
 
-from qenerate.core.plugin import Plugin
+from qenerate.core.plugin import GeneratedFile, Plugin
+from .preprocessor import Preprocessor
 from qenerate.plugins.pydantic_v1.plugin import (
     AnonymousQueryError,
     InvalidQueryError,
     PydanticV1Plugin,
 )
-from qenerate.core.feature_flag_parser import FeatureFlagError, FeatureFlagParser
+from qenerate.core.feature_flag_parser import FeatureFlagError
 
 
 plugins: dict[str, Plugin] = {
@@ -31,41 +33,43 @@ class CodeCommand:
             introspection = json.loads(f.read())["data"]
 
         for file in CodeCommand._find_query_files(dir):
-            with open(file, "r") as f:
-                content = f.read()
-                try:
-                    feature_flags = FeatureFlagParser.parse(
-                        query=content,
-                    )
-                    if feature_flags.plugin not in plugins:
+            try:
+                preprocessor = Preprocessor()
+                definitions = preprocessor.process_file(Path(file))
+                generated_files: list[GeneratedFile] = []
+
+                for definition in definitions:
+                    if definition.feature_flags.plugin not in plugins:
                         print(
                             f"[Skipping File] Query in {file} specifies "
                             "unknown plugin: "
-                            f'"# qenerate: plugin={feature_flags.plugin}".'
+                            f'"# qenerate: plugin={definition.feature_flags.plugin}".'
                         )
                         continue
-                    plugin = plugins[feature_flags.plugin]
-                    generated_files = plugin.generate(
-                        query_file=file,
-                        raw_schema=introspection,
+                    plugin = plugins[definition.feature_flags.plugin]
+                    generated_files.extend(
+                        plugin.generate(
+                            definition=definition,
+                            raw_schema=introspection,
+                        )
                     )
-                except FeatureFlagError:
-                    print(
-                        f"[Skipping File] Query in {file} does not "
-                        "specify generator plugin via "
-                        '"# qenerate: plugin=<plugin_id>" set.'
-                    )
-                    continue
-                except AnonymousQueryError:
-                    print(
-                        f"[Skipping File] Query in {file} is anonymous. "
-                        "Qenerate does not support anonymous queries."
-                        "Please name the query."
-                    )
-                    continue
-                except InvalidQueryError:
-                    print(f"[Skipping File] Schema validation failed for query {file}.")
-                    continue
+            except FeatureFlagError:
+                print(
+                    f"[Skipping File] Query in {file} does not "
+                    "specify generator plugin via "
+                    '"# qenerate: plugin=<plugin_id>" set.'
+                )
+                continue
+            except AnonymousQueryError:
+                print(
+                    f"[Skipping File] Query in {file} is anonymous. "
+                    "Qenerate does not support anonymous queries."
+                    "Please name the query."
+                )
+                continue
+            except InvalidQueryError:
+                print(f"[Skipping File] Schema validation failed for query {file}.")
+                continue
 
-                for generated_file in generated_files:
-                    generated_file.save()
+            for generated_file in generated_files:
+                generated_file.save()

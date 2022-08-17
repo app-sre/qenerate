@@ -1,0 +1,6 @@
+# qenerate: plugin=test
+query MyQuery {
+    some {
+        name
+    }
+}

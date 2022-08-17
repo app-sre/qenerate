@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Any
 from pathlib import Path
 
+from qenerate.core.preprocessor import GQLDefinition
+
 
 @dataclass(eq=True, order=True)
 class GeneratedFile:
@@ -18,7 +20,7 @@ class GeneratedFile:
 
 class Plugin:
     def generate(
-        self, query_file: str, raw_schema: dict[Any, Any]
+        self, definition: GQLDefinition, raw_schema: dict[Any, Any]
     ) -> list[GeneratedFile]:
         raise NotImplementedError
 
