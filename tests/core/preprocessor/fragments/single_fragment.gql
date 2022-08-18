@@ -1,0 +1,4 @@
+# qenerate: plugin=test
+fragment MyFragment on MyObject {
+    name
+}

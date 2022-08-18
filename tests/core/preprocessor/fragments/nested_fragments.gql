@@ -1,0 +1,10 @@
+# qenerate: plugin=test
+fragment MyFragment on MyObject {
+    some {
+        ... NestedFragment
+    }
+}
+
+fragment NestedFragment on NestedObject {
+    name
+}

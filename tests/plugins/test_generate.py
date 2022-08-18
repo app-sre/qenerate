@@ -28,6 +28,7 @@ def test_generate(schema_raw, expected_files, query, plugin_name):
         feature_flags=FeatureFlags(plugin=plugin_name),
         source_file=source_file,
         definition=content,
+        fragment_dependencies=[],
         kind=GQLDefinitionType.QUERY,
         name="",
     )
@@ -56,6 +57,7 @@ def test_invalid_queries(schema_raw, query, exception, plugin_name):
         source_file=source_file,
         definition=content,
         kind=GQLDefinitionType.QUERY,
+        fragment_dependencies=[],
         name="",
     )
     with pytest.raises(exception):
