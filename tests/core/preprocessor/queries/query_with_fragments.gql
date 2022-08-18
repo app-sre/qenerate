@@ -1,0 +1,24 @@
+# qenerate: plugin=test
+query FirstQuery {
+    some {
+        ... FirstFragment
+    }
+
+    other {
+        ... SecondFragment
+    }
+}
+
+fragment FirstFragment on SomeObject {
+    name
+}
+
+fragment SecondFragment on OtherObject {
+    other {
+        ... NestedFragment
+    }
+}
+
+fragment NestedFragment on NestedObject {
+    name
+}
