@@ -1,6 +1,5 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional
 
 from graphql import (
     FieldNode,
@@ -23,7 +22,14 @@ from qenerate.core.plugin import (
     AnonymousQueryError,
     InvalidQueryError,
 )
-from qenerate.core.preprocessor import GQLDefinition
+from qenerate.plugins.pydantic_v1.typed_ast import (
+    ParsedNode,
+    ParsedInlineFragmentNode,
+    ParsedOperationNode,
+    ParsedFieldType,
+    ParsedClassNode,
+)
+from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -47,134 +53,6 @@ IMPORTS = (
     f"{INDENT}Json,\n"
     ")"
 )
-
-
-@dataclass
-class ParsedNode:
-    parent: Optional[ParsedNode]
-    fields: list[ParsedNode]
-    parsed_type: ParsedFieldType
-
-    def class_code_string(self) -> str:
-        return ""
-
-    def _pydantic_config_string(self) -> list[str]:
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
-        lines: list[str] = []
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
-        return lines
-
-
-@dataclass
-class ParsedInlineFragmentNode(ParsedNode):
-    def class_code_string(self) -> str:
-        # Assure not Optional[]
-        if not (self.parent and self.parsed_type):
-            return ""
-
-        if self.parsed_type.is_primitive:
-            return ""
-
-        lines = ["\n\n"]
-        lines.append(
-            (
-                "class "
-                f"{self.parsed_type.unwrapped_python_type}"
-                f"({self.parent.parsed_type.unwrapped_python_type}):"
-            )
-        )
-        for field in self.fields:
-            if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
-                )
-
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
-
-        return "\n".join(lines)
-
-
-@dataclass
-class ParsedClassNode(ParsedNode):
-    gql_key: str
-    py_key: str
-
-    def class_code_string(self) -> str:
-        if self.parsed_type.is_primitive:
-            return ""
-
-        lines = ["\n\n"]
-        lines.append(f"class {self.parsed_type.unwrapped_python_type}(BaseModel):")
-        for field in self.fields:
-            if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
-                )
-
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
-
-        return "\n".join(lines)
-
-    def field_type(self) -> str:
-        unions: list[str] = []
-        # TODO: sorting does not need to happen on each call
-        """
-        Pydantic does best-effort matching on Unions.
-        Declare most significant type first.
-        This, smart_union and disallowing extra fields gives high confidence
-        in matching.
-        https://pydantic-docs.helpmanual.io/usage/types/#unions
-        """
-        self.fields.sort(key=lambda a: len(a.fields), reverse=True)
-        for field in self.fields:
-            if isinstance(field, ParsedInlineFragmentNode):
-                unions.append(field.parsed_type.unwrapped_python_type)
-        if len(unions) > 0:
-            unions.append(self.parsed_type.unwrapped_python_type)
-            return self.parsed_type.wrapped_python_type.replace(
-                self.parsed_type.unwrapped_python_type, f"Union[{', '.join(unions)}]"
-            )
-        return self.parsed_type.wrapped_python_type
-
-
-@dataclass
-class ParsedOperationNode(ParsedNode):
-    def class_code_string(self) -> str:
-        lines = ["\n\n"]
-        lines.append(
-            f"class {self.parsed_type.unwrapped_python_type}QueryData(BaseModel):"
-        )
-        for field in self.fields:
-            if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
-                )
-
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
-
-        return "\n".join(lines)
-
-
-@dataclass
-class ParsedFieldType:
-    unwrapped_python_type: str
-    wrapped_python_type: str
-    is_primitive: bool
 
 
 class FieldToTypeMatcherVisitor(Visitor):
@@ -306,6 +184,13 @@ class QueryParser:
         return visitor.parsed
 
 
+@dataclass
+class Fragment:
+    import_path: str
+    fragment_name: str
+    class_name: str
+
+
 class PydanticV1Plugin(Plugin):
     def _traverse(self, node: ParsedNode) -> str:
         """
@@ -326,11 +211,19 @@ class PydanticV1Plugin(Plugin):
                 result = f"{result}{self._traverse(child)}"
         return result
 
-    def generate(
-        self, definitions: list[GQLDefinition], schema: GraphQLSchema
+    def _generate_fragments(
+        self, fragments: dict[str, GQLDefinition], schema: GraphQLSchema
+    ) -> tuple[list[GeneratedFile], dict[str, Fragment]]:
+        return ([], {})
+
+    def _generate_queries(
+        self,
+        queries: list[GQLDefinition],
+        fragments: dict[str, Fragment],
+        schema: GraphQLSchema,
     ) -> list[GeneratedFile]:
         generated_files: list[GeneratedFile] = []
-        for definition in definitions:
+        for definition in queries:
             result = HEADER + IMPORTS
             result += "\n\n\n"
             qf = definition.source_file
@@ -340,7 +233,6 @@ class PydanticV1Plugin(Plugin):
                 "\n"
                 f"{INDENT}{INDENT}return f.read()"
             )
-            # schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
             parser = QueryParser()
             query = definition.definition
             ast = parser.parse(query=query, schema=schema)
@@ -349,5 +241,31 @@ class PydanticV1Plugin(Plugin):
             generated_files.append(
                 GeneratedFile(file=qf.with_suffix(".py"), content=result)
             )
+
+        return generated_files
+
+    def generate(
+        self, definitions: list[GQLDefinition], schema: GraphQLSchema
+    ) -> list[GeneratedFile]:
+        generated_files: list[GeneratedFile] = []
+
+        query_defs = [d for d in definitions if d.kind == GQLDefinitionType.QUERY]
+        fragment_defs = {
+            f.name: f for f in definitions if f.kind == GQLDefinitionType.FRAGMENT
+        }
+
+        files, fragments = self._generate_fragments(
+            fragments=fragment_defs,
+            schema=schema,
+        )
+        generated_files.extend(files)
+
+        generated_files.extend(
+            self._generate_queries(
+                queries=query_defs,
+                schema=schema,
+                fragments=fragments,
+            )
+        )
 
         return generated_files
