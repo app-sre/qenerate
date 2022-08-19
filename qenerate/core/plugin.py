@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Any
 from pathlib import Path
+
+from graphql import GraphQLSchema
 
 from qenerate.core.preprocessor import GQLDefinition
 
@@ -22,7 +23,7 @@ class GeneratedFile:
 
 class Plugin:
     def generate(
-        self, definition: GQLDefinition, raw_schema: dict[Any, Any]
+        self, definitions: list[GQLDefinition], schema: GraphQLSchema
     ) -> list[GeneratedFile]:
         raise NotImplementedError
 
