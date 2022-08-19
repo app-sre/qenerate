@@ -18,7 +18,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
-def test_generate(schema_raw, expected_files, query, plugin_name):
+def test_generate(schema, expected_files, query, plugin_name):
     """Test code generation for each QUERY x PLUGIN combinations."""
     source_file = Path(f"tests/queries/{query}.gql")
     with open(source_file, "r") as f:
@@ -32,7 +32,7 @@ def test_generate(schema_raw, expected_files, query, plugin_name):
         kind=GQLDefinitionType.QUERY,
         name="",
     )
-    generated_files = plugin.generate(definition=definition, raw_schema=schema_raw)
+    generated_files = plugin.generate(definitions=[definition], schema=schema)
     assert generated_files == expected_files(plugin=plugin_name, query=query)
 
 
@@ -44,7 +44,7 @@ def test_generate(schema_raw, expected_files, query, plugin_name):
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
-def test_invalid_queries(schema_raw, query, exception, plugin_name):
+def test_invalid_queries(schema, query, exception, plugin_name):
     source_file = Path(f"tests/queries/{query}.gql")
     plugin = plugins[plugin_name]
 
@@ -61,4 +61,4 @@ def test_invalid_queries(schema_raw, query, exception, plugin_name):
         name="",
     )
     with pytest.raises(exception):
-        plugin.generate(definition=definition, raw_schema=schema_raw)
+        plugin.generate(definitions=[definition], schema=schema)

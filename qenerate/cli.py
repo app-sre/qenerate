@@ -2,6 +2,7 @@ import argparse
 from qenerate.core.code_command import CodeCommand
 
 from qenerate.core.introspection_command import IntrospectionCommand
+from qenerate.core.preprocessor import Preprocessor
 
 
 def run():
@@ -33,7 +34,8 @@ def run():
     if args.subcommand == "introspection":
         IntrospectionCommand.introspection_query(args.url)
     elif args.subcommand == "code":
-        CodeCommand.generate_code(
+        code_command = CodeCommand(preprocessor=Preprocessor())
+        code_command.generate_code(
             introspection_file_path=args.introspection,
             dir=args.dir,
         )

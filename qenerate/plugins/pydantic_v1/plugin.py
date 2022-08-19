@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Optional, cast
+from typing import Optional
 
 from graphql import (
     FieldNode,
@@ -8,12 +8,10 @@ from graphql import (
     GraphQLScalarType,
     GraphQLSchema,
     InlineFragmentNode,
-    IntrospectionQuery,
     OperationDefinitionNode,
     Visitor,
     TypeInfo,
     TypeInfoVisitor,
-    build_client_schema,
     visit,
     parse,
     get_operation_ast,
@@ -329,21 +327,27 @@ class PydanticV1Plugin(Plugin):
         return result
 
     def generate(
-        self, definition: GQLDefinition, raw_schema: dict[Any, Any]
+        self, definitions: list[GQLDefinition], schema: GraphQLSchema
     ) -> list[GeneratedFile]:
-        result = HEADER + IMPORTS
-        result += "\n\n\n"
-        qf = definition.source_file
-        result += (
-            "def query_string() -> str:\n"
-            f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf.name}", "r") as f:\n'
-            f"{INDENT}{INDENT}return f.read()"
-        )
-        schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
-        parser = QueryParser()
-        query = definition.definition
-        ast = parser.parse(query=query, schema=schema)
-        result += self._traverse(ast)
-        result += "\n"
+        generated_files: list[GeneratedFile] = []
+        for definition in definitions:
+            result = HEADER + IMPORTS
+            result += "\n\n\n"
+            qf = definition.source_file
+            result += (
+                "def query_string() -> str:\n"
+                f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf.name}", "r") as f:'
+                "\n"
+                f"{INDENT}{INDENT}return f.read()"
+            )
+            # schema = build_client_schema(cast(IntrospectionQuery, raw_schema))
+            parser = QueryParser()
+            query = definition.definition
+            ast = parser.parse(query=query, schema=schema)
+            result += self._traverse(ast)
+            result += "\n"
+            generated_files.append(
+                GeneratedFile(file=qf.with_suffix(".py"), content=result)
+            )
 
-        return sorted([GeneratedFile(file=qf.with_suffix(".py"), content=result)])
+        return generated_files
