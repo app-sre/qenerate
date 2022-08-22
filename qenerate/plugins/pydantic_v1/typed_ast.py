@@ -128,6 +128,28 @@ class ParsedOperationNode(ParsedNode):
 
 
 @dataclass
+class ParsedFragmentDefinitionNode(ParsedNode):
+    class_name: str
+    fragment_name: str
+
+    def class_code_string(self) -> str:
+        lines = ["\n\n"]
+        lines.append(f"class {self.class_name}(BaseModel):")
+        for field in self.fields:
+            if isinstance(field, ParsedClassNode):
+                lines.append(
+                    (
+                        f"{INDENT}{field.py_key}: {field.field_type()} = "
+                        f'Field(..., alias="{field.gql_key}")'
+                    )
+                )
+
+        lines.append("")
+        lines.extend(self._pydantic_config_string())
+        return "\n".join(lines)
+
+
+@dataclass
 class ParsedFieldType:
     unwrapped_python_type: str
     wrapped_python_type: str

@@ -10,13 +10,15 @@ from qenerate.core.plugin import GeneratedFile
 
 @pytest.fixture()
 def expected_files():
-    """Read fixture files from test/queries/expected/PLUGIN/QUERY and remove .txt suffix."""
+    """Read fixture files from test/KIND/expected/PLUGIN/DEFINITION and remove .txt suffix."""
 
-    def _(plugin: str, query: str) -> list[GeneratedFile]:
+    def _(plugin: str, kind: str, definition: str) -> list[GeneratedFile]:
         return sorted(
             [
                 GeneratedFile(file=f.with_suffix(""), content=f.read_text())
-                for f in Path(f"tests/queries/expected/{plugin}/{query}").glob("**/*")
+                for f in Path(f"tests/{kind}/expected/{plugin}/{definition}").glob(
+                    "**/*"
+                )
             ]
         )
 

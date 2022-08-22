@@ -27,6 +27,18 @@ class Fragment(GeneratedFile):
     fragment_name: str
     class_name: str
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Fragment):
+            return False
+        # ignore path in filename comparison
+        return (
+            self.content == other.content
+            and self.file.name == other.file.name
+            and self.class_name == other.class_name
+            and self.fragment_name == other.fragment_name
+            and self.import_path == other.import_path
+        )
+
 
 class Plugin:
     def generate_queries(
