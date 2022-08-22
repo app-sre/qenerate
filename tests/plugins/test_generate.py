@@ -32,7 +32,9 @@ def test_generate(schema, expected_files, query, plugin_name):
         kind=GQLDefinitionType.QUERY,
         name="",
     )
-    generated_files = plugin.generate(definitions=[definition], schema=schema)
+    generated_files = plugin.generate_queries(
+        definitions=[definition], fragments=[], schema=schema
+    )
     assert generated_files == expected_files(plugin=plugin_name, query=query)
 
 
@@ -61,4 +63,4 @@ def test_invalid_queries(schema, query, exception, plugin_name):
         name="",
     )
     with pytest.raises(exception):
-        plugin.generate(definitions=[definition], schema=schema)
+        plugin.generate_queries(definitions=[definition], fragments=[], schema=schema)
