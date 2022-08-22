@@ -35,7 +35,9 @@ def test_generate(schema, expected_files, query, plugin_name):
     generated_files = plugin.generate_queries(
         definitions=[definition], fragments=[], schema=schema
     )
-    assert generated_files == expected_files(plugin=plugin_name, query=query)
+    assert generated_files == expected_files(
+        plugin=plugin_name, kind="queries", definition=query
+    )
 
 
 @pytest.mark.parametrize(

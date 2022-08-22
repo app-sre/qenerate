@@ -7,6 +7,7 @@ from graphql import (
     GraphQLSchema,
     InlineFragmentNode,
     OperationDefinitionNode,
+    FragmentDefinitionNode,
     Visitor,
     TypeInfo,
     TypeInfoVisitor,
@@ -23,6 +24,7 @@ from qenerate.core.plugin import (
     InvalidQueryError,
 )
 from qenerate.plugins.pydantic_v1.typed_ast import (
+    ParsedFragmentDefinitionNode,
     ParsedNode,
     ParsedInlineFragmentNode,
     ParsedOperationNode,
@@ -33,6 +35,7 @@ from qenerate.core.preprocessor import GQLDefinition
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
+    graphql_class_name_str_to_python,
     graphql_primitive_to_python,
     graphql_field_name_to_python,
 )
@@ -110,6 +113,26 @@ class FieldToTypeMatcherVisitor(Visitor):
     def leave_operation_definition(self, *_):
         self.parent = self.parent.parent if self.parent else self.parent
 
+    def enter_fragment_definition(self, node: FragmentDefinitionNode, *_):
+        graphql_type = self.type_info.get_type()
+        if not graphql_type:
+            raise ValueError(f"{node} does not have a graphql type")
+        field_type = self._parse_type(graphql_type=graphql_type)
+        name = graphql_class_name_str_to_python(node.name.value)
+        current = ParsedFragmentDefinitionNode(
+            fields=[],
+            parent=self.parent,
+            parsed_type=field_type,
+            class_name=name,
+            fragment_name=node.name.value,
+        )
+
+        self.parent.fields.append(current)
+        self.parent = current
+
+    def leave_fragment_definition(self, *_):
+        self.parent = self.parent.parent if self.parent else self.parent
+
     def enter_field(self, node: FieldNode, *_):
         graphql_type = self.type_info.get_type()
         if not graphql_type:
@@ -167,19 +190,21 @@ class FieldToTypeMatcherVisitor(Visitor):
 
 class QueryParser:
     @staticmethod
-    def parse(query: str, schema: GraphQLSchema) -> ParsedNode:
-        document_ast = parse(query)
+    def parse(definition: str, schema: GraphQLSchema) -> ParsedNode:
+        document_ast = parse(definition)
         operation = get_operation_ast(document_ast)
 
         if operation and not operation.name:
             raise AnonymousQueryError()
 
         errors = validate(schema, document_ast)
-        if errors:
+        for error in errors:
+            if "Fragment" in error.message and "is never used" in error.message:
+                continue
             raise InvalidQueryError(errors)
 
         type_info = TypeInfo(schema)
-        visitor = FieldToTypeMatcherVisitor(schema, type_info, query)
+        visitor = FieldToTypeMatcherVisitor(schema, type_info, definition)
         visit(document_ast, TypeInfoVisitor(type_info, visitor))
         return visitor.parsed
 
@@ -207,8 +232,38 @@ class PydanticV1Plugin(Plugin):
     def generate_fragments(
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
     ) -> list[Fragment]:
-        # TODO: implement
-        return []
+        generated_files: list[Fragment] = []
+        for definition in definitions:
+            result = HEADER + IMPORTS
+            result += "\n\n\n"
+            qf = definition.source_file
+            result += (
+                "def query_string() -> str:\n"
+                f'{INDENT}with open(f"{{Path(__file__).parent}}/{qf.name}", "r") as f:'
+                "\n"
+                f"{INDENT}{INDENT}return f.read()"
+            )
+            parser = QueryParser()
+            fragment_definition = definition.definition
+            ast = parser.parse(definition=fragment_definition, schema=schema)
+            fragment = ast.fields[0]
+            if not isinstance(fragment, ParsedFragmentDefinitionNode):
+                print(f"[WARNING] {qf} is not a fragment")
+                continue
+            result += self._traverse(ast)
+            result += "\n"
+            import_path = str(definition.source_file.with_suffix("")).replace("/", ".")
+            generated_files.append(
+                Fragment(
+                    file=qf.with_suffix(".py"),
+                    content=result,
+                    class_name=fragment.class_name,
+                    import_path=import_path,
+                    fragment_name=fragment.fragment_name,
+                )
+            )
+
+        return generated_files
 
     def generate_queries(
         self,
@@ -229,7 +284,7 @@ class PydanticV1Plugin(Plugin):
             )
             parser = QueryParser()
             query = definition.definition
-            ast = parser.parse(query=query, schema=schema)
+            ast = parser.parse(definition=query, schema=schema)
             result += self._traverse(ast)
             result += "\n"
             generated_files.append(

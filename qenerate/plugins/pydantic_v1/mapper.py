@@ -18,7 +18,10 @@ def _keyword_sanitizer(s: str) -> str:
 
 
 def graphql_class_name_to_python(graphql_type: GraphQLOutputType) -> str:
-    class_name = str(graphql_type)
+    return graphql_class_name_str_to_python(str(graphql_type))
+
+
+def graphql_class_name_str_to_python(class_name: str) -> str:
     result = class_name[0]
     for i in range(1, len(class_name)):
         cur, prev = class_name[i], class_name[i - 1]

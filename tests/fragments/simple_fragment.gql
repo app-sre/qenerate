@@ -1,0 +1,6 @@
+fragment Vault_Secret on VaultSecret_v1 {
+    path
+    field
+    version
+    format
+}
