@@ -5,14 +5,22 @@ from unittest.mock import MagicMock
 from graphql import GraphQLSchema
 from qenerate.core.feature_flag_parser import FeatureFlags
 
-from qenerate.core.plugin import Plugin, GeneratedFile
+from qenerate.core.plugin import Fragment, Plugin, GeneratedFile
 from qenerate.core.code_command import CodeCommand
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
 
 
 class FakePlugin(Plugin):
-    def generate(
+    def generate_fragments(
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
+    ) -> list[Fragment]:
+        return []
+
+    def generate_queries(
+        self,
+        definitions: list[GQLDefinition],
+        fragments: list[Fragment],
+        schema: GraphQLSchema,
     ) -> list[GeneratedFile]:
         return [
             GeneratedFile(

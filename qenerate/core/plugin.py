@@ -21,10 +21,25 @@ class GeneratedFile:
         self.file.write_text(self.content)
 
 
+@dataclass
+class Fragment(GeneratedFile):
+    import_path: str
+    fragment_name: str
+    class_name: str
+
+
 class Plugin:
-    def generate(
-        self, definitions: list[GQLDefinition], schema: GraphQLSchema
+    def generate_queries(
+        self,
+        definitions: list[GQLDefinition],
+        schema: GraphQLSchema,
+        fragments: list[Fragment],
     ) -> list[GeneratedFile]:
+        raise NotImplementedError
+
+    def generate_fragments(
+        self, definitions: list[GQLDefinition], schema: GraphQLSchema
+    ) -> list[Fragment]:
         raise NotImplementedError
 
 

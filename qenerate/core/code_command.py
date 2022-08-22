@@ -5,8 +5,8 @@ from typing import cast
 
 from graphql import build_client_schema, IntrospectionQuery
 
-from qenerate.core.plugin import Plugin
-from qenerate.core.preprocessor import Preprocessor, GQLDefinition
+from qenerate.core.plugin import GeneratedFile, Plugin
+from qenerate.core.preprocessor import GQLDefinitionType, Preprocessor, GQLDefinition
 from qenerate.plugins.pydantic_v1.plugin import (
     AnonymousQueryError,
     InvalidQueryError,
@@ -66,24 +66,45 @@ class CodeCommand:
         schema = build_client_schema(cast(IntrospectionQuery, introspection))
 
         definitions = self._preprocess(dir=dir)
-        definitions_by_plugin: dict[str, list[GQLDefinition]] = {
+        queries_by_plugin: dict[str, list[GQLDefinition]] = {
+            plugin: [] for plugin in self._plugins.keys()
+        }
+        fragments_by_plugin: dict[str, list[GQLDefinition]] = {
             plugin: [] for plugin in self._plugins.keys()
         }
 
         for definition in definitions:
             plugin_name = definition.feature_flags.plugin
-            if plugin_name not in definitions_by_plugin:
+            if plugin_name not in self._plugins.keys():
                 # TODO: proper logging
                 print(
                     f"[WARNING] Unknown plugin: {plugin_name} "
                     f"for {definition.source_file} - Skipping"
                 )
                 continue
-            definitions_by_plugin[definition.feature_flags.plugin].append(definition)
 
-        for plugin, defs in definitions_by_plugin.items():
-            generated_files = self._plugins[plugin].generate(
-                definitions=defs, schema=schema
+            if definition.kind == GQLDefinitionType.QUERY:
+                queries_by_plugin[definition.feature_flags.plugin].append(definition)
+            elif definition.kind == GQLDefinitionType.FRAGMENT:
+                fragments_by_plugin[definition.feature_flags.plugin].append(definition)
+
+        generated_files: list[GeneratedFile] = []
+        for plugin_name in self._plugins.keys():
+            plugin = self._plugins[plugin_name]
+
+            rendered_fragments = plugin.generate_fragments(
+                definitions=fragments_by_plugin[plugin_name],
+                schema=schema,
             )
-            for file in generated_files:
-                file.save()
+
+            rendered_queries = plugin.generate_queries(
+                definitions=queries_by_plugin[plugin_name],
+                fragments=rendered_fragments,
+                schema=schema,
+            )
+
+            generated_files.extend(rendered_fragments)
+            generated_files.extend(rendered_queries)
+
+        for file in generated_files:
+            file.save()

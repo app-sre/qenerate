@@ -1,5 +1,4 @@
 from __future__ import annotations
-from dataclasses import dataclass
 
 from graphql import (
     FieldNode,
@@ -17,6 +16,7 @@ from graphql import (
     validate,
 )
 from qenerate.core.plugin import (
+    Fragment,
     Plugin,
     GeneratedFile,
     AnonymousQueryError,
@@ -29,7 +29,7 @@ from qenerate.plugins.pydantic_v1.typed_ast import (
     ParsedFieldType,
     ParsedClassNode,
 )
-from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
+from qenerate.core.preprocessor import GQLDefinition
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -184,13 +184,6 @@ class QueryParser:
         return visitor.parsed
 
 
-@dataclass
-class Fragment:
-    import_path: str
-    fragment_name: str
-    class_name: str
-
-
 class PydanticV1Plugin(Plugin):
     def _traverse(self, node: ParsedNode) -> str:
         """
@@ -211,19 +204,20 @@ class PydanticV1Plugin(Plugin):
                 result = f"{result}{self._traverse(child)}"
         return result
 
-    def _generate_fragments(
-        self, fragments: dict[str, GQLDefinition], schema: GraphQLSchema
-    ) -> tuple[list[GeneratedFile], dict[str, Fragment]]:
-        return ([], {})
+    def generate_fragments(
+        self, definitions: list[GQLDefinition], schema: GraphQLSchema
+    ) -> list[Fragment]:
+        # TODO: implement
+        return []
 
-    def _generate_queries(
+    def generate_queries(
         self,
-        queries: list[GQLDefinition],
-        fragments: dict[str, Fragment],
+        definitions: list[GQLDefinition],
         schema: GraphQLSchema,
+        fragments: list[Fragment],
     ) -> list[GeneratedFile]:
         generated_files: list[GeneratedFile] = []
-        for definition in queries:
+        for definition in definitions:
             result = HEADER + IMPORTS
             result += "\n\n\n"
             qf = definition.source_file
@@ -241,31 +235,5 @@ class PydanticV1Plugin(Plugin):
             generated_files.append(
                 GeneratedFile(file=qf.with_suffix(".py"), content=result)
             )
-
-        return generated_files
-
-    def generate(
-        self, definitions: list[GQLDefinition], schema: GraphQLSchema
-    ) -> list[GeneratedFile]:
-        generated_files: list[GeneratedFile] = []
-
-        query_defs = [d for d in definitions if d.kind == GQLDefinitionType.QUERY]
-        fragment_defs = {
-            f.name: f for f in definitions if f.kind == GQLDefinitionType.FRAGMENT
-        }
-
-        files, fragments = self._generate_fragments(
-            fragments=fragment_defs,
-            schema=schema,
-        )
-        generated_files.extend(files)
-
-        generated_files.extend(
-            self._generate_queries(
-                queries=query_defs,
-                schema=schema,
-                fragments=fragments,
-            )
-        )
 
         return generated_files
