@@ -10,6 +10,9 @@ from qenerate.core.code_command import CodeCommand
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
 
 
+SCHEMA_DIR = "tests/generator"
+
+
 class FakePlugin(Plugin):
     def generate_fragments(
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
@@ -52,7 +55,7 @@ def fake_preprocessor(files: list[str]) -> Preprocessor:
 
 
 def test_single_file(fs):
-    fs.add_real_directory("tests/queries")
+    fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="",
@@ -65,7 +68,7 @@ def test_single_file(fs):
         plugins={"fake": FakePlugin()},
     )
     code_command.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
+        introspection_file_path=f"{SCHEMA_DIR}/introspection.json",
         dir="/tmp",
     )
 
@@ -73,7 +76,7 @@ def test_single_file(fs):
 
 
 def test_unknown_plugin_flag(fs):
-    fs.add_real_directory("tests/queries")
+    fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="",
@@ -84,7 +87,7 @@ def test_unknown_plugin_flag(fs):
         plugins={},
     )
     code_command.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
+        introspection_file_path=f"{SCHEMA_DIR}/introspection.json",
         dir="/tmp",
     )
 
@@ -92,7 +95,7 @@ def test_unknown_plugin_flag(fs):
 
 
 def test_dir_tree(fs):
-    fs.add_real_directory("tests/queries")
+    fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
         contents="",
@@ -117,7 +120,7 @@ def test_dir_tree(fs):
         plugins={"fake": FakePlugin()},
     )
     code_command.generate_code(
-        introspection_file_path="tests/queries/introspection.json",
+        introspection_file_path=f"{SCHEMA_DIR}/introspection.json",
         dir="/tmp",
     )
 
