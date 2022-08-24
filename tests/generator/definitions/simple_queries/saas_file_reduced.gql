@@ -1,0 +1,7 @@
+query SaasFilesReduced {
+  apps_v1 {
+    saasFiles {
+      name
+    }
+  }
+}
