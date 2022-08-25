@@ -2,19 +2,27 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Union
+from typing import Iterable, Union
 
 from graphql import (
     parse,
+    validate,
+    get_operation_ast,
     visit,
     Visitor,
     OperationDefinitionNode,
     OperationType,
     FragmentDefinitionNode,
     FragmentSpreadNode,
+    GraphQLSchema,
 )
 
 from qenerate.core.feature_flag_parser import FeatureFlagParser, FeatureFlags
+
+
+class AnonymousOperationError(Exception):
+    def __init__(self, message: str):
+        super().__init__(f"All operations must be named:\n{message}")
 
 
 class GQLDefinitionType(Enum):
@@ -115,6 +123,21 @@ class DefinitionVisitor(Visitor):
 
 
 class Preprocessor:
+    def validate(self, definitions: Iterable[GQLDefinition], schema: GraphQLSchema):
+        all_definitions = ""
+        for definition in definitions:
+            all_definitions += definition.definition + " "
+            document_ast = parse(definition.definition)
+            operation = get_operation_ast(document_ast)
+            if operation and not operation.name:
+                raise AnonymousOperationError(message=definition.definition)
+
+        document_ast = parse(all_definitions)
+
+        errors = validate(schema, document_ast)
+        for error in errors:
+            raise error
+
     def process_file(self, file_path: Path) -> list[GQLDefinition]:
         with open(file_path, "r") as f:
             content = f.read()
@@ -122,6 +145,7 @@ class Preprocessor:
             query=content,
         )
         document_ast = parse(content)
+
         visitor = DefinitionVisitor(
             feature_flags=feature_flags,
             source_file_path=file_path,
