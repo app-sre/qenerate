@@ -274,7 +274,7 @@ class PydanticV1Plugin(Plugin):
         imports = ""
         for dep in definition.fragment_dependencies:
             fragment = fragment_map[dep]
-            imports += f"from {fragment.import_path} import {fragment.class_name}"
+            imports += f"\nfrom {fragment.import_path} import {fragment.class_name}"
         return imports
 
     def _assemble_definition(
@@ -310,7 +310,7 @@ class PydanticV1Plugin(Plugin):
 
             result = HEADER + IMPORTS
             if fragment_imports:
-                result += "\n\n"
+                result += "\n"
                 result += fragment_imports
             result += "\n\n\n"
             qf = definition.source_file

@@ -4,11 +4,15 @@ This plugin generates simple pydantic data classes for your queries.
 Pydantic is capable of mapping nested dictionaries to nested types.
 I.e., no custom mapping functions are required.
 
-This plugin expects exactly one `query` operation per `.gql` file.
+This plugin expects exactly one gql definition per `.gql` file.
+Supported definitions are:
+
+- `fragment`
+- `query`
 
 ## Examples
 
-### Hero
+### Query with inline fragments
 
 **hero.gql:**
 ```graphql
@@ -51,7 +55,68 @@ class HeroForEpisodeData(BaseModel):
     extra = Extra.forbid
 ```
 
+### Query with Fragments
+
+**hero.gql:**
+```graphql
+# qenerate: plugin=pydantic_v1
+query HeroForEpisode {
+  hero {
+    ... HeroName
+    ... HeroAge
+    number
+  }
+}
+```
+
+**hero_name_fragment.gql:**
+```graphql
+# qenerate: plugin=pydantic_v1
+fragment HeroName on Hero {
+  name
+}
+```
+
+**hero_age_fragment.gql:**
+```graphql
+# qenerate: plugin=pydantic_v1
+fragment HeroAge on Hero {
+  age
+}
+```
+
+**hero_name_fragment.py:**
+```python
+class HeroName(BaseModel):
+    name: str = Field(..., alias="name")
+```
+
+**hero_age_fragment.py:**
+```python
+class HeroAge(BaseModel):
+    age: int = Field(..., alias="age")
+```
+
+**hero.py:**
+```python
+from hero_age_fragment import HeroAge
+from hero_name_fragment import HeroName
+
+
+# Note, that Hero implements the fragments
+class Hero(HeroAge, HeroName):
+  number: int = Field(..., alias="number")
+
+
+class HeroForEpisodeData(BaseModel):
+  hero: Optional[list[Hero]] = Field(..., alias="hero")
+```
+
+Note, that the python import path is relative to the directory
+in which `qenerate` was executed.
+
 ## Missing Features / TODOs
 
-- support fragments
 - support enums
+- support fragments within inline fragments
+- support nested fragments
