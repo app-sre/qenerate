@@ -78,8 +78,9 @@ class ParsedClassNode(ParsedNode):
         if not self._needs_class_rendering():
             return ""
 
+        base_classes = ", ".join(self._base_classes())
         lines = ["\n\n"]
-        lines.append(f"class {self.parsed_type.unwrapped_python_type}(BaseModel):")
+        lines.append(f"class {self.parsed_type.unwrapped_python_type}({base_classes}):")
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
@@ -93,6 +94,16 @@ class ParsedClassNode(ParsedNode):
         lines.extend(self._pydantic_config_string())
 
         return "\n".join(lines)
+
+    def _base_classes(self) -> list[str]:
+        base_classes: list[str] = []
+        for field in self.fields:
+            if not isinstance(field, ParsedFragmentSpreadNode):
+                continue
+            base_classes.append(field.parsed_type.unwrapped_python_type)
+        if not base_classes:
+            base_classes.append("BaseModel")
+        return base_classes
 
     def field_type(self) -> str:
         # This is a full (non-partial) fragment spread

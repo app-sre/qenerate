@@ -36,10 +36,18 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
         ],
         [
             "simple_queries_with_fragments",
-            {"ocp_query": ["VaultSecret"]},
             {
+                "ocp_query": ["VaultSecret"],
+                "ocp_query_partial": ["VaultSecretPartial"],
+                "ocp_query_multiple": ["VaultSecretPartial", "VaultSecretVersion"],
+            },
+            {
+                "vault_secret_partial_fragment": GQLDefinitionType.FRAGMENT,
                 "vault_secret_fragment": GQLDefinitionType.FRAGMENT,
+                "vault_secret_version_fragment": GQLDefinitionType.FRAGMENT,
                 "ocp_query": GQLDefinitionType.QUERY,
+                "ocp_query_partial": GQLDefinitionType.QUERY,
+                "ocp_query_multiple": GQLDefinitionType.QUERY,
             },
         ],
     ],
