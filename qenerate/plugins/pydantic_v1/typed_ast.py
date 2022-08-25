@@ -24,6 +24,17 @@ class ParsedNode:
         lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
         return lines
 
+    def _needs_class_rendering(self) -> bool:
+        if self.parsed_type.is_primitive:
+            return False
+
+        return not self._is_non_partial_fragment()
+
+    def _is_non_partial_fragment(self) -> bool:
+        return len(self.fields) == 1 and isinstance(
+            self.fields[0], ParsedFragmentSpreadNode
+        )
+
 
 @dataclass
 class ParsedInlineFragmentNode(ParsedNode):
@@ -64,7 +75,7 @@ class ParsedClassNode(ParsedNode):
     py_key: str
 
     def class_code_string(self) -> str:
-        if self.parsed_type.is_primitive:
+        if not self._needs_class_rendering():
             return ""
 
         lines = ["\n\n"]
@@ -84,6 +95,15 @@ class ParsedClassNode(ParsedNode):
         return "\n".join(lines)
 
     def field_type(self) -> str:
+        # This is a full (non-partial) fragment spread
+        if len(self.fields) == 1 and isinstance(
+            self.fields[0], ParsedFragmentSpreadNode
+        ):
+            return self.parsed_type.wrapped_python_type.replace(
+                self.parsed_type.unwrapped_python_type,
+                self.fields[0].parsed_type.unwrapped_python_type,
+            )
+
         unions: list[str] = []
         # TODO: sorting does not need to happen on each call
         """
@@ -147,6 +167,12 @@ class ParsedFragmentDefinitionNode(ParsedNode):
         lines.append("")
         lines.extend(self._pydantic_config_string())
         return "\n".join(lines)
+
+
+@dataclass
+class ParsedFragmentSpreadNode(ParsedNode):
+    def class_code_string(self) -> str:
+        return ""
 
 
 @dataclass

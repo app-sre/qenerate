@@ -10,18 +10,26 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
     Json,
 )
 
+from tests.generator.definitions.simple_queries_with_fragments.vault_secret_fragment import VaultSecret
+
 
 DEFINITION = """
-query OCPWithInterface {
+fragment VaultSecret on VaultSecret_v1 {
+  path
+  field
+  version
+  format
+}
+
+
+query OCPAuthFull {
   ocp_release_mirror: ocp_release_mirror_v1 {
     hiveCluster {
-      auth {
-        ... on ClusterAuthGithubOrg_v1 {
-          org
-        }
-        ... on ClusterAuthGithubOrgTeam_v1 {
-          org
-          team
+      name
+      ocm {
+        name
+        offlineToken {
+            ... VaultSecret
         }
       }
     }
@@ -31,24 +39,9 @@ query OCPWithInterface {
 """
 
 
-class ClusterAuthV1(BaseModel):
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
-
-class ClusterAuthGithubOrgV1(ClusterAuthV1):
-    org: str = Field(..., alias="org")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
-
-class ClusterAuthGithubOrgTeamV1(ClusterAuthV1):
-    org: str = Field(..., alias="org")
-    team: str = Field(..., alias="team")
+class OpenShiftClusterManagerV1(BaseModel):
+    name: str = Field(..., alias="name")
+    offline_token: Optional[VaultSecret] = Field(..., alias="offlineToken")
 
     class Config:
         smart_union = True
@@ -56,7 +49,8 @@ class ClusterAuthGithubOrgTeamV1(ClusterAuthV1):
 
 
 class ClusterV1(BaseModel):
-    auth: Optional[Union[ClusterAuthGithubOrgTeamV1, ClusterAuthGithubOrgV1, ClusterAuthV1]] = Field(..., alias="auth")
+    name: str = Field(..., alias="name")
+    ocm: Optional[OpenShiftClusterManagerV1] = Field(..., alias="ocm")
 
     class Config:
         smart_union = True
@@ -71,7 +65,7 @@ class OcpReleaseMirrorV1(BaseModel):
         extra = Extra.forbid
 
 
-class OCPWithInterfaceQueryData(BaseModel):
+class OCPAuthFullQueryData(BaseModel):
     ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
 
     class Config:

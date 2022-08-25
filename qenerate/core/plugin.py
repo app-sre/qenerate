@@ -23,6 +23,7 @@ class GeneratedFile:
 
 @dataclass
 class Fragment(GeneratedFile):
+    definition: GQLDefinition
     import_path: str
     fragment_name: str
     class_name: str

@@ -34,6 +34,14 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "simple_fragment": GQLDefinitionType.FRAGMENT,
             },
         ],
+        [
+            "simple_queries_with_fragments",
+            {"ocp_query": ["VaultSecret"]},
+            {
+                "vault_secret_fragment": GQLDefinitionType.FRAGMENT,
+                "ocp_query": GQLDefinitionType.QUERY,
+            },
+        ],
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
@@ -60,7 +68,7 @@ def test_rendering(
             definition=content,
             fragment_dependencies=dep_graph.get(file_id, []),
             kind=kind,
-            name="",
+            name=file_id,
         )
         if kind == GQLDefinitionType.QUERY:
             query_definitions.append(definition)
