@@ -16,7 +16,7 @@ entry_points = {"console_scripts": ["qenerate = qenerate.cli:run"]}
 
 setup_kwargs = {
     "name": "qenerate",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Code Generator for GraphQL Query Data Classes",
     "long_description": None,
     "author": "Service Delivery - AppSRE",
