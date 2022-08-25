@@ -3,13 +3,11 @@ import os
 from pathlib import Path
 from typing import cast
 
-from graphql import build_client_schema, IntrospectionQuery
+from graphql import build_client_schema, IntrospectionQuery, GraphQLSchema
 
 from qenerate.core.plugin import GeneratedFile, Plugin
 from qenerate.core.preprocessor import GQLDefinitionType, Preprocessor, GQLDefinition
 from qenerate.plugins.pydantic_v1.plugin import (
-    AnonymousQueryError,
-    InvalidQueryError,
     PydanticV1Plugin,
 )
 from qenerate.core.feature_flag_parser import FeatureFlagError
@@ -35,7 +33,7 @@ class CodeCommand:
                     result.append(os.path.join(root, name))
         return result
 
-    def _preprocess(self, dir: str) -> list[GQLDefinition]:
+    def _preprocess(self, dir: str, schema: GraphQLSchema) -> list[GQLDefinition]:
         definitions: list[GQLDefinition] = []
         for file in self._find_query_files(dir):
             try:
@@ -47,16 +45,10 @@ class CodeCommand:
                     '"# qenerate: plugin=<plugin_id>" set.'
                 )
                 continue
-            except AnonymousQueryError:
-                print(
-                    f"[Skipping File] Query in {file} is anonymous. "
-                    "Qenerate does not support anonymous queries."
-                    "Please name the query."
-                )
-                continue
-            except InvalidQueryError:
-                print(f"[Skipping File] Schema validation failed for query {file}.")
-                continue
+        self._preprocessor.validate(
+            definitions=definitions,
+            schema=schema,
+        )
         return definitions
 
     def generate_code(self, introspection_file_path: str, dir: str):
@@ -65,7 +57,10 @@ class CodeCommand:
 
         schema = build_client_schema(cast(IntrospectionQuery, introspection))
 
-        definitions = self._preprocess(dir=dir)
+        definitions = self._preprocess(
+            dir=dir,
+            schema=schema,
+        )
         queries_by_plugin: dict[str, list[GQLDefinition]] = {
             plugin: [] for plugin in self._plugins.keys()
         }

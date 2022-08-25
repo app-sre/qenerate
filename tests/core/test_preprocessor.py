@@ -2,7 +2,14 @@ from pathlib import Path
 from typing import Iterable
 import pytest
 
-from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
+from graphql import GraphQLError, GraphQLSyntaxError
+
+from qenerate.core.preprocessor import (
+    AnonymousOperationError,
+    GQLDefinition,
+    GQLDefinitionType,
+    Preprocessor,
+)
 from qenerate.core.feature_flag_parser import FeatureFlags
 
 
@@ -162,3 +169,74 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]):
         definition.definition = normalize_definition(definition.definition)
 
     assert definitions == expected
+
+
+@pytest.mark.parametrize(
+    "definitions, raise_error",
+    [
+        [
+            # Bad Syntax
+            [
+                "{}",
+                "blub",
+            ],
+            GraphQLSyntaxError,
+        ],
+        [
+            # Valid simple query
+            [
+                "query Test { users_v1 { name } }",
+            ],
+            None,
+        ],
+        [
+            # Valid query with fragments
+            [
+                "query Test { users_v1 { ... MyFragment } }",
+                "fragment MyFragment on User_v1 { name }",
+            ],
+            None,
+        ],
+        [
+            # Unused fragment
+            [
+                "fragment MyFragment on User_v1 { name }",
+            ],
+            GraphQLError,
+        ],
+        [
+            # Unknown fragment
+            [
+                "query Test { users_v1 { ... MyFragment } }",
+            ],
+            GraphQLError,
+        ],
+        [
+            # Anonymous query
+            [
+                "query { users_v1 { name } }",
+            ],
+            AnonymousOperationError,
+        ],
+    ],
+)
+def test_preprocessor_exception(schema, raise_error, definitions: Iterable[str]):
+    definition_objects = [
+        GQLDefinition(
+            definition=definition,
+            feature_flags=FeatureFlags(plugin="fake"),
+            fragment_dependencies=[],
+            kind=GQLDefinitionType.QUERY,
+            source_file=Path("/tmp"),
+            name="",
+        )
+        for definition in definitions
+    ]
+    preprocessor = Preprocessor()
+
+    if not raise_error:
+        preprocessor.validate(definitions=definition_objects, schema=schema)
+        return
+
+    with pytest.raises(raise_error):
+        preprocessor.validate(definitions=definition_objects, schema=schema)

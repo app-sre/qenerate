@@ -54,15 +54,3 @@ class Plugin:
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
     ) -> list[Fragment]:
         raise NotImplementedError
-
-
-class AnonymousQueryError(Exception):
-    def __init__(self):
-        super().__init__("All queries must be named")
-
-
-class InvalidQueryError(Exception):
-    def __init__(self, errors):
-        self.errors = errors
-        message = "\n".join(str(err) for err in errors)
-        super().__init__(message)
