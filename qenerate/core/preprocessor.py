@@ -136,6 +136,8 @@ class Preprocessor:
 
         errors = validate(schema, document_ast)
         for error in errors:
+            if "Fragment" in error.message and "is never used" in error.message:
+                continue
             raise error
 
     def process_file(self, file_path: Path) -> list[GQLDefinition]:
