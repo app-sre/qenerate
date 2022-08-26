@@ -198,11 +198,11 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]):
             None,
         ],
         [
-            # Unused fragment
+            # Unused fragment - allow it
             [
                 "fragment MyFragment on User_v1 { name }",
             ],
-            GraphQLError,
+            None,
         ],
         [
             # Unknown fragment
