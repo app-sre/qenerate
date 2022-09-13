@@ -236,10 +236,10 @@ class FieldToTypeMatcherVisitor(Visitor):
                     == NamingCollisionStrategy.ENUMERATE
                 ):
                     if collision_enum_suffix == 2:
-                        class_name = f"{class_name}_{collision_enum_suffix}"
+                        class_name = f"{class_name}__{collision_enum_suffix}"
                     else:
-                        idx = class_name.rfind("_")
-                        class_name = f"{class_name[:idx+1]}_{collision_enum_suffix}"
+                        idx = class_name.rfind("_") - 1
+                        class_name = f"{class_name[:idx]}__{collision_enum_suffix}"
                     collision_enum_suffix += 1
                 # By default, prefix with parent name if you see a collision
                 else:

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qenerate"
-version = "0.2.3"
+version = "0.2.4"
 description = "Code Generator for GraphQL Query Data Classes"
 authors = [
     "Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"

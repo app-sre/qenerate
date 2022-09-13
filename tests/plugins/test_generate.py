@@ -25,11 +25,11 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
             {},
             {
                 "ocp_with_inline_fragments": GQLDefinitionType.QUERY,
-                "saas_enumerate_collisions": GQLDefinitionType.QUERY,
+                "enumerate_collisions": GQLDefinitionType.QUERY,
                 "saas_humongous": GQLDefinitionType.QUERY,
             },
             {
-                "saas_enumerate_collisions": NamingCollisionStrategy.ENUMERATE,
+                "enumerate_collisions": NamingCollisionStrategy.ENUMERATE,
             },
         ],
         [
