@@ -30,6 +30,7 @@ from qenerate.plugins.pydantic_v1.typed_ast import (
     ParsedFieldType,
     ParsedClassNode,
 )
+from qenerate.core.feature_flag_parser import NamingCollisionStrategy, FeatureFlags
 from qenerate.core.preprocessor import GQLDefinition
 
 from qenerate.plugins.pydantic_v1.mapper import (
@@ -84,11 +85,18 @@ def query(query_func: Callable, **kwargs) -> {cls}:
 
 
 class FieldToTypeMatcherVisitor(Visitor):
-    def __init__(self, schema: GraphQLSchema, type_info: TypeInfo, definition: str):
+    def __init__(
+        self,
+        schema: GraphQLSchema,
+        type_info: TypeInfo,
+        definition: str,
+        feature_flags: FeatureFlags,
+    ):
         Visitor.__init__(self)
         self.schema = schema
         self.type_info = type_info
         self.definition = definition
+        self.feature_flags = feature_flags
         self.parsed = ParsedNode(
             parent=None,
             fields=[],
@@ -218,10 +226,24 @@ class FieldToTypeMatcherVisitor(Visitor):
         else:
             cur = self.parent
             class_name = graphql_class_name_to_python(graphql_type=graphql_type)
+            collision_enum_suffix = 2
 
-            # handle name collisions -> prefix with parent name if necessary
+            # handle name collisions
             while cur and cur.parent and class_name in self.deduplication_cache:
-                class_name = f"{cur.parsed_type.unwrapped_python_type}_{class_name}"
+                # Enumerate (1,2,3, ...) if you see a collision
+                if (
+                    self.feature_flags.collision_strategy
+                    == NamingCollisionStrategy.ENUMERATE
+                ):
+                    if collision_enum_suffix == 2:
+                        class_name = f"{class_name}_{collision_enum_suffix}"
+                    else:
+                        idx = class_name.rfind("_")
+                        class_name = f"{class_name[:idx+1]}_{collision_enum_suffix}"
+                    collision_enum_suffix += 1
+                # By default, prefix with parent name if you see a collision
+                else:
+                    class_name = f"{cur.parsed_type.unwrapped_python_type}_{class_name}"
                 cur = cur.parent
 
             self.deduplication_cache.add(class_name)
@@ -230,13 +252,16 @@ class FieldToTypeMatcherVisitor(Visitor):
 
 class QueryParser:
     @staticmethod
-    def parse(definition: str, schema: GraphQLSchema) -> ParsedNode:
+    def parse(
+        definition: str, schema: GraphQLSchema, feature_flags: FeatureFlags
+    ) -> ParsedNode:
         document_ast = parse(definition)
         type_info = TypeInfo(schema)
         visitor = FieldToTypeMatcherVisitor(
             schema=schema,
             type_info=type_info,
             definition=definition,
+            feature_flags=feature_flags,
         )
         visit(document_ast, TypeInfoVisitor(type_info, visitor))
         return visitor.parsed
@@ -271,7 +296,11 @@ class PydanticV1Plugin(Plugin):
             qf = definition.source_file
             parser = QueryParser()
             fragment_definition = definition.definition
-            ast = parser.parse(definition=fragment_definition, schema=schema)
+            ast = parser.parse(
+                definition=fragment_definition,
+                schema=schema,
+                feature_flags=definition.feature_flags,
+            )
             fragment = ast.fields[0]
             if not isinstance(fragment, ParsedFragmentDefinitionNode):
                 print(f"[WARNING] {qf} is not a fragment")
@@ -351,7 +380,11 @@ class PydanticV1Plugin(Plugin):
             result += 'DEFINITION = """\n' f"{assembled_definition}" '\n"""'
             parser = QueryParser()
             query = definition.definition
-            ast = parser.parse(definition=query, schema=schema)
+            ast = parser.parse(
+                definition=query,
+                schema=schema,
+                feature_flags=definition.feature_flags,
+            )
             result += self._traverse(ast)
             result += "\n\n"
             result += convenience_function(

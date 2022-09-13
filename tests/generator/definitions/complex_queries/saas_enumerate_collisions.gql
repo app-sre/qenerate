@@ -1,0 +1,33 @@
+query SaasFilesEnumerate {
+  saas_files: saas_files_v2 {
+    path
+    name
+    app {
+      name
+    }
+    pipelinesProvider {
+      name
+      provider
+      ...on PipelinesProviderTekton_v1 {
+        namespace {
+          name
+          cluster {
+            name
+            jumpHost {
+              identity {
+                path
+              }
+            }
+            automationToken {
+              path
+            }
+            internal
+            disable {
+              integrations
+            }
+          }
+        }
+      }
+    }
+  }
+}
