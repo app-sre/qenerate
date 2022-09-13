@@ -51,6 +51,39 @@ Currently available plugins are:
 
 - [pydantic_v1](docs/plugins/pydantic_v1.md) for generating Pydantic data classes
 
+## Feature Flags
+
+`qenerate` leverages feature flags to configure the behavior of the generator. Feature flags are passed to
+the generator via comments in your .gql definition file.
+
+### Plugin
+
+```graphql
+# qenerate: plugin=<plugin-id>
+```
+
+This feature flag tells `qenerate` which plugin it should use to generate the code for the given definition.
+
+### Naming Collision Strategy
+
+```graphql
+# qenerate: naming_collision_strategy=[PARENT_CONTEXT | ENUMERATE]
+```
+
+This feature flag tells `qenerate` how to deal with naming collisions in classes.
+In GraphQL it is easy to query the same object in a nested fashion, which results
+in re-definitions of the type. We call this naming collision. A naming collision
+strategy defines how to adjust recurring names to make them unique.
+
+**PARENT_CONTEXT**
+
+This is the default strategy if nothing else is specified. It uses the name of the
+parent node in the query as a prefix.
+
+**ENUMERATE**
+
+This strategy adds the number of occurrences of this name as a suffix.
+
 ## Development
 
 ### Build and Dependency Management
