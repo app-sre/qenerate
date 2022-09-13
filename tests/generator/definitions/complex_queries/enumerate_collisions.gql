@@ -1,0 +1,32 @@
+query EnumerateCollisions {
+  clusters: clusters_v1 {
+    name
+    spec {
+      private
+    }
+    internal
+    peering {
+      connections {
+        provider
+        ... on ClusterPeeringConnectionClusterRequester_v1 {
+          cluster {
+            name
+            spec {
+              private
+            }
+            internal
+          }
+        }
+        ... on ClusterPeeringConnectionClusterAccepter_v1 {
+          cluster {
+            name
+            spec {
+              private
+            }
+            internal
+          }
+        }
+      }
+    }
+  }
+}

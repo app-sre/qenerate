@@ -17,33 +17,32 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 
 
 DEFINITION = """
-query SaasFilesEnumerate {
-  saas_files: saas_files_v2 {
-    path
+query EnumerateCollisions {
+  clusters: clusters_v1 {
     name
-    app {
-      name
+    spec {
+      private
     }
-    pipelinesProvider {
-      name
-      provider
-      ...on PipelinesProviderTekton_v1 {
-        namespace {
-          name
+    internal
+    peering {
+      connections {
+        provider
+        ... on ClusterPeeringConnectionClusterRequester_v1 {
           cluster {
             name
-            jumpHost {
-              identity {
-                path
-              }
-            }
-            automationToken {
-              path
+            spec {
+              private
             }
             internal
-            disable {
-              integrations
+          }
+        }
+        ... on ClusterPeeringConnectionClusterAccepter_v1 {
+          cluster {
+            name
+            spec {
+              private
             }
+            internal
           }
         }
       }
@@ -54,16 +53,15 @@ query SaasFilesEnumerate {
 """
 
 
-class AppV1(BaseModel):
-    name: str = Field(..., alias="name")
+class ClusterSpecV1(BaseModel):
+    private: bool = Field(..., alias="private")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class PipelinesProviderV1(BaseModel):
-    name: str = Field(..., alias="name")
+class ClusterPeeringConnectionV1(BaseModel):
     provider: str = Field(..., alias="provider")
 
     class Config:
@@ -71,32 +69,60 @@ class PipelinesProviderV1(BaseModel):
         extra = Extra.forbid
 
 
-class VaultSecretV1(BaseModel):
-    path: str = Field(..., alias="path")
+class ClusterSpecV1__2(BaseModel):
+    private: bool = Field(..., alias="private")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class ClusterJumpHostV1(BaseModel):
-    identity: VaultSecretV1 = Field(..., alias="identity")
+class ClusterV1__2(BaseModel):
+    name: str = Field(..., alias="name")
+    spec: Optional[ClusterSpecV1__2] = Field(..., alias="spec")
+    internal: Optional[bool] = Field(..., alias="internal")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class VaultSecretV1_2(BaseModel):
-    path: str = Field(..., alias="path")
+class ClusterPeeringConnectionClusterRequesterV1(ClusterPeeringConnectionV1):
+    cluster: ClusterV1__2 = Field(..., alias="cluster")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class DisableClusterAutomationsV1(BaseModel):
-    integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
+class ClusterSpecV1__3(BaseModel):
+    private: bool = Field(..., alias="private")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterV1__3(BaseModel):
+    name: str = Field(..., alias="name")
+    spec: Optional[ClusterSpecV1__3] = Field(..., alias="spec")
+    internal: Optional[bool] = Field(..., alias="internal")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterPeeringConnectionClusterAccepterV1(ClusterPeeringConnectionV1):
+    cluster: ClusterV1__3 = Field(..., alias="cluster")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+class ClusterPeeringV1(BaseModel):
+    connections: Optional[list[Union[ClusterPeeringConnectionClusterRequesterV1, ClusterPeeringConnectionClusterAccepterV1, ClusterPeeringConnectionV1]]] = Field(..., alias="connections")
 
     class Config:
         smart_union = True
@@ -105,53 +131,24 @@ class DisableClusterAutomationsV1(BaseModel):
 
 class ClusterV1(BaseModel):
     name: str = Field(..., alias="name")
-    jump_host: Optional[ClusterJumpHostV1] = Field(..., alias="jumpHost")
-    automation_token: Optional[VaultSecretV1_2] = Field(..., alias="automationToken")
+    spec: Optional[ClusterSpecV1] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
-    disable: Optional[DisableClusterAutomationsV1] = Field(..., alias="disable")
+    peering: Optional[ClusterPeeringV1] = Field(..., alias="peering")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class NamespaceV1(BaseModel):
-    name: str = Field(..., alias="name")
-    cluster: ClusterV1 = Field(..., alias="cluster")
+class EnumerateCollisionsQueryData(BaseModel):
+    clusters: Optional[list[Optional[ClusterV1]]] = Field(..., alias="clusters")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class PipelinesProviderTektonV1(PipelinesProviderV1):
-    namespace: NamespaceV1 = Field(..., alias="namespace")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
-
-class SaasFileV2(BaseModel):
-    path: str = Field(..., alias="path")
-    name: str = Field(..., alias="name")
-    app: AppV1 = Field(..., alias="app")
-    pipelines_provider: Union[PipelinesProviderTektonV1, PipelinesProviderV1] = Field(..., alias="pipelinesProvider")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
-
-class SaasFilesEnumerateQueryData(BaseModel):
-    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
-
-def query(query_func: Callable, **kwargs) -> SaasFilesEnumerateQueryData:
+def query(query_func: Callable, **kwargs) -> EnumerateCollisionsQueryData:
     """
     This is a convenience function which queries and parses the data into
     concrete types. It should be compatible with most GQL clients.
@@ -164,7 +161,7 @@ def query(query_func: Callable, **kwargs) -> SaasFilesEnumerateQueryData:
         kwargs: optional arguments that will be passed to the query function
 
     Returns:
-        SaasFilesEnumerateQueryData: queried data parsed into generated classes
+        EnumerateCollisionsQueryData: queried data parsed into generated classes
     """
     raw_data: dict[Any, Any] = query_func(DEFINITION, kwargs)
-    return SaasFilesEnumerateQueryData(**raw_data)
+    return EnumerateCollisionsQueryData(**raw_data)
