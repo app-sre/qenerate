@@ -144,7 +144,7 @@ class Preprocessor:
         with open(file_path, "r") as f:
             content = f.read()
         feature_flags = FeatureFlagParser.parse(
-            query=content,
+            definition=content,
         )
         document_ast = parse(content)
 

@@ -1,13 +1,13 @@
 from pathlib import Path
 import pytest
 from qenerate.core.code_command import plugins
-from qenerate.core.feature_flag_parser import FeatureFlags
+from qenerate.core.feature_flag_parser import NamingCollisionStrategy, FeatureFlags
 from qenerate.core.plugin import GeneratedFile
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
 
 
 @pytest.mark.parametrize(
-    "case, dep_graph, type_map",
+    "case, dep_graph, type_map, collision_strategies",
     [
         [
             "simple_queries",
@@ -18,13 +18,18 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "saas_file_json": GQLDefinitionType.QUERY,
                 "difficult_attribute_name": GQLDefinitionType.QUERY,
             },
+            {},
         ],
         [
             "complex_queries",
             {},
             {
                 "ocp_with_inline_fragments": GQLDefinitionType.QUERY,
+                "saas_enumerate_collisions": GQLDefinitionType.QUERY,
                 "saas_humongous": GQLDefinitionType.QUERY,
+            },
+            {
+                "saas_enumerate_collisions": NamingCollisionStrategy.ENUMERATE,
             },
         ],
         [
@@ -33,6 +38,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
             {
                 "simple_fragment": GQLDefinitionType.FRAGMENT,
             },
+            {},
         ],
         [
             "simple_queries_with_fragments",
@@ -49,6 +55,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "ocp_query_partial": GQLDefinitionType.QUERY,
                 "ocp_query_multiple": GQLDefinitionType.QUERY,
             },
+            {},
         ],
     ],
 )
@@ -59,6 +66,7 @@ def test_rendering(
     case,
     dep_graph: dict[str, list[str]],
     type_map: dict[str, GQLDefinitionType],
+    collision_strategies: dict[str, NamingCollisionStrategy],
     plugin_name,
 ):
     """Test code generation for each CASE x PLUGIN combination."""
@@ -70,8 +78,13 @@ def test_rendering(
         with open(source_file, "r") as f:
             content = f.read()
         kind = type_map[file_id]
+        collision_strategy = collision_strategies.get(
+            file_id, NamingCollisionStrategy.PARENT_CONTEXT
+        )
         definition = GQLDefinition(
-            feature_flags=FeatureFlags(plugin=plugin_name),
+            feature_flags=FeatureFlags(
+                plugin=plugin_name, collision_strategy=collision_strategy
+            ),
             source_file=source_file,
             definition=content,
             fragment_dependencies=dep_graph.get(file_id, []),
