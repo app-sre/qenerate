@@ -325,7 +325,7 @@ class PydanticV1Plugin(Plugin):
         self, definition: GQLDefinition, fragment_map: Mapping[str, Fragment]
     ) -> str:
         imports = ""
-        for dep in definition.fragment_dependencies:
+        for dep in sorted(definition.fragment_dependencies):
             fragment = fragment_map[dep]
             imports += f"\nfrom {fragment.import_path} import {fragment.class_name}"
         return imports
@@ -337,7 +337,7 @@ class PydanticV1Plugin(Plugin):
     ) -> set[str]:
         ans: set[str] = set()
         ans.add(definition.definition)
-        for dep in definition.fragment_dependencies:
+        for dep in sorted(definition.fragment_dependencies):
             ans = ans.union(
                 self._assemble_definition(
                     definition=fragment_definitions[dep],
