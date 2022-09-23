@@ -57,6 +57,17 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
             },
             {},
         ],
+        [
+            "complex_queries_with_fragments",
+            {
+                "saas_with_multiple_fragment_references": ["VaultSecret"],
+            },
+            {
+                "vault_secret_fragment": GQLDefinitionType.FRAGMENT,
+                "saas_with_multiple_fragment_references": GQLDefinitionType.QUERY,
+            },
+            {},
+        ],
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
