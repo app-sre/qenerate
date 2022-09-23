@@ -37,7 +37,7 @@ class GQLDefinition:
     kind: GQLDefinitionType
     definition: str
     name: str
-    fragment_dependencies: list[str]
+    fragment_dependencies: set[str]
 
 
 class DefinitionVisitor(Visitor):
@@ -93,7 +93,7 @@ class DefinitionVisitor(Visitor):
             definition=body,
             source_file=self._source_file_path,
             feature_flags=self._feature_flags,
-            fragment_dependencies=[],
+            fragment_dependencies=set(),
             name=name,
         )
         self._stack.append(definition)
@@ -102,7 +102,7 @@ class DefinitionVisitor(Visitor):
         self._add_definition()
 
     def enter_fragment_spread(self, node: FragmentSpreadNode, *_):
-        self._stack[-1].fragment_dependencies.append(self._node_name(node))
+        self._stack[-1].fragment_dependencies.add(self._node_name(node))
 
     def enter_fragment_definition(self, node: FragmentDefinitionNode, *_):
         body = self._node_body(node)
@@ -113,7 +113,7 @@ class DefinitionVisitor(Visitor):
             definition=body,
             source_file=self._source_file_path,
             feature_flags=self._feature_flags,
-            fragment_dependencies=[],
+            fragment_dependencies=set(),
             name=name,
         )
         self._stack.append(definition)

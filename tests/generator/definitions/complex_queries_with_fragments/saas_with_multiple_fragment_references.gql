@@ -1,0 +1,46 @@
+query SaasFilesV2XXL {
+  saas_files: saas_files_v2 {
+    path
+    name
+    pipelinesProvider {
+      name
+      provider
+      ...on PipelinesProviderTekton_v1 {
+        namespace {
+          name
+          cluster {
+            name
+            jumpHost {
+              hostname
+              identity {
+                ... VaultSecret
+              }
+            }
+            automationToken {
+              ... VaultSecret
+            }
+          }
+        }
+      }
+    }
+    slack {
+      output
+      workspace {
+        name
+        integrations {
+          name
+          token {
+            ... VaultSecret
+          }
+          channel
+          icon_emoji
+          username
+        }
+      }
+      channel
+      notifications {
+        start
+      }
+    }
+  }
+}

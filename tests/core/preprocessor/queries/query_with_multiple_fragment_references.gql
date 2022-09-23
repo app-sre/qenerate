@@ -1,0 +1,14 @@
+# qenerate: plugin=test
+query FirstQuery {
+    some {
+        ... MyFragment
+    }
+
+    other {
+        ... MyFragment
+    }
+}
+
+fragment MyFragment on SomeObject {
+    name
+}
