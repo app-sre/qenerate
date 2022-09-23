@@ -100,3 +100,7 @@ This strategy adds the number of occurrences of this name as a suffix.
 pip install poetry2setup
 poetry2setup .
 ```
+
+### Architecture
+
+The architecture is described in more detail in [this document](docs/architecture.md).
