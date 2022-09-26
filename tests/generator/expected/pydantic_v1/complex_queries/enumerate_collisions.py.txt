@@ -163,5 +163,5 @@ def query(query_func: Callable, **kwargs) -> EnumerateCollisionsQueryData:
     Returns:
         EnumerateCollisionsQueryData: queried data parsed into generated classes
     """
-    raw_data: dict[Any, Any] = query_func(DEFINITION, kwargs)
+    raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
     return EnumerateCollisionsQueryData(**raw_data)
