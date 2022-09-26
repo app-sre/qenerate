@@ -823,5 +823,5 @@ def query(query_func: Callable, **kwargs) -> SaasFilesV2XXLQueryData:
     Returns:
         SaasFilesV2XXLQueryData: queried data parsed into generated classes
     """
-    raw_data: dict[Any, Any] = query_func(DEFINITION, kwargs)
+    raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
     return SaasFilesV2XXLQueryData(**raw_data)

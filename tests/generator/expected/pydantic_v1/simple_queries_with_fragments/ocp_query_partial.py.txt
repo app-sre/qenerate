@@ -102,5 +102,5 @@ def query(query_func: Callable, **kwargs) -> OCPAuthPartialQueryData:
     Returns:
         OCPAuthPartialQueryData: queried data parsed into generated classes
     """
-    raw_data: dict[Any, Any] = query_func(DEFINITION, kwargs)
+    raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
     return OCPAuthPartialQueryData(**raw_data)

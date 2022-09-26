@@ -79,7 +79,7 @@ def query(query_func: Callable, **kwargs) -> {cls}:
 {INDENT}Returns:
 {INDENT}{INDENT}{cls}: queried data parsed into generated classes
 {INDENT}\"\"\"
-{INDENT}raw_data: dict[Any, Any] = query_func(DEFINITION, kwargs)
+{INDENT}raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
 {INDENT}return {cls}(**raw_data)
 """
 

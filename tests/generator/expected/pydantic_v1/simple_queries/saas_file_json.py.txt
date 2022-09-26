@@ -77,5 +77,5 @@ def query(query_func: Callable, **kwargs) -> SaasFilesWithEnumQueryData:
     Returns:
         SaasFilesWithEnumQueryData: queried data parsed into generated classes
     """
-    raw_data: dict[Any, Any] = query_func(DEFINITION, kwargs)
+    raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
     return SaasFilesWithEnumQueryData(**raw_data)
