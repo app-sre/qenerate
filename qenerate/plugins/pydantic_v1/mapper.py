@@ -47,11 +47,16 @@ def graphql_primitive_to_python(graphql_type: GraphQLOutputType) -> str:
 
 def graphql_field_name_to_python(name: str) -> str:
     # ElbFQDN -> ["elb", "f", "q", "d", "n"]
+    # SLOParameter -> ["s", "l", "o", "parameter"]
     parts = re.split("(?=[A-Z])", name)
+    if not parts[0]:
+        # if first letter was capital, then split will add '' first
+        parts = parts[1:]
     for i, el in enumerate(parts):
         parts[i] = el.lower()
 
     # ["elb", "f", "q", "d", "n"] -> elb_fqdn
+    # ["s", "l", "o", "parameter"] -> slo_parameter
     result = parts[0]
     for i in range(1, len(parts)):
         cur, prev = parts[i], parts[i - 1]
