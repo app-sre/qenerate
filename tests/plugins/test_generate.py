@@ -17,6 +17,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "saas_file_reduced": GQLDefinitionType.QUERY,
                 "saas_file_json": GQLDefinitionType.QUERY,
                 "difficult_attribute_name": GQLDefinitionType.QUERY,
+                "difficult_attribute_name_2": GQLDefinitionType.QUERY,
             },
             {},
         ],
