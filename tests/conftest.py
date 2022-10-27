@@ -24,7 +24,14 @@ def expected_files():
 
 
 @pytest.fixture()
-def schema():
-    with open("tests/generator/introspection.json") as f:
+def app_interface_schema():
+    with open("tests/generator/introspection-app-interface.json") as f:
+        raw_schema = json.loads(f.read())["data"]
+    return build_client_schema(cast(IntrospectionQuery, raw_schema))
+
+
+@pytest.fixture()
+def github_schema():
+    with open("tests/generator/introspection-github.json") as f:
         raw_schema = json.loads(f.read())["data"]
     return build_client_schema(cast(IntrospectionQuery, raw_schema))

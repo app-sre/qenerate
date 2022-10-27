@@ -244,7 +244,9 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]):
         ],
     ],
 )
-def test_preprocessor_exception(schema, raise_error, definitions: Iterable[str]):
+def test_preprocessor_exception(
+    app_interface_schema, raise_error, definitions: Iterable[str]
+):
     definition_objects = [
         GQLDefinition(
             definition=definition,
@@ -259,8 +261,12 @@ def test_preprocessor_exception(schema, raise_error, definitions: Iterable[str])
     preprocessor = Preprocessor()
 
     if not raise_error:
-        preprocessor.validate(definitions=definition_objects, schema=schema)
+        preprocessor.validate(
+            definitions=definition_objects, schema=app_interface_schema
+        )
         return
 
     with pytest.raises(raise_error):
-        preprocessor.validate(definitions=definition_objects, schema=schema)
+        preprocessor.validate(
+            definitions=definition_objects, schema=app_interface_schema
+        )

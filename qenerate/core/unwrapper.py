@@ -1,6 +1,12 @@
 from dataclasses import dataclass
 from enum import Enum
-from graphql import GraphQLOutputType, GraphQLNonNull, GraphQLList, GraphQLScalarType
+from graphql import (
+    GraphQLEnumType,
+    GraphQLOutputType,
+    GraphQLNonNull,
+    GraphQLList,
+    GraphQLScalarType,
+)
 
 
 class WrapperType(Enum):
@@ -13,6 +19,7 @@ class UnwrapperResult:
     wrapper_stack: list[WrapperType]
     inner_gql_type: GraphQLOutputType
     is_primitive: bool
+    enum_map: dict[str, str]
 
 
 class Unwrapper:
@@ -38,10 +45,16 @@ class Unwrapper:
                 wrapper_stack=wrappers,
                 inner_gql_type=res.inner_gql_type,
                 is_primitive=res.is_primitive,
+                enum_map=res.enum_map,
             )
 
+        enum_map = {}
+        if isinstance(gql_type, GraphQLEnumType):
+            for k, v in gql_type.values.items():
+                enum_map[k] = v.value
         return UnwrapperResult(
             wrapper_stack=wrappers,
             inner_gql_type=gql_type,
             is_primitive=isinstance(gql_type, GraphQLScalarType),
+            enum_map=enum_map,
         )

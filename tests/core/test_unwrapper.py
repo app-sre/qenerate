@@ -3,6 +3,7 @@ import pytest
 from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
 
 from graphql import (
+    GraphQLEnumType,
     GraphQLOutputType,
     GraphQLScalarType,
     GraphQLNonNull,
@@ -20,6 +21,7 @@ from graphql import (
                 wrapper_stack=[WrapperType.OPTIONAL],
                 inner_gql_type=GraphQLScalarType(name="String"),
                 is_primitive=True,
+                enum_map={},
             ),
         ],
         [
@@ -28,6 +30,7 @@ from graphql import (
                 wrapper_stack=[WrapperType.LIST, WrapperType.OPTIONAL],
                 inner_gql_type=GraphQLObjectType(name="MyObject", fields=[]),
                 is_primitive=False,
+                enum_map={},
             ),
         ],
         [
@@ -36,6 +39,7 @@ from graphql import (
                 wrapper_stack=[WrapperType.OPTIONAL, WrapperType.LIST],
                 inner_gql_type=GraphQLScalarType(name="Integer"),
                 is_primitive=True,
+                enum_map={},
             ),
         ],
         [
@@ -49,6 +53,28 @@ from graphql import (
                 ],
                 inner_gql_type=GraphQLScalarType(name="Integer"),
                 is_primitive=True,
+                enum_map={},
+            ),
+        ],
+        [
+            GraphQLList(
+                GraphQLNonNull(
+                    GraphQLEnumType(name="Integer", values={"K": "V", "KK": "VV"})
+                )
+            ),
+            UnwrapperResult(
+                wrapper_stack=[
+                    WrapperType.OPTIONAL,
+                    WrapperType.LIST,
+                ],
+                inner_gql_type=GraphQLEnumType(
+                    name="Integer", values={"K": "V", "KK": "VV"}
+                ),
+                is_primitive=False,
+                enum_map={
+                    "K": "V",
+                    "KK": "VV",
+                },
             ),
         ],
     ],

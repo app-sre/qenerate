@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 
 INDENT = "    "
@@ -78,21 +78,38 @@ class ParsedClassNode(ParsedNode):
         if not self._needs_class_rendering():
             return ""
 
+        if self.parsed_type.enum_map:
+            return self._enum_code()
+        else:
+            return self._class_code()
+
+    def _class_code(self) -> str:
         base_classes = ", ".join(self._base_classes())
         lines = ["\n\n"]
         lines.append(f"class {self.parsed_type.unwrapped_python_type}({base_classes}):")
         for field in self.fields:
+            field_arg = "..., "
+            if field.parsed_type.enum_map:
+                field_arg = ""
             if isinstance(field, ParsedClassNode):
                 lines.append(
                     (
                         f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
+                        f'Field({field_arg}alias="{field.gql_key}")'
                     )
                 )
 
         lines.append("")
         lines.extend(self._pydantic_config_string())
 
+        return "\n".join(lines)
+
+    def _enum_code(self) -> str:
+        lines = ["\n\n"]
+        lines.append(f"class {self.parsed_type.unwrapped_python_type}(Enum):")
+        for k, v in self.parsed_type.enum_map.items():
+            val = f'"{v}"' if isinstance(v, str) else v
+            lines.append(f"{INDENT}{k} = {val}")
         return "\n".join(lines)
 
     def _base_classes(self) -> list[str]:
@@ -191,3 +208,4 @@ class ParsedFieldType:
     unwrapped_python_type: str
     wrapped_python_type: str
     is_primitive: bool
+    enum_map: dict[str, Any]
