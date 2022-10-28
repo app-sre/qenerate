@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 import pytest
 from qenerate.core.code_command import plugins
@@ -6,8 +7,13 @@ from qenerate.core.plugin import GeneratedFile
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
 
 
+class Schema(Enum):
+    APP_INTERFACE = "app-interface"
+    GITHUB = "github"
+
+
 @pytest.mark.parametrize(
-    "case, dep_graph, type_map, collision_strategies",
+    "case, dep_graph, type_map, collision_strategies, use_schema",
     [
         [
             "simple_queries",
@@ -20,6 +26,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "difficult_attribute_name_2": GQLDefinitionType.QUERY,
             },
             {},
+            Schema.APP_INTERFACE,
         ],
         [
             "complex_queries",
@@ -32,6 +39,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
             {
                 "enumerate_collisions": NamingCollisionStrategy.ENUMERATE,
             },
+            Schema.APP_INTERFACE,
         ],
         [
             "fragments",
@@ -40,6 +48,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "simple_fragment": GQLDefinitionType.FRAGMENT,
             },
             {},
+            Schema.APP_INTERFACE,
         ],
         [
             "simple_queries_with_fragments",
@@ -57,6 +66,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "ocp_query_multiple": GQLDefinitionType.QUERY,
             },
             {},
+            Schema.APP_INTERFACE,
         ],
         [
             "complex_queries_with_fragments",
@@ -68,12 +78,24 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
                 "saas_with_multiple_fragment_references": GQLDefinitionType.QUERY,
             },
             {},
+            Schema.APP_INTERFACE,
+        ],
+        [
+            "enums",
+            {},
+            {
+                "github_invitations": GQLDefinitionType.QUERY,
+            },
+            {},
+            Schema.GITHUB,
         ],
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
 def test_rendering(
-    schema,
+    use_schema,
+    app_interface_schema,
+    github_schema,
     expected_files,
     case,
     dep_graph: dict[str, list[str]],
@@ -82,7 +104,9 @@ def test_rendering(
     plugin_name,
 ):
     """Test code generation for each CASE x PLUGIN combination."""
-
+    schema = (
+        app_interface_schema if use_schema == Schema.APP_INTERFACE else github_schema
+    )
     fragment_definitions = []
     query_definitions = []
     for source_file in Path(f"tests/generator/definitions/{case}").glob("**/*"):

@@ -11,6 +11,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preproc
 
 
 SCHEMA_DIR = "tests/generator"
+APP_INTERFACE_INTROSPECTION = "introspection-app-interface.json"
 
 
 class FakePlugin(Plugin):
@@ -68,7 +69,7 @@ def test_single_file(fs):
         plugins={"fake": FakePlugin()},
     )
     code_command.generate_code(
-        introspection_file_path=f"{SCHEMA_DIR}/introspection.json",
+        introspection_file_path=f"{SCHEMA_DIR}/{APP_INTERFACE_INTROSPECTION}",
         dir="/tmp",
     )
 
@@ -87,7 +88,7 @@ def test_unknown_plugin_flag(fs):
         plugins={},
     )
     code_command.generate_code(
-        introspection_file_path=f"{SCHEMA_DIR}/introspection.json",
+        introspection_file_path=f"{SCHEMA_DIR}/{APP_INTERFACE_INTROSPECTION}",
         dir="/tmp",
     )
 
@@ -120,7 +121,7 @@ def test_dir_tree(fs):
         plugins={"fake": FakePlugin()},
     )
     code_command.generate_code(
-        introspection_file_path=f"{SCHEMA_DIR}/introspection.json",
+        introspection_file_path=f"{SCHEMA_DIR}/{APP_INTERFACE_INTROSPECTION}",
         dir="/tmp",
     )
 
