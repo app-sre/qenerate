@@ -46,6 +46,7 @@ class Schema(Enum):
             {},
             {
                 "simple_fragment": GQLDefinitionType.FRAGMENT,
+                "nested_fragment": GQLDefinitionType.FRAGMENT,
             },
             {},
             Schema.APP_INTERFACE,
