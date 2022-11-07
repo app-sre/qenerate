@@ -46,11 +46,13 @@ class Schema(Enum):
             {
                 "nested_fragment": ["VaultSecret"],
                 "multiple_nested_fragments": ["VaultSecret", "CommonJumphostFields"],
+                "nested_layers": ["CommonJumphostFields"],
             },
             {
                 "simple_fragment": GQLDefinitionType.FRAGMENT,
                 "nested_fragment": GQLDefinitionType.FRAGMENT,
                 "multiple_nested_fragments": GQLDefinitionType.FRAGMENT,
+                "nested_layers": GQLDefinitionType.QUERY,
             },
             {},
             Schema.APP_INTERFACE,
