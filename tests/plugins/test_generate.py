@@ -43,9 +43,14 @@ class Schema(Enum):
         ],
         [
             "fragments",
-            {},
+            {
+                "nested_fragment": ["VaultSecret"],
+                "multiple_nested_fragments": ["VaultSecret", "CommonJumphostFields"],
+            },
             {
                 "simple_fragment": GQLDefinitionType.FRAGMENT,
+                "nested_fragment": GQLDefinitionType.FRAGMENT,
+                "multiple_nested_fragments": GQLDefinitionType.FRAGMENT,
             },
             {},
             Schema.APP_INTERFACE,
@@ -157,12 +162,13 @@ def test_rendering(
         )
     )
 
-    generated: list[GeneratedFile] = sorted(generated_files)
+    generated: list[GeneratedFile] = sorted(generated_files, key=lambda x: x.file)
     expected: list[GeneratedFile] = sorted(
         expected_files(
             plugin=plugin_name,
             case=case,
-        )
+        ),
+        key=lambda x: x.file,
     )
 
     for i in range(len(generated)):

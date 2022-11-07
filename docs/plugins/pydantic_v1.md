@@ -117,6 +117,4 @@ in which `qenerate` was executed.
 
 ## Missing Features / TODOs
 
-- support enums
 - support fragments within inline fragments
-- support nested fragments

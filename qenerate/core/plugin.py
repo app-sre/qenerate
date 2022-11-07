@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from graphql import GraphQLSchema
@@ -8,14 +8,8 @@ from qenerate.core.preprocessor import GQLDefinition
 
 @dataclass(eq=True, order=True)
 class GeneratedFile:
-    file: Path
+    file: Path = field(compare=False)
     content: str
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, GeneratedFile):
-            return False
-        # ignore path in filename comparison
-        return self.content == other.content and self.file.name == other.file.name
 
     def save(self):
         self.file.write_text(self.content)
@@ -27,18 +21,6 @@ class Fragment(GeneratedFile):
     import_path: str
     fragment_name: str
     class_name: str
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Fragment):
-            return False
-        # ignore path in filename comparison
-        return (
-            self.content == other.content
-            and self.file.name == other.file.name
-            and self.class_name == other.class_name
-            and self.fragment_name == other.fragment_name
-            and self.import_path == other.import_path
-        )
 
 
 class Plugin:

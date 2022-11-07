@@ -1,0 +1,9 @@
+fragment MinimalCluster on Cluster_v1 {
+  name
+  jumpHost {
+    ... CommonJumphostFields
+  }
+  automationToken {
+    ... VaultSecret
+  }
+}
