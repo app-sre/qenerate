@@ -1,4 +1,4 @@
-fragment Vault_Secret on VaultSecret_v1 {
+fragment VaultSecret on VaultSecret_v1 {
     path
     field
     version

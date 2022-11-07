@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import Mapping
+from functools import reduce
+import operator
 
 from graphql import (
     FieldNode,
@@ -83,6 +85,10 @@ def query(query_func: Callable, **kwargs) -> {cls}:
 {INDENT}raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
 {INDENT}return {cls}(**raw_data)
 """
+
+
+class PydanticV1Error(Exception):
+    pass
 
 
 class FieldToTypeMatcherVisitor(Visitor):
@@ -296,26 +302,58 @@ class PydanticV1Plugin(Plugin):
     def generate_fragments(
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
     ) -> list[Fragment]:
-        generated_files: list[Fragment] = []
-        for definition in definitions:
-            result = HEADER + IMPORTS
-            qf = definition.source_file
-            parser = QueryParser()
-            fragment_definition = definition.definition
-            ast = parser.parse(
-                definition=fragment_definition,
-                schema=schema,
-                feature_flags=definition.feature_flags,
-            )
-            fragment = ast.fields[0]
-            if not isinstance(fragment, ParsedFragmentDefinitionNode):
-                print(f"[WARNING] {qf} is not a fragment")
-                continue
-            result += self._traverse(ast)
-            result += "\n"
-            import_path = str(definition.source_file.with_suffix("")).replace("/", ".")
-            generated_files.append(
-                Fragment(
+        """
+        Render all fragments. Handle nested fragments, i.e., fragments which
+        depend on other fragments. The current dependency resolving approach
+        is brute-force, but will get the job done for most likely use-cases.
+
+        @TODO: fragment dependency graph should be calculated in pre-processor.
+        This function should ideally then be able to process fragments in order.
+        """
+        processed: dict[str, Fragment] = {}
+        current_to_process: list[GQLDefinition] = definitions
+        next_to_process: list[GQLDefinition] = []
+        while len(processed) < len(definitions):
+            for definition in current_to_process:
+                # We make sure that all dependencies are already rendered
+                # in order to obtain proper import lines
+                has_unrendered_dependencies = reduce(
+                    operator.or_,
+                    [dep not in processed for dep in definition.fragment_dependencies],
+                    False,
+                )
+                if has_unrendered_dependencies:
+                    # not all dependencies rendered yet. It will
+                    # probably happen later in the loop, so we skip
+                    # this and will try again in the next iteration.
+                    next_to_process.append(definition)
+                    continue
+                fragment_imports = self._fragment_imports(
+                    definition=definition,
+                    fragment_map=processed,
+                )
+                result = HEADER + IMPORTS
+                if fragment_imports:
+                    result += "\n"
+                    result += fragment_imports
+                qf = definition.source_file
+                parser = QueryParser()
+                fragment_definition = definition.definition
+                ast = parser.parse(
+                    definition=fragment_definition,
+                    schema=schema,
+                    feature_flags=definition.feature_flags,
+                )
+                fragment = ast.fields[0]
+                if not isinstance(fragment, ParsedFragmentDefinitionNode):
+                    print(f"[WARNING] {qf} is not a fragment")
+                    continue
+                result += self._traverse(ast)
+                result += "\n"
+                import_path = str(definition.source_file.with_suffix("")).replace(
+                    "/", "."
+                )
+                rendered_fragment = Fragment(
                     definition=definition,
                     file=qf.with_suffix(".py"),
                     content=result,
@@ -323,9 +361,18 @@ class PydanticV1Plugin(Plugin):
                     import_path=import_path,
                     fragment_name=fragment.fragment_name,
                 )
-            )
+                processed[rendered_fragment.fragment_name] = rendered_fragment
 
-        return generated_files
+            if len(current_to_process) == len(next_to_process):
+                # We found a cyclic dependency, i.e., not a single
+                # fragment got rendered in this iteration
+                raise PydanticV1Error("Cyclic fragment dependency detected")
+
+            # lets try again to render all fragments that we skipped in this iteration
+            current_to_process = next_to_process
+            next_to_process = []
+
+        return list(processed.values())
 
     def _fragment_imports(
         self, definition: GQLDefinition, fragment_map: Mapping[str, Fragment]
