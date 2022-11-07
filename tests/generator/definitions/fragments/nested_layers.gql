@@ -1,0 +1,8 @@
+query ClustersMinimal {
+  clusters_v1 {
+    name
+    jumpHost {
+      ... CommonJumphostFields
+    }
+  }
+}
