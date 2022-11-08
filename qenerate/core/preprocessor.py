@@ -146,7 +146,11 @@ class Preprocessor:
         feature_flags = FeatureFlagParser.parse(
             definition=content,
         )
-        document_ast = parse(content)
+        try:
+            document_ast = parse(content)
+        except Exception as e:
+            print(f"[ERROR] preprocessing file {file_path}")
+            raise e
 
         visitor = DefinitionVisitor(
             feature_flags=feature_flags,
