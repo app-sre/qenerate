@@ -65,7 +65,7 @@ class SaasFilesSimpleQueryData(BaseModel):
         extra = Extra.forbid
 
 
-def query(query_func: Callable, **kwargs) -> SaasFilesSimpleQueryData:
+def query(query_func: Callable, **kwargs: Any) -> SaasFilesSimpleQueryData:
     """
     This is a convenience function which queries and parses the data into
     concrete types. It should be compatible with most GQL clients.

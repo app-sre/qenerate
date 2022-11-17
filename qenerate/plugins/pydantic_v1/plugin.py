@@ -67,7 +67,7 @@ IMPORTS = (
 
 def convenience_function(cls: str) -> str:
     return f"""
-def query(query_func: Callable, **kwargs) -> {cls}:
+def query(query_func: Callable, **kwargs: Any) -> {cls}:
 {INDENT}\"\"\"
 {INDENT}This is a convenience function which queries and parses the data into
 {INDENT}concrete types. It should be compatible with most GQL clients.
