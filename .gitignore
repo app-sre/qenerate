@@ -3,3 +3,4 @@ __pycache__
 .venv
 .vscode
 .mypy_cache
+demo/gql/introspection.json

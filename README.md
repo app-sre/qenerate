@@ -5,12 +5,6 @@
 of nested untyped dictionaries. `qenerate` solely focuses on generating code
 for transforming those untyped dictionaries into concrete types.
 
-## Code Examples
-
-`qenerate` is actively used in our qontract-reconcile project. There you can find a lot of [examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions) on how generated classes look like in more detail.
-
-`qenerate` also supports GraphQL fragments to help reduce the number of potentially duplicated data classes.
-
 ## Installation
 
 [Releases](https://pypi.org/project/qenerate/) are published on pypi.
@@ -22,6 +16,8 @@ pip install qenerate
 ## Usage
 
 ### Introspection
+
+<img src="demo/introspection.gif" />
 
 In a first step we must obtain the GQL schema in the form of an introspection query:
 
@@ -48,6 +44,26 @@ I.e., within this scope fragment and query names must be unique. Further, you ca
 freely use any fragment within queries, as long as the fragment is defined somewhere
 within the scope (directory). 
 
+#### Example for Single Query
+
+[Single query](demo/gql/queries/example1.gql) and its [generated classes](demo/gql/queries/example1.py).
+
+<img src="demo/query.gif" />
+
+#### Example for Query using a Fragment
+
+We define a re-usable [fragment](demo/gql/fragments/fragment1.gql) which results in the following
+generated [re-usable data classes](demo/gql/fragments/fragment1.py).
+
+The fragment is used in a [query](demo/gql/queries/example2.gql) and imported
+in the [generated python file](demo/gql/queries/example2.py).
+
+<img src="demo/fragment.gif" />
+
+#### More Examples
+
+`qenerate` is actively used in our qontract-reconcile project. There you can find a lot of [examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions) on how generated classes look like in more detail.
+
 ## Plugins
 
 `qenerate` follows a plugin based approach. I.e., multiple code generators are supported.
@@ -62,7 +78,7 @@ query {
 ```
 
 By choosing a plugin based approach, `qenerate` can extent its feature set creating new plugins
-while at the same time keeping old plugins stable and fully backwards compatible.
+while at the same time keeping existing plugins stable and fully backwards compatible.
 
 Currently available plugins are:
 
