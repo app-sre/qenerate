@@ -1,8 +1,8 @@
 # Pydantic V1 Plugin
 
-This plugin generates simple pydantic data classes for your queries.
+This plugin generates simple [pydantic](https://docs.pydantic.dev/) data classes for your queries and fragments.
 Pydantic is capable of mapping nested dictionaries to nested types.
-I.e., no custom mapping functions are required.
+I.e., no data mapping functions need to be generated.
 
 This plugin expects exactly one gql definition per `.gql` file.
 Supported definitions are:
@@ -114,7 +114,3 @@ class HeroForEpisodeData(BaseModel):
 
 Note, that the python import path is relative to the directory
 in which `qenerate` was executed.
-
-## Missing Features / TODOs
-
-- support fragments within inline fragments

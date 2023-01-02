@@ -1,23 +1,35 @@
-**Disclaimer:** :warning: This is in alpha stage. Breaking changes could occur any time.
-
 # qenerate
 
-`qenerate` is a code generator for GraphQL Query Data Classes. 
+`qenerate` is a code generator for GraphQL Query and Fragment Data Classes. 
 `qenerate` is not a GQL client. A GQL client normally returns data in the form
 of nested untyped dictionaries. `qenerate` solely focuses on generating code
 for transforming those untyped dictionaries into concrete types.
+
+## Code Examples
+
+`qenerate` is actively used in our qontract-reconcile project. There you can find a lot of [examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions) on how generated classes look like in more detail.
+
+`qenerate` also supports GraphQL fragments to help reduce the number of potentially duplicated data classes.
+
+## Installation
+
+[Releases](https://pypi.org/project/qenerate/) are published on pypi.
+
+```sh
+pip install qenerate
+```
 
 ## Usage
 
 ### Introspection
 
-In a first step we must obtain your GQL schema in the form of an introspection query:
+In a first step we must obtain the GQL schema in the form of an introspection query:
 
 ```sh
 qenerate introspection http://my-gql-instance:4000/graphql > introspection.json
 ```
 
-The `introspection.json` is used in a next step to map concrete types to your queries.
+The `introspection.json` is used in a next step to map concrete types to your queries and fragments.
 
 ### Code Generation
 
@@ -29,7 +41,7 @@ An `introspection.json` and a directory holding `*.gql` files are given.
 `qenerate` then generates data classes for every `*.gql` file it encounters
 while traversing the given directory.
 
-`qenerate` expects that a `.gql` file contains exactly one `query` operation.
+`qenerate` expects that a `.gql` file contains exactly one `query` or `fragment` definition.
 
 ## Plugins
 
@@ -49,7 +61,7 @@ while at the same time keeping old plugins stable and fully backwards compatible
 
 Currently available plugins are:
 
-- [pydantic_v1](docs/plugins/pydantic_v1.md) for generating Pydantic data classes
+- [pydantic_v1](docs/plugins/pydantic_v1.md) for generating [Pydantic](https://docs.pydantic.dev/) data classes
 
 ## Feature Flags
 
@@ -84,7 +96,17 @@ parent node in the query as a prefix.
 
 This strategy adds the number of occurrences of this name as a suffix.
 
+However, in most cases it might be cleaner to define a re-usable fragment instead of
+relying on a collision strategy. Here are some [fragment examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions/fragments). 
+
 ## Development
+
+### CI
+
+CI happens on an [app-sre](https://github.com/app-sre/) owned Jenkins instance.
+
+- [Releases](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-build-main/)
+- [PR Checks](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-pr-check/) 
 
 ### Build and Dependency Management
 
