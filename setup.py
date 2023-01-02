@@ -16,9 +16,9 @@ entry_points = {"console_scripts": ["qenerate = qenerate.cli:run"]}
 
 setup_kwargs = {
     "name": "qenerate",
-    "version": "0.4.3",
-    "description": "Code Generator for GraphQL Query Data Classes",
-    "long_description": None,
+    "version": "0.4.4",
+    "description": "Code Generator for GraphQL Query and Fragment Data Classes",
+    "long_description": "Qenerate is a Code Generator for GraphQL Query and Fragment Data Classes. Documentation is at https://github.com/app-sre/qenerate .",
     "author": "Service Delivery - AppSRE",
     "author_email": "sd-app-sre@redhat.com",
     "maintainer": "Service Delivery - AppSRE",

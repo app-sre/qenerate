@@ -37,11 +37,16 @@ The `introspection.json` is used in a next step to map concrete types to your qu
 qenerate code -i introspection.json dir/to/gql/files
 ```
 
-An `introspection.json` and a directory holding `*.gql` files are given.
+An `introspection.json` and a (nested) directory holding all your `*.gql` files are given.
 `qenerate` then generates data classes for every `*.gql` file it encounters
 while traversing the given directory.
 
 `qenerate` expects that a `.gql` file contains exactly one `query` or `fragment` definition.
+
+Note, that the given directory and every `gql.` file in it share the same scope.
+I.e., within this scope fragment and query names must be unique. Further, you can
+freely use any fragment within queries, as long as the fragment is defined somewhere
+within the scope (directory). 
 
 ## Plugins
 
