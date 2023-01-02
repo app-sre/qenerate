@@ -1,0 +1,11 @@
+# qenerate: plugin=pydantic_v1
+
+query GitlabInstance {
+  instances: gitlabinstance_v1 {
+    url
+    token {
+      # Here we use the fragment defined in fragment1.gql
+      ... VaultSecret
+    }
+  }
+}
