@@ -1,9 +1,11 @@
 # qenerate
 
-`qenerate` is a code generator for GraphQL Query and Fragment Data Classes. 
-`qenerate` is not a GQL client. A GQL client normally returns data in the form
-of nested untyped dictionaries. `qenerate` solely focuses on generating code
-for transforming those untyped dictionaries into concrete types.
+`qenerate` is a pluggable code generator for GraphQL Query and Fragment Data Classes.
+It works hand in hand with GraphQL clients like [gql](https://github.com/graphql-python/gql).
+Clients like gql return nested untyped dictionaries as result to a query. 
+`qenerate` generated classes easily transform these nested untyped dictionaries into concrete classes.
+`qenerate` itself is not a GraphQL client and solely focuses on generating code
+for transforming untyped dictionaries into concrete types.
 
 ## Installation
 
