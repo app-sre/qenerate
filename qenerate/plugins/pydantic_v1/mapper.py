@@ -42,7 +42,7 @@ def graphql_primitive_to_python(graphql_type: GraphQLOutputType) -> str:
         "DateTime": "datetime",
         "JSON": "Json",
     }
-    return mapping.get(str(graphql_type), str(graphql_type))
+    return mapping.get(str(graphql_type), "str")
 
 
 def graphql_field_name_to_python(name: str) -> str:

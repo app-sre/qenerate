@@ -92,7 +92,7 @@ class Schema(Enum):
             {},
             {
                 "invitations_enum": GQLDefinitionType.QUERY,
-                "issues_datetime": GQLDefinitionType.QUERY,
+                "issues_datetime_html": GQLDefinitionType.QUERY,
             },
             {},
             Schema.GITHUB,
