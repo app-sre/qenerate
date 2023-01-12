@@ -19,10 +19,12 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 
 
 DEFINITION = """
-query SaasFilesReduced {
-  apps_v1 {
-    saasFiles {
-      name
+query IssuesDate {
+  repository(name: "qenerate", owner: "app-sre") {
+    issues(first: 10) {
+      nodes {
+        createdAt
+      }
     }
   }
 }
@@ -30,31 +32,39 @@ query SaasFilesReduced {
 """
 
 
-class SaasFileV2(BaseModel):
-    name: str = Field(..., alias="name")
+class Issue(BaseModel):
+    created_at: datetime = Field(..., alias="createdAt")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class AppV1(BaseModel):
-    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saasFiles")
+class IssueConnection(BaseModel):
+    nodes: Optional[list[Optional[Issue]]] = Field(..., alias="nodes")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-class SaasFilesReducedQueryData(BaseModel):
-    apps_v1: Optional[list[Optional[AppV1]]] = Field(..., alias="apps_v1")
+class Repository(BaseModel):
+    issues: IssueConnection = Field(..., alias="issues")
 
     class Config:
         smart_union = True
         extra = Extra.forbid
 
 
-def query(query_func: Callable, **kwargs: Any) -> SaasFilesReducedQueryData:
+class IssuesDateQueryData(BaseModel):
+    repository: Optional[Repository] = Field(..., alias="repository")
+
+    class Config:
+        smart_union = True
+        extra = Extra.forbid
+
+
+def query(query_func: Callable, **kwargs: Any) -> IssuesDateQueryData:
     """
     This is a convenience function which queries and parses the data into
     concrete types. It should be compatible with most GQL clients.
@@ -67,7 +77,7 @@ def query(query_func: Callable, **kwargs: Any) -> SaasFilesReducedQueryData:
         kwargs: optional arguments that will be passed to the query function
 
     Returns:
-        SaasFilesReducedQueryData: queried data parsed into generated classes
+        IssuesDateQueryData: queried data parsed into generated classes
     """
     raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
-    return SaasFilesReducedQueryData(**raw_data)
+    return IssuesDateQueryData(**raw_data)

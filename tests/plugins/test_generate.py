@@ -88,10 +88,11 @@ class Schema(Enum):
             Schema.APP_INTERFACE,
         ],
         [
-            "enums",
+            "github",
             {},
             {
-                "github_invitations": GQLDefinitionType.QUERY,
+                "invitations_enum": GQLDefinitionType.QUERY,
+                "issues_datetime": GQLDefinitionType.QUERY,
             },
             {},
             Schema.GITHUB,
