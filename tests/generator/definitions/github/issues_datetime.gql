@@ -1,0 +1,9 @@
+query IssuesDate {
+  repository(name: "qenerate", owner: "app-sre") {
+    issues(first: 10) {
+      nodes {
+        createdAt
+      }
+    }
+  }
+}
