@@ -3,6 +3,7 @@ query IssuesDate {
     issues(first: 10) {
       nodes {
         createdAt
+        bodyHTML
       }
     }
   }

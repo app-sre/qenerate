@@ -10,6 +10,18 @@ Supported definitions are:
 - `fragment`
 - `query`
 
+## Opinionated Custom Scalars
+
+The `pydantic_v1` plugin has an opinionated approach towards some very common custom scalars
+defined in https://the-guild.dev/graphql/scalars/docs
+
+Currently it maps the following: 
+
+- `JSON` maps to `pydantic.Json`
+- `DateTime` maps to `datetime.datetime` 
+
+Any other custom scalar will be mapped to `str`.
+
 ## Examples
 
 ### Query with inline fragments

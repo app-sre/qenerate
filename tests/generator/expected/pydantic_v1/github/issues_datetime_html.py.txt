@@ -24,6 +24,7 @@ query IssuesDate {
     issues(first: 10) {
       nodes {
         createdAt
+        bodyHTML
       }
     }
   }
@@ -34,6 +35,7 @@ query IssuesDate {
 
 class Issue(BaseModel):
     created_at: datetime = Field(..., alias="createdAt")
+    body_html: str = Field(..., alias="bodyHTML")
 
     class Config:
         smart_union = True
