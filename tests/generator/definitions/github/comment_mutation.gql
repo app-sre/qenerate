@@ -1,0 +1,14 @@
+mutation AddComment {
+  addComment(input: {subjectId: "", body: ""}) {
+    subject {
+      ... on Topic {
+        id
+        name
+      }
+      ... on User {
+        id
+        email
+      }
+    }
+  }
+}

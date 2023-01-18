@@ -1,5 +1,5 @@
 # qenerate: plugin=test
-# This should be ignored by qenerate
+
 mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
   createReview(episode: $ep, review: $review) {
     stars

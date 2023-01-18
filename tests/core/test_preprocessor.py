@@ -59,7 +59,16 @@ def normalize_definition(definition: str) -> str:
         # Test a file containing a mutation
         [
             Path("tests/core/preprocessor/queries/mutation.gql"),
-            [],
+            [
+                GQLDefinition(
+                    feature_flags=FeatureFlags(plugin="test"),
+                    kind=GQLDefinitionType.QUERY,
+                    name="CreateReviewForEpisode",
+                    definition="mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }",
+                    fragment_dependencies=set(),
+                    source_file="",  # adjusted in test
+                )
+            ],
         ],
         # Test a file containing a single fragment
         [

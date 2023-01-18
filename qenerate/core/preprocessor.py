@@ -79,12 +79,12 @@ class DefinitionVisitor(Visitor):
         body = self._node_body(node)
         name = self._node_name(node)
 
-        if node.operation != OperationType.QUERY:
+        if node.operation not in (OperationType.QUERY, OperationType.MUTATION):
             # TODO: logger
             # TODO: raise
             print(
                 "[WARNING] Skipping operation definition because"
-                f" it is not a query: \n{body}"
+                f" it is neither a query nor a mutation: \n{body}"
             )
             return
 
