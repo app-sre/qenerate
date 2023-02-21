@@ -19,8 +19,8 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 
 
 DEFINITION = """
-mutation AddComment {
-  addComment(input: {subjectId: "", body: ""}) {
+mutation AddComment($body: String = "", $subjectId: ID = "") {
+  addComment(input: {subjectId: $subjectId, body: $body}) {
     subject {
       ... on Topic {
         id

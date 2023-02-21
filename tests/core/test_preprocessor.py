@@ -67,7 +67,7 @@ def normalize_definition(definition: str) -> str:
                     definition="mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }",
                     fragment_dependencies=set(),
                     source_file="",  # adjusted in test
-                )
+                ),
             ],
         ],
         # Test a file containing a single fragment

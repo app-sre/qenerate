@@ -1,5 +1,5 @@
-mutation AddComment {
-  addComment(input: {subjectId: "", body: ""}) {
+mutation AddComment($body: String = "", $subjectId: ID = "") {
+  addComment(input: {subjectId: $subjectId, body: $body}) {
     subject {
       ... on Topic {
         id
