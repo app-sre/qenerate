@@ -88,7 +88,7 @@ def mutate(mutation_func: Callable, **kwargs: Any) -> AddCommentMutationResponse
 
     Parameters:
         mutation_func (Callable): Function which executes the mutation.
-        kwargs: Arguments that will be passed to the query function.
+        kwargs: Arguments that will be passed to the mutation function.
             This must include the mutation parameters.
 
     Returns:

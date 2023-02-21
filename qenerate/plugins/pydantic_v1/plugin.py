@@ -100,7 +100,7 @@ def mutate(mutation_func: Callable, **kwargs: Any) -> {cls}:
 
 {INDENT}Parameters:
 {INDENT}{INDENT}mutation_func (Callable): Function which executes the mutation.
-{INDENT}{INDENT}kwargs: Arguments that will be passed to the query function.
+{INDENT}{INDENT}kwargs: Arguments that will be passed to the mutation function.
 {INDENT}{INDENT}{INDENT}This must include the mutation parameters.
 
 {INDENT}Returns:
