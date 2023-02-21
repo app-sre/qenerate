@@ -62,7 +62,7 @@ def normalize_definition(definition: str) -> str:
             [
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test"),
-                    kind=GQLDefinitionType.QUERY,
+                    kind=GQLDefinitionType.MUTATION,
                     name="CreateReviewForEpisode",
                     definition="mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }",
                     fragment_dependencies=set(),

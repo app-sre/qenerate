@@ -70,7 +70,7 @@ class AddCommentPayload(BaseModel):
         extra = Extra.forbid
 
 
-class AddCommentQueryData(BaseModel):
+class AddCommentMutationResponse(BaseModel):
     add_comment: Optional[AddCommentPayload] = Field(..., alias="addComment")
 
     class Config:
@@ -78,20 +78,21 @@ class AddCommentQueryData(BaseModel):
         extra = Extra.forbid
 
 
-def query(query_func: Callable, **kwargs: Any) -> AddCommentQueryData:
+def mutate(mutation_func: Callable, **kwargs: Any) -> AddCommentMutationResponse:
     """
-    This is a convenience function which queries and parses the data into
-    concrete types. It should be compatible with most GQL clients.
+    This is a convenience function which executes a mutation and parses the response
+    into concrete types. It should be compatible with most GQL clients.
     You do not have to use it to consume the generated data classes.
     Alternatively, you can also mime and alternate the behavior
     of this function in the caller.
 
     Parameters:
-        query_func (Callable): Function which queries your GQL Server
-        kwargs: optional arguments that will be passed to the query function
+        mutation_func (Callable): Function which executes the mutation.
+        kwargs: Arguments that will be passed to the query function.
+            This must include the mutation parameters.
 
     Returns:
-        AddCommentQueryData: queried data parsed into generated classes
+        AddCommentMutationResponse: mutation response parsed into generated classes
     """
-    raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
-    return AddCommentQueryData(**raw_data)
+    raw_data: dict[Any, Any] = mutation_func(DEFINITION, **kwargs)
+    return AddCommentMutationResponse(**raw_data)

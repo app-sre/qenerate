@@ -93,7 +93,7 @@ class Schema(Enum):
             {
                 "invitations_enum": GQLDefinitionType.QUERY,
                 "issues_datetime_html": GQLDefinitionType.QUERY,
-                "comment_mutation": GQLDefinitionType.QUERY,
+                "comment_mutation": GQLDefinitionType.MUTATION,
             },
             {},
             Schema.GITHUB,
@@ -117,7 +117,7 @@ def test_rendering(
         app_interface_schema if use_schema == Schema.APP_INTERFACE else github_schema
     )
     fragment_definitions = []
-    query_definitions = []
+    operation_definitions = []
     for source_file in Path(f"tests/generator/definitions/{case}").glob("**/*"):
         file_id = source_file.with_suffix("").name
         with open(source_file, "r") as f:
@@ -136,10 +136,10 @@ def test_rendering(
             kind=kind,
             name=file_id,
         )
-        if kind == GQLDefinitionType.QUERY:
-            query_definitions.append(definition)
-        else:
+        if kind == GQLDefinitionType.FRAGMENT:
             fragment_definitions.append(definition)
+        else:
+            operation_definitions.append(definition)
 
     plugin = plugins[plugin_name]
 
@@ -159,8 +159,8 @@ def test_rendering(
         )
 
     generated_files.extend(
-        plugin.generate_queries(
-            definitions=query_definitions,
+        plugin.generate_operations(
+            definitions=operation_definitions,
             fragments=fragments,
             schema=schema,
         )

@@ -33,7 +33,7 @@ from qenerate.plugins.pydantic_v1.typed_ast import (
     ParsedClassNode,
 )
 from qenerate.core.feature_flag_parser import NamingCollisionStrategy, FeatureFlags
-from qenerate.core.preprocessor import GQLDefinition
+from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
 
 from qenerate.plugins.pydantic_v1.mapper import (
     graphql_class_name_to_python,
@@ -66,7 +66,7 @@ IMPORTS = (
 )
 
 
-def convenience_function(cls: str) -> str:
+def query_convenience_function(cls: str) -> str:
     return f"""
 def query(query_func: Callable, **kwargs: Any) -> {cls}:
 {INDENT}\"\"\"
@@ -88,6 +88,29 @@ def query(query_func: Callable, **kwargs: Any) -> {cls}:
 """
 
 
+def mutation_convenience_function(cls: str) -> str:
+    return f"""
+def mutate(mutation_func: Callable, **kwargs: Any) -> {cls}:
+{INDENT}\"\"\"
+{INDENT}This is a convenience function which executes a mutation and parses the response
+{INDENT}into concrete types. It should be compatible with most GQL clients.
+{INDENT}You do not have to use it to consume the generated data classes.
+{INDENT}Alternatively, you can also mime and alternate the behavior
+{INDENT}of this function in the caller.
+
+{INDENT}Parameters:
+{INDENT}{INDENT}mutation_func (Callable): Function which executes the mutation.
+{INDENT}{INDENT}kwargs: Arguments that will be passed to the query function.
+{INDENT}{INDENT}{INDENT}This must include the mutation parameters.
+
+{INDENT}Returns:
+{INDENT}{INDENT}{cls}: mutation response parsed into generated classes
+{INDENT}\"\"\"
+{INDENT}raw_data: dict[Any, Any] = mutation_func(DEFINITION, **kwargs)
+{INDENT}return {cls}(**raw_data)
+"""
+
+
 class PydanticV1Error(Exception):
     pass
 
@@ -97,7 +120,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         self,
         schema: GraphQLSchema,
         type_info: TypeInfo,
-        definition: str,
+        definition: GQLDefinition,
         feature_flags: FeatureFlags,
     ):
         Visitor.__init__(self)
@@ -140,6 +163,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         current = ParsedOperationNode(
             parent=self.parent,
             fields=[],
+            operation_type=self.definition.kind,
             parsed_type=ParsedFieldType(
                 unwrapped_python_type=node.name.value,
                 wrapped_python_type=node.name.value,
@@ -266,9 +290,9 @@ class FieldToTypeMatcherVisitor(Visitor):
 class QueryParser:
     @staticmethod
     def parse(
-        definition: str, schema: GraphQLSchema, feature_flags: FeatureFlags
+        definition: GQLDefinition, schema: GraphQLSchema, feature_flags: FeatureFlags
     ) -> ParsedNode:
-        document_ast = parse(definition)
+        document_ast = parse(definition.definition)
         type_info = TypeInfo(schema)
         visitor = FieldToTypeMatcherVisitor(
             schema=schema,
@@ -339,9 +363,8 @@ class PydanticV1Plugin(Plugin):
                     result += fragment_imports
                 qf = definition.source_file
                 parser = QueryParser()
-                fragment_definition = definition.definition
                 ast = parser.parse(
-                    definition=fragment_definition,
+                    definition=definition,
                     schema=schema,
                     feature_flags=definition.feature_flags,
                 )
@@ -400,7 +423,7 @@ class PydanticV1Plugin(Plugin):
             )
         return ans
 
-    def generate_queries(
+    def generate_operations(
         self,
         definitions: list[GQLDefinition],
         schema: GraphQLSchema,
@@ -433,17 +456,18 @@ class PydanticV1Plugin(Plugin):
             )
             result += 'DEFINITION = """\n' f"{assembled_definition}" '\n"""'
             parser = QueryParser()
-            query = definition.definition
             ast = parser.parse(
-                definition=query,
+                definition=definition,
                 schema=schema,
                 feature_flags=definition.feature_flags,
             )
             result += self._traverse(ast)
             result += "\n\n"
-            result += convenience_function(
-                cls=f"{ast.fields[0].parsed_type.unwrapped_python_type}QueryData"
-            )
+            cls = ast.fields[0].parsed_type.unwrapped_python_type
+            if definition.kind == GQLDefinitionType.QUERY:
+                result += query_convenience_function(cls=f"{cls}QueryData")
+            else:
+                result += mutation_convenience_function(cls=f"{cls}MutationResponse")
             generated_files.append(
                 GeneratedFile(file=qf.with_suffix(".py"), content=result)
             )

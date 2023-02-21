@@ -20,7 +20,7 @@ class FakePlugin(Plugin):
     ) -> list[Fragment]:
         return []
 
-    def generate_queries(
+    def generate_operations(
         self,
         definitions: list[GQLDefinition],
         fragments: list[Fragment],

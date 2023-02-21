@@ -2,6 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from qenerate.core.preprocessor import GQLDefinitionType
+
 
 INDENT = "    "
 
@@ -155,10 +157,15 @@ class ParsedClassNode(ParsedNode):
 
 @dataclass
 class ParsedOperationNode(ParsedNode):
+    operation_type: GQLDefinitionType
+
     def class_code_string(self) -> str:
         lines = ["\n\n"]
+        class_suffix = "QueryData"
+        if self.operation_type == GQLDefinitionType.MUTATION:
+            class_suffix = "MutationResponse"
         lines.append(
-            f"class {self.parsed_type.unwrapped_python_type}QueryData(BaseModel):"
+            f"class {self.parsed_type.unwrapped_python_type}{class_suffix}(BaseModel):"
         )
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
