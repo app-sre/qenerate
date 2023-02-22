@@ -28,6 +28,7 @@ class AnonymousOperationError(Exception):
 class GQLDefinitionType(Enum):
     QUERY = 1
     FRAGMENT = 2
+    MUTATION = 3
 
 
 @dataclass
@@ -79,23 +80,31 @@ class DefinitionVisitor(Visitor):
         body = self._node_body(node)
         name = self._node_name(node)
 
-        if node.operation != OperationType.QUERY:
+        if node.operation == OperationType.QUERY:
+            definition = GQLDefinition(
+                kind=GQLDefinitionType.QUERY,
+                definition=body,
+                source_file=self._source_file_path,
+                feature_flags=self._feature_flags,
+                fragment_dependencies=set(),
+                name=name,
+            )
+        elif node.operation == OperationType.MUTATION:
+            definition = GQLDefinition(
+                kind=GQLDefinitionType.MUTATION,
+                definition=body,
+                source_file=self._source_file_path,
+                feature_flags=self._feature_flags,
+                fragment_dependencies=set(),
+                name=name,
+            )
+        else:
             # TODO: logger
-            # TODO: raise
             print(
                 "[WARNING] Skipping operation definition because"
-                f" it is not a query: \n{body}"
+                f" it is neither a query nor a mutation: \n{body}"
             )
             return
-
-        definition = GQLDefinition(
-            kind=GQLDefinitionType.QUERY,
-            definition=body,
-            source_file=self._source_file_path,
-            feature_flags=self._feature_flags,
-            fragment_dependencies=set(),
-            name=name,
-        )
         self._stack.append(definition)
 
     def leave_operation_definition(self, *_):

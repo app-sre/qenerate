@@ -9,6 +9,7 @@ Supported definitions are:
 
 - `fragment`
 - `query`
+- `mutation` (only response data structures - input data structures are still a [TODO](https://github.com/app-sre/qenerate/issues/71))
 
 ## Opinionated Custom Scalars
 

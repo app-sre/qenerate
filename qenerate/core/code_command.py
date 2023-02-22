@@ -92,7 +92,7 @@ class CodeCommand:
                 schema=schema,
             )
 
-            rendered_queries = plugin.generate_queries(
+            rendered_queries = plugin.generate_operations(
                 definitions=queries_by_plugin[plugin_name],
                 fragments=rendered_fragments,
                 schema=schema,

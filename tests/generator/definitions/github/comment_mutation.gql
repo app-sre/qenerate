@@ -1,0 +1,14 @@
+mutation AddComment($body: String = "", $subjectId: ID = "") {
+  addComment(input: {subjectId: $subjectId, body: $body}) {
+    subject {
+      ... on Topic {
+        id
+        name
+      }
+      ... on User {
+        id
+        email
+      }
+    }
+  }
+}

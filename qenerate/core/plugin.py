@@ -24,7 +24,7 @@ class Fragment(GeneratedFile):
 
 
 class Plugin:
-    def generate_queries(
+    def generate_operations(
         self,
         definitions: list[GQLDefinition],
         schema: GraphQLSchema,
