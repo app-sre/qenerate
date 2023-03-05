@@ -34,17 +34,17 @@ class FakePlugin(Plugin):
         ]
 
 
-def fake_preprocessor(files: list[str]) -> Preprocessor:
+def fake_preprocessor(files: list[tuple[str, GQLDefinitionType]]) -> Preprocessor:
     side_effect = [
         [
             GQLDefinition(
                 feature_flags=FeatureFlags(plugin="fake"),
                 definition="",
                 fragment_dependencies=[],
-                kind=GQLDefinitionType.QUERY,
+                kind=f[1],
                 name="",
-                source_file=Path(f),
-            )
+                source_file=Path(f[0]),
+            ),
         ]
         for f in files
     ]
@@ -64,7 +64,7 @@ def test_single_file(fs):
 
     code_command = CodeCommand(
         preprocessor=fake_preprocessor(
-            files=["/tmp/my_query.gql"],
+            files=[("/tmp/my_query.gql", GQLDefinitionType.QUERY)],
         ),
         plugins={"fake": FakePlugin()},
     )
@@ -84,7 +84,9 @@ def test_unknown_plugin_flag(fs):
     )
 
     code_command = CodeCommand(
-        preprocessor=fake_preprocessor(files=["/tmp/my_query.gql"]),
+        preprocessor=fake_preprocessor(
+            files=[("/tmp/my_query.gql", GQLDefinitionType.QUERY)]
+        ),
         plugins={},
     )
     code_command.generate_code(
@@ -95,7 +97,7 @@ def test_unknown_plugin_flag(fs):
     assert not os.path.exists("/tmp/my_query.py")
 
 
-def test_dir_tree(fs):
+def test_dir_tree_with_different_operations(fs):
     fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
@@ -106,16 +108,16 @@ def test_dir_tree(fs):
         contents="",
     )
     fs.create_file(
-        "/tmp/sub/my_query2.gql",
+        "/tmp/sub/my_mutation.gql",
         contents="",
     )
 
     code_command = CodeCommand(
         preprocessor=fake_preprocessor(
             files=[
-                "/tmp/my_query.gql",
-                "/tmp/sub/my_query.gql",
-                "/tmp/sub/my_query2.gql",
+                ("/tmp/my_query.gql", GQLDefinitionType.QUERY),
+                ("/tmp/sub/my_query.gql", GQLDefinitionType.QUERY),
+                ("/tmp/sub/my_mutation.gql", GQLDefinitionType.MUTATION),
             ]
         ),
         plugins={"fake": FakePlugin()},
@@ -127,4 +129,4 @@ def test_dir_tree(fs):
 
     assert os.path.exists("/tmp/my_query.py")
     assert os.path.exists("/tmp/sub/my_query.py")
-    assert os.path.exists("/tmp/sub/my_query2.py")
+    assert os.path.exists("/tmp/sub/my_mutation.py")
