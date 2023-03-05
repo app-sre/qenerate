@@ -61,7 +61,7 @@ class CodeCommand:
             dir=dir,
             schema=schema,
         )
-        queries_by_plugin: dict[str, list[GQLDefinition]] = {
+        operations_by_plugin: dict[str, list[GQLDefinition]] = {
             plugin: [] for plugin in self._plugins.keys()
         }
         fragments_by_plugin: dict[str, list[GQLDefinition]] = {
@@ -78,8 +78,8 @@ class CodeCommand:
                 )
                 continue
 
-            if definition.kind == GQLDefinitionType.QUERY:
-                queries_by_plugin[definition.feature_flags.plugin].append(definition)
+            if definition.kind in (GQLDefinitionType.QUERY, GQLDefinitionType.MUTATION):
+                operations_by_plugin[definition.feature_flags.plugin].append(definition)
             elif definition.kind == GQLDefinitionType.FRAGMENT:
                 fragments_by_plugin[definition.feature_flags.plugin].append(definition)
 
@@ -93,7 +93,7 @@ class CodeCommand:
             )
 
             rendered_queries = plugin.generate_operations(
-                definitions=queries_by_plugin[plugin_name],
+                definitions=operations_by_plugin[plugin_name],
                 fragments=rendered_fragments,
                 schema=schema,
             )
