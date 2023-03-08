@@ -45,7 +45,15 @@ query HeroForEpisode {
 
 **hero.py:**
 ```python
-class Hero(BaseModel):
+class ConfiguredBaseModel(BaseModel):
+  # This is set so pydantic can properly match the data to union, i.e., properly infer the correct type
+  # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+  # https://stackoverflow.com/a/69705356/4478420
+  smart_union = True
+  extra = Extra.forbid
+
+
+class Hero(ConfiguredBaseModel):
   name: str = Field(..., alias="name")
 
 
@@ -57,15 +65,8 @@ class Human(Hero):  # Note that Human implements Hero
   height: str = Field(..., alias="height")
 
 
-class HeroForEpisodeData(BaseModel):
+class HeroForEpisodeData(ConfiguredBaseModel):
   hero: Optional[list[Union[Droid, Human, Hero]]] = Field(..., alias="hero")
-
-  class Config:
-    # This is set so pydantic can properly match the data to union, i.e., properly infer the correct type
-    # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-    # https://stackoverflow.com/a/69705356/4478420
-    smart_union = True
-    extra = Extra.forbid
 ```
 
 ### Query with Fragments

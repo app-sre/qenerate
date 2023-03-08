@@ -39,7 +39,7 @@ An `introspection.json` and a (nested) directory holding all your `*.gql` files 
 `qenerate` then generates data classes for every `*.gql` file it encounters
 while traversing the given directory.
 
-`qenerate` expects that a `.gql` file contains exactly one `query` or `fragment` definition.
+`qenerate` expects that a `.gql` file contains exactly one `query`, `mutation` or `fragment` definition.
 
 Note, that the given directory and every `gql.` file in it share the same scope.
 I.e., within this scope fragment and query names must be unique. Further, you can
