@@ -4,4 +4,4 @@
 
 ENHANCEMENTS:
 
-* Reduce Boilerplate ([#101](https://github.com/app-sre/qenerate))
+* Reduce Boilerplate ([#75](https://github.com/app-sre/qenerate/pull/75))
