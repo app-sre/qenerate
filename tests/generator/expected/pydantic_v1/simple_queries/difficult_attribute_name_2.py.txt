@@ -37,17 +37,17 @@ query SLODocuments {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class SLODocumentSLOSLOParametersV1(BaseModelWithConfig):
+class SLODocumentSLOSLOParametersV1(ConfiguredBaseModel):
     window: str = Field(..., alias="window")
 
 
-class SLODocumentSLOV1(BaseModelWithConfig):
+class SLODocumentSLOV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     expr: str = Field(..., alias="expr")
     sli_type: str = Field(..., alias="SLIType")
@@ -56,11 +56,11 @@ class SLODocumentSLOV1(BaseModelWithConfig):
     slo_target_unit: str = Field(..., alias="SLOTargetUnit")
 
 
-class SLODocumentV1(BaseModelWithConfig):
+class SLODocumentV1(ConfiguredBaseModel):
     slos: Optional[list[Optional[SLODocumentSLOV1]]] = Field(..., alias="slos")
 
 
-class SLODocumentsQueryData(BaseModelWithConfig):
+class SLODocumentsQueryData(ConfiguredBaseModel):
     slo_documents: Optional[list[Optional[SLODocumentV1]]] = Field(..., alias="slo_documents")
 
 

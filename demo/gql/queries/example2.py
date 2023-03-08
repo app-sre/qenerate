@@ -40,18 +40,18 @@ query GitlabInstance {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class GitlabInstanceV1(BaseModelWithConfig):
+class GitlabInstanceV1(ConfiguredBaseModel):
     url: str = Field(..., alias="url")
     token: VaultSecret = Field(..., alias="token")
 
 
-class GitlabInstanceQueryData(BaseModelWithConfig):
+class GitlabInstanceQueryData(ConfiguredBaseModel):
     instances: Optional[list[GitlabInstanceV1]] = Field(..., alias="instances")
 
 

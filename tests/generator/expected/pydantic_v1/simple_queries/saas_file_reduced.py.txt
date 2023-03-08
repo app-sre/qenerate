@@ -30,21 +30,21 @@ query SaasFilesReduced {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class SaasFileV2(BaseModelWithConfig):
+class SaasFileV2(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
 
 
-class AppV1(BaseModelWithConfig):
+class AppV1(ConfiguredBaseModel):
     saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saasFiles")
 
 
-class SaasFilesReducedQueryData(BaseModelWithConfig):
+class SaasFilesReducedQueryData(ConfiguredBaseModel):
     apps_v1: Optional[list[Optional[AppV1]]] = Field(..., alias="apps_v1")
 
 

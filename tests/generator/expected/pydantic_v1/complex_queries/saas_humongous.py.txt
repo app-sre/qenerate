@@ -256,29 +256,29 @@ query SaasFilesV2XXL {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class AppV1(BaseModelWithConfig):
+class AppV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
 
 
-class PipelinesProviderV1(BaseModelWithConfig):
+class PipelinesProviderV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     provider: str = Field(..., alias="provider")
 
 
-class VaultSecretV1(BaseModelWithConfig):
+class VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class ClusterJumpHostV1(BaseModelWithConfig):
+class ClusterJumpHostV1(ConfiguredBaseModel):
     hostname: str = Field(..., alias="hostname")
     known_hosts: str = Field(..., alias="knownHosts")
     user: str = Field(..., alias="user")
@@ -286,18 +286,18 @@ class ClusterJumpHostV1(BaseModelWithConfig):
     identity: VaultSecretV1 = Field(..., alias="identity")
 
 
-class ClusterV1_VaultSecretV1(BaseModelWithConfig):
+class ClusterV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class DisableClusterAutomationsV1(BaseModelWithConfig):
+class DisableClusterAutomationsV1(ConfiguredBaseModel):
     integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
 
-class ClusterV1(BaseModelWithConfig):
+class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     console_url: str = Field(..., alias="consoleUrl")
     server_url: str = Field(..., alias="serverUrl")
@@ -308,28 +308,28 @@ class ClusterV1(BaseModelWithConfig):
     disable: Optional[DisableClusterAutomationsV1] = Field(..., alias="disable")
 
 
-class NamespaceV1(BaseModelWithConfig):
+class NamespaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     cluster: ClusterV1 = Field(..., alias="cluster")
 
 
-class PipelinesProviderTektonObjectTemplateV1(BaseModelWithConfig):
+class PipelinesProviderTektonObjectTemplateV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
 
 
-class PipelinesProviderPipelineTemplatesV1(BaseModelWithConfig):
+class PipelinesProviderPipelineTemplatesV1(ConfiguredBaseModel):
     openshift_saas_deploy: PipelinesProviderTektonObjectTemplateV1 = Field(..., alias="openshiftSaasDeploy")
 
 
-class PipelinesProviderTektonProviderDefaultsV1(BaseModelWithConfig):
+class PipelinesProviderTektonProviderDefaultsV1(ConfiguredBaseModel):
     pipeline_templates: PipelinesProviderPipelineTemplatesV1 = Field(..., alias="pipelineTemplates")
 
 
-class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1_PipelinesProviderTektonObjectTemplateV1(BaseModelWithConfig):
+class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1_PipelinesProviderTektonObjectTemplateV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
 
 
-class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1(BaseModelWithConfig):
+class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1(ConfiguredBaseModel):
     openshift_saas_deploy: PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1_PipelinesProviderTektonObjectTemplateV1 = Field(..., alias="openshiftSaasDeploy")
 
 
@@ -339,29 +339,29 @@ class PipelinesProviderTektonV1(PipelinesProviderV1):
     pipeline_templates: Optional[PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1] = Field(..., alias="pipelineTemplates")
 
 
-class ResourceRequirementsV1(BaseModelWithConfig):
+class ResourceRequirementsV1(ConfiguredBaseModel):
     cpu: str = Field(..., alias="cpu")
     memory: str = Field(..., alias="memory")
 
 
-class DeployResourcesV1_ResourceRequirementsV1(BaseModelWithConfig):
+class DeployResourcesV1_ResourceRequirementsV1(ConfiguredBaseModel):
     cpu: str = Field(..., alias="cpu")
     memory: str = Field(..., alias="memory")
 
 
-class DeployResourcesV1(BaseModelWithConfig):
+class DeployResourcesV1(ConfiguredBaseModel):
     requests: ResourceRequirementsV1 = Field(..., alias="requests")
     limits: DeployResourcesV1_ResourceRequirementsV1 = Field(..., alias="limits")
 
 
-class SlackWorkspaceIntegrationV1_VaultSecretV1(BaseModelWithConfig):
+class SlackWorkspaceIntegrationV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SlackWorkspaceIntegrationV1(BaseModelWithConfig):
+class SlackWorkspaceIntegrationV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     token: SlackWorkspaceIntegrationV1_VaultSecretV1 = Field(..., alias="token")
     channel: str = Field(..., alias="channel")
@@ -369,95 +369,95 @@ class SlackWorkspaceIntegrationV1(BaseModelWithConfig):
     username: str = Field(..., alias="username")
 
 
-class SlackWorkspaceV1(BaseModelWithConfig):
+class SlackWorkspaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
 
 
-class SlackOutputNotificationsV1(BaseModelWithConfig):
+class SlackOutputNotificationsV1(ConfiguredBaseModel):
     start: Optional[bool] = Field(..., alias="start")
 
 
-class SlackOutputV1(BaseModelWithConfig):
+class SlackOutputV1(ConfiguredBaseModel):
     output: Optional[str] = Field(..., alias="output")
     workspace: SlackWorkspaceV1 = Field(..., alias="workspace")
     channel: Optional[str] = Field(..., alias="channel")
     notifications: Optional[SlackOutputNotificationsV1] = Field(..., alias="notifications")
 
 
-class SaasFileAuthenticationV1_VaultSecretV1(BaseModelWithConfig):
+class SaasFileAuthenticationV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1(BaseModelWithConfig):
+class SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasFileAuthenticationV1(BaseModelWithConfig):
+class SaasFileAuthenticationV1(ConfiguredBaseModel):
     code: Optional[SaasFileAuthenticationV1_VaultSecretV1] = Field(..., alias="code")
     image: Optional[SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1] = Field(..., alias="image")
 
 
-class SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
+class SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasSecretParametersV1(BaseModelWithConfig):
+class SaasSecretParametersV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     secret: SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
 
-class SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
+class SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasResourceTemplateV2_SaasSecretParametersV1(BaseModelWithConfig):
+class SaasResourceTemplateV2_SaasSecretParametersV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     secret: SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
 
-class EnvironmentV1_SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
+class EnvironmentV1_SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class EnvironmentV1_SaasSecretParametersV1(BaseModelWithConfig):
+class EnvironmentV1_SaasSecretParametersV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     secret: EnvironmentV1_SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
 
-class EnvironmentV1(BaseModelWithConfig):
+class EnvironmentV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     parameters: Optional[Json] = Field(..., alias="parameters")
     secret_parameters: Optional[list[Optional[EnvironmentV1_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_AppV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_AppV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1(ConfiguredBaseModel):
     hostname: str = Field(..., alias="hostname")
     known_hosts: str = Field(..., alias="knownHosts")
     user: str = Field(..., alias="user")
@@ -465,25 +465,25 @@ class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1(BaseM
     identity: SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1 = Field(..., alias="identity")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1(ConfiguredBaseModel):
     integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     server_url: str = Field(..., alias="serverUrl")
     insecure_skip_tls_verify: Optional[bool] = Field(..., alias="insecureSkipTLSVerify")
@@ -494,14 +494,14 @@ class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(BaseModelWithConfig):
     disable: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1] = Field(..., alias="disable")
 
 
-class SaasResourceTemplateTargetV2_NamespaceV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_NamespaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     environment: EnvironmentV1 = Field(..., alias="environment")
     app: SaasResourceTemplateTargetV2_NamespaceV1_AppV1 = Field(..., alias="app")
     cluster: SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1 = Field(..., alias="cluster")
 
 
-class PromotionChannelDataV1(BaseModelWithConfig):
+class PromotionChannelDataV1(ConfiguredBaseModel):
     q_type: str = Field(..., alias="type")
 
 
@@ -510,41 +510,41 @@ class ParentSaasPromotionV1(PromotionChannelDataV1):
     target_config_hash: Optional[str] = Field(..., alias="target_config_hash")
 
 
-class PromotionDataV1(BaseModelWithConfig):
+class PromotionDataV1(ConfiguredBaseModel):
     channel: Optional[str] = Field(..., alias="channel")
     data: Optional[list[Optional[Union[ParentSaasPromotionV1, PromotionChannelDataV1]]]] = Field(..., alias="data")
 
 
-class SaasResourceTemplateTargetPromotionV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetPromotionV1(ConfiguredBaseModel):
     auto: Optional[bool] = Field(..., alias="auto")
     publish: Optional[list[Optional[str]]] = Field(..., alias="publish")
     subscribe: Optional[list[Optional[str]]] = Field(..., alias="subscribe")
     promotion_data: Optional[list[Optional[PromotionDataV1]]] = Field(..., alias="promotion_data")
 
 
-class SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
 
-class SaasResourceTemplateTargetV2_SaasSecretParametersV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2_SaasSecretParametersV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     secret: SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
 
-class JenkinsInstanceV1(BaseModelWithConfig):
+class JenkinsInstanceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     server_url: str = Field(..., alias="serverUrl")
 
 
-class SaasResourceTemplateTargetUpstreamV1(BaseModelWithConfig):
+class SaasResourceTemplateTargetUpstreamV1(ConfiguredBaseModel):
     instance: JenkinsInstanceV1 = Field(..., alias="instance")
     name: str = Field(..., alias="name")
 
 
-class SaasResourceTemplateTargetV2(BaseModelWithConfig):
+class SaasResourceTemplateTargetV2(ConfiguredBaseModel):
     namespace: SaasResourceTemplateTargetV2_NamespaceV1 = Field(..., alias="namespace")
     ref: str = Field(..., alias="ref")
     promotion: Optional[SaasResourceTemplateTargetPromotionV1] = Field(..., alias="promotion")
@@ -555,7 +555,7 @@ class SaasResourceTemplateTargetV2(BaseModelWithConfig):
     delete: Optional[bool] = Field(..., alias="delete")
 
 
-class SaasResourceTemplateV2(BaseModelWithConfig):
+class SaasResourceTemplateV2(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     url: str = Field(..., alias="url")
     path: str = Field(..., alias="path")
@@ -566,16 +566,16 @@ class SaasResourceTemplateV2(BaseModelWithConfig):
     targets: Optional[list[SaasResourceTemplateTargetV2]] = Field(..., alias="targets")
 
 
-class UserV1(BaseModelWithConfig):
+class UserV1(ConfiguredBaseModel):
     org_username: str = Field(..., alias="org_username")
     tag_on_merge_requests: Optional[bool] = Field(..., alias="tag_on_merge_requests")
 
 
-class RoleV1(BaseModelWithConfig):
+class RoleV1(ConfiguredBaseModel):
     users: Optional[list[Optional[UserV1]]] = Field(..., alias="users")
 
 
-class SaasFileV2(BaseModelWithConfig):
+class SaasFileV2(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     name: str = Field(..., alias="name")
     app: AppV1 = Field(..., alias="app")
@@ -596,7 +596,7 @@ class SaasFileV2(BaseModelWithConfig):
     roles: Optional[list[Optional[RoleV1]]] = Field(..., alias="roles")
 
 
-class SaasFilesV2XXLQueryData(BaseModelWithConfig):
+class SaasFilesV2XXLQueryData(ConfiguredBaseModel):
     saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
 
 

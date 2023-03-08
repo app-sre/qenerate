@@ -79,29 +79,29 @@ query SaasFilesV2XXL {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class PipelinesProviderV1(BaseModelWithConfig):
+class PipelinesProviderV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     provider: str = Field(..., alias="provider")
 
 
-class ClusterJumpHostV1(BaseModelWithConfig):
+class ClusterJumpHostV1(ConfiguredBaseModel):
     hostname: str = Field(..., alias="hostname")
     identity: VaultSecret = Field(..., alias="identity")
 
 
-class ClusterV1(BaseModelWithConfig):
+class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     jump_host: Optional[ClusterJumpHostV1] = Field(..., alias="jumpHost")
     automation_token: Optional[VaultSecret] = Field(..., alias="automationToken")
 
 
-class NamespaceV1(BaseModelWithConfig):
+class NamespaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     cluster: ClusterV1 = Field(..., alias="cluster")
 
@@ -110,7 +110,7 @@ class PipelinesProviderTektonV1(PipelinesProviderV1):
     namespace: NamespaceV1 = Field(..., alias="namespace")
 
 
-class SlackWorkspaceIntegrationV1(BaseModelWithConfig):
+class SlackWorkspaceIntegrationV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     token: VaultSecret = Field(..., alias="token")
     channel: str = Field(..., alias="channel")
@@ -118,30 +118,30 @@ class SlackWorkspaceIntegrationV1(BaseModelWithConfig):
     username: str = Field(..., alias="username")
 
 
-class SlackWorkspaceV1(BaseModelWithConfig):
+class SlackWorkspaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
 
 
-class SlackOutputNotificationsV1(BaseModelWithConfig):
+class SlackOutputNotificationsV1(ConfiguredBaseModel):
     start: Optional[bool] = Field(..., alias="start")
 
 
-class SlackOutputV1(BaseModelWithConfig):
+class SlackOutputV1(ConfiguredBaseModel):
     output: Optional[str] = Field(..., alias="output")
     workspace: SlackWorkspaceV1 = Field(..., alias="workspace")
     channel: Optional[str] = Field(..., alias="channel")
     notifications: Optional[SlackOutputNotificationsV1] = Field(..., alias="notifications")
 
 
-class SaasFileV2(BaseModelWithConfig):
+class SaasFileV2(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     name: str = Field(..., alias="name")
     pipelines_provider: Union[PipelinesProviderTektonV1, PipelinesProviderV1] = Field(..., alias="pipelinesProvider")
     slack: Optional[SlackOutputV1] = Field(..., alias="slack")
 
 
-class SaasFilesV2XXLQueryData(BaseModelWithConfig):
+class SaasFilesV2XXLQueryData(ConfiguredBaseModel):
     saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
 
 

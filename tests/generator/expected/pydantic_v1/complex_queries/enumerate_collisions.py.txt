@@ -55,25 +55,25 @@ query EnumerateCollisions {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class ClusterSpecV1(BaseModelWithConfig):
+class ClusterSpecV1(ConfiguredBaseModel):
     private: bool = Field(..., alias="private")
 
 
-class ClusterPeeringConnectionV1(BaseModelWithConfig):
+class ClusterPeeringConnectionV1(ConfiguredBaseModel):
     provider: str = Field(..., alias="provider")
 
 
-class ClusterSpecV1__2(BaseModelWithConfig):
+class ClusterSpecV1__2(ConfiguredBaseModel):
     private: bool = Field(..., alias="private")
 
 
-class ClusterV1__2(BaseModelWithConfig):
+class ClusterV1__2(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     spec: Optional[ClusterSpecV1__2] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
@@ -83,11 +83,11 @@ class ClusterPeeringConnectionClusterRequesterV1(ClusterPeeringConnectionV1):
     cluster: ClusterV1__2 = Field(..., alias="cluster")
 
 
-class ClusterSpecV1__3(BaseModelWithConfig):
+class ClusterSpecV1__3(ConfiguredBaseModel):
     private: bool = Field(..., alias="private")
 
 
-class ClusterV1__3(BaseModelWithConfig):
+class ClusterV1__3(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     spec: Optional[ClusterSpecV1__3] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
@@ -97,18 +97,18 @@ class ClusterPeeringConnectionClusterAccepterV1(ClusterPeeringConnectionV1):
     cluster: ClusterV1__3 = Field(..., alias="cluster")
 
 
-class ClusterPeeringV1(BaseModelWithConfig):
+class ClusterPeeringV1(ConfiguredBaseModel):
     connections: Optional[list[Union[ClusterPeeringConnectionClusterRequesterV1, ClusterPeeringConnectionClusterAccepterV1, ClusterPeeringConnectionV1]]] = Field(..., alias="connections")
 
 
-class ClusterV1(BaseModelWithConfig):
+class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     spec: Optional[ClusterSpecV1] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
     peering: Optional[ClusterPeeringV1] = Field(..., alias="peering")
 
 
-class EnumerateCollisionsQueryData(BaseModelWithConfig):
+class EnumerateCollisionsQueryData(ConfiguredBaseModel):
     clusters: Optional[list[Optional[ClusterV1]]] = Field(..., alias="clusters")
 
 

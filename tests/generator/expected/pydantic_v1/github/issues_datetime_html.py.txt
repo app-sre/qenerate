@@ -33,26 +33,26 @@ query IssuesDate {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class Issue(BaseModelWithConfig):
+class Issue(ConfiguredBaseModel):
     created_at: datetime = Field(..., alias="createdAt")
     body_html: str = Field(..., alias="bodyHTML")
 
 
-class IssueConnection(BaseModelWithConfig):
+class IssueConnection(ConfiguredBaseModel):
     nodes: Optional[list[Optional[Issue]]] = Field(..., alias="nodes")
 
 
-class Repository(BaseModelWithConfig):
+class Repository(ConfiguredBaseModel):
     issues: IssueConnection = Field(..., alias="issues")
 
 
-class IssuesDateQueryData(BaseModelWithConfig):
+class IssuesDateQueryData(ConfiguredBaseModel):
     repository: Optional[Repository] = Field(..., alias="repository")
 
 

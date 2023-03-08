@@ -52,18 +52,18 @@ query ClustersMinimal {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class ClusterV1(BaseModelWithConfig):
+class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     jump_host: Optional[CommonJumphostFields] = Field(..., alias="jumpHost")
 
 
-class ClustersMinimalQueryData(BaseModelWithConfig):
+class ClustersMinimalQueryData(ConfiguredBaseModel):
     clusters_v1: Optional[list[Optional[ClusterV1]]] = Field(..., alias="clusters_v1")
 
 

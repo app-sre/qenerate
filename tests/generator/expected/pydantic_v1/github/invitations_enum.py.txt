@@ -34,7 +34,7 @@ query GithubInvitations {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
@@ -45,23 +45,23 @@ class OrganizationInvitationType(Enum):
     EMAIL = "EMAIL"
 
 
-class OrganizationInvitation(BaseModelWithConfig):
+class OrganizationInvitation(ConfiguredBaseModel):
     invitation_type: OrganizationInvitationType = Field(alias="invitationType")
 
 
-class OrganizationInvitationConnection(BaseModelWithConfig):
+class OrganizationInvitationConnection(ConfiguredBaseModel):
     nodes: Optional[list[Optional[OrganizationInvitation]]] = Field(..., alias="nodes")
 
 
-class Team(BaseModelWithConfig):
+class Team(ConfiguredBaseModel):
     invitations: Optional[OrganizationInvitationConnection] = Field(..., alias="invitations")
 
 
-class Organization(BaseModelWithConfig):
+class Organization(ConfiguredBaseModel):
     team: Optional[Team] = Field(..., alias="team")
 
 
-class GithubInvitationsQueryData(BaseModelWithConfig):
+class GithubInvitationsQueryData(ConfiguredBaseModel):
     organization: Optional[Organization] = Field(..., alias="organization")
 
 

@@ -30,21 +30,21 @@ query DifficultAttributeName {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class ClusterV1(BaseModelWithConfig):
+class ClusterV1(ConfiguredBaseModel):
     elb_fqdn: str = Field(..., alias="elbFQDN")
 
 
-class AppInterfaceSettingsV1(BaseModelWithConfig):
+class AppInterfaceSettingsV1(ConfiguredBaseModel):
     push_gateway_cluster: Optional[ClusterV1] = Field(..., alias="pushGatewayCluster")
 
 
-class DifficultAttributeNameQueryData(BaseModelWithConfig):
+class DifficultAttributeNameQueryData(ConfiguredBaseModel):
     app_interface_settings_v1: Optional[list[Optional[AppInterfaceSettingsV1]]] = Field(..., alias="app_interface_settings_v1")
 
 

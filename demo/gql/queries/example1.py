@@ -33,17 +33,17 @@ query JenkinsConfigs {
 """
 
 
-class BaseModelWithConfig(BaseModel):
+class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
-class JenkinsConfigV1(BaseModelWithConfig):
+class JenkinsConfigV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
 
 
-class ResourceV1(BaseModelWithConfig):
+class ResourceV1(ConfiguredBaseModel):
     content: str = Field(..., alias="content")
 
 
@@ -52,7 +52,7 @@ class JenkinsConfigV1_JenkinsConfigV1(JenkinsConfigV1):
     config_path: Optional[ResourceV1] = Field(..., alias="config_path")
 
 
-class JenkinsConfigsQueryData(BaseModelWithConfig):
+class JenkinsConfigsQueryData(ConfiguredBaseModel):
     jenkins_configs: Optional[list[Union[JenkinsConfigV1_JenkinsConfigV1, JenkinsConfigV1]]] = Field(..., alias="jenkins_configs")
 
 
