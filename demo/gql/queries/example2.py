@@ -43,17 +43,9 @@ class GitlabInstanceV1(BaseModel):
     url: str = Field(..., alias="url")
     token: VaultSecret = Field(..., alias="token")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
 
 class GitlabInstanceQueryData(BaseModel):
     instances: Optional[list[GitlabInstanceV1]] = Field(..., alias="instances")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> GitlabInstanceQueryData:

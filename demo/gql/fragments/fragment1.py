@@ -22,7 +22,3 @@ class VaultSecret(BaseModel):
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid

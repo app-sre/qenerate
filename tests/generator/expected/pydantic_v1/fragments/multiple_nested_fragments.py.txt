@@ -21,11 +21,13 @@ from tests.generator.definitions.fragments.nested_fragment import CommonJumphost
 from tests.generator.definitions.fragments.simple_fragment import VaultSecret
 
 
-class MinimalCluster(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class MinimalCluster(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     jump_host: Optional[CommonJumphostFields] = Field(..., alias="jumpHost")
     automation_token: Optional[VaultSecret] = Field(..., alias="automationToken")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid

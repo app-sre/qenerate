@@ -79,108 +79,70 @@ query SaasFilesV2XXL {
 """
 
 
-class PipelinesProviderV1(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class PipelinesProviderV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     provider: str = Field(..., alias="provider")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterJumpHostV1(BaseModel):
+class ClusterJumpHostV1(BaseModelWithConfig):
     hostname: str = Field(..., alias="hostname")
     identity: VaultSecret = Field(..., alias="identity")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1(BaseModel):
+class ClusterV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     jump_host: Optional[ClusterJumpHostV1] = Field(..., alias="jumpHost")
     automation_token: Optional[VaultSecret] = Field(..., alias="automationToken")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class NamespaceV1(BaseModel):
+class NamespaceV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     cluster: ClusterV1 = Field(..., alias="cluster")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class PipelinesProviderTektonV1(PipelinesProviderV1):
     namespace: NamespaceV1 = Field(..., alias="namespace")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackWorkspaceIntegrationV1(BaseModel):
+class SlackWorkspaceIntegrationV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     token: VaultSecret = Field(..., alias="token")
     channel: str = Field(..., alias="channel")
     icon_emoji: str = Field(..., alias="icon_emoji")
     username: str = Field(..., alias="username")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackWorkspaceV1(BaseModel):
+class SlackWorkspaceV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackOutputNotificationsV1(BaseModel):
+class SlackOutputNotificationsV1(BaseModelWithConfig):
     start: Optional[bool] = Field(..., alias="start")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackOutputV1(BaseModel):
+class SlackOutputV1(BaseModelWithConfig):
     output: Optional[str] = Field(..., alias="output")
     workspace: SlackWorkspaceV1 = Field(..., alias="workspace")
     channel: Optional[str] = Field(..., alias="channel")
     notifications: Optional[SlackOutputNotificationsV1] = Field(..., alias="notifications")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFileV2(BaseModel):
+class SaasFileV2(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     name: str = Field(..., alias="name")
     pipelines_provider: Union[PipelinesProviderTektonV1, PipelinesProviderV1] = Field(..., alias="pipelinesProvider")
     slack: Optional[SlackOutputV1] = Field(..., alias="slack")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFilesV2XXLQueryData(BaseModel):
+class SaasFilesV2XXLQueryData(BaseModelWithConfig):
     saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> SaasFilesV2XXLQueryData:

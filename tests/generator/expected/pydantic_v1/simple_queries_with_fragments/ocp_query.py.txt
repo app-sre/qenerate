@@ -46,38 +46,28 @@ query OCPAuthFull {
 """
 
 
-class OpenShiftClusterManagerV1(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class OpenShiftClusterManagerV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     offline_token: Optional[VaultSecret] = Field(..., alias="offlineToken")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1(BaseModel):
+class ClusterV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     ocm: Optional[OpenShiftClusterManagerV1] = Field(..., alias="ocm")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OcpReleaseMirrorV1(BaseModel):
+class OcpReleaseMirrorV1(BaseModelWithConfig):
     hive_cluster: ClusterV1 = Field(..., alias="hiveCluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OCPAuthFullQueryData(BaseModel):
+class OCPAuthFullQueryData(BaseModelWithConfig):
     ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> OCPAuthFullQueryData:

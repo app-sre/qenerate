@@ -5,6 +5,7 @@ from typing import Any, Optional
 from qenerate.core.preprocessor import GQLDefinitionType
 
 
+BASE_CLASS_NAME = "BaseModelWithConfig"
 INDENT = "    "
 
 
@@ -17,15 +18,6 @@ class ParsedNode:
     def class_code_string(self) -> str:
         return ""
 
-    def _pydantic_config_string(self) -> list[str]:
-        # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-        # https://stackoverflow.com/a/69705356/4478420
-        lines: list[str] = []
-        lines.append(f"{INDENT}class Config:")
-        lines.append(f"{INDENT}{INDENT}smart_union = True")
-        lines.append(f"{INDENT}{INDENT}extra = Extra.forbid")
-        return lines
-
     def _needs_class_rendering(self) -> bool:
         if self.parsed_type.is_primitive:
             return False
@@ -36,6 +28,9 @@ class ParsedNode:
         return len(self.fields) == 1 and isinstance(
             self.fields[0], ParsedFragmentSpreadNode
         )
+
+    def _empty(self) -> str:
+        return f"{INDENT}..."
 
 
 @dataclass
@@ -56,6 +51,7 @@ class ParsedInlineFragmentNode(ParsedNode):
                 f"({self.parent.parsed_type.unwrapped_python_type}):"
             )
         )
+        fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
@@ -64,9 +60,10 @@ class ParsedInlineFragmentNode(ParsedNode):
                         f'Field(..., alias="{field.gql_key}")'
                     )
                 )
+                fields_added = True
 
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
+        if not fields_added:
+            lines.append(self._empty())
 
         return "\n".join(lines)
 
@@ -89,6 +86,7 @@ class ParsedClassNode(ParsedNode):
         base_classes = ", ".join(self._base_classes())
         lines = ["\n\n"]
         lines.append(f"class {self.parsed_type.unwrapped_python_type}({base_classes}):")
+        fields_added = False
         for field in self.fields:
             field_arg = "..., "
             if field.parsed_type.enum_map:
@@ -100,9 +98,10 @@ class ParsedClassNode(ParsedNode):
                         f'Field({field_arg}alias="{field.gql_key}")'
                     )
                 )
+                fields_added = True
 
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
+        if not fields_added:
+            lines.append(self._empty())
 
         return "\n".join(lines)
 
@@ -121,7 +120,7 @@ class ParsedClassNode(ParsedNode):
                 continue
             base_classes.append(field.parsed_type.unwrapped_python_type)
         if not base_classes:
-            base_classes.append("BaseModel")
+            base_classes.append(BASE_CLASS_NAME)
         return base_classes
 
     def field_type(self) -> str:
@@ -165,8 +164,10 @@ class ParsedOperationNode(ParsedNode):
         if self.operation_type == GQLDefinitionType.MUTATION:
             class_suffix = "MutationResponse"
         lines.append(
-            f"class {self.parsed_type.unwrapped_python_type}{class_suffix}(BaseModel):"
+            f"class {self.parsed_type.unwrapped_python_type}{class_suffix}"
+            f"({BASE_CLASS_NAME}):"
         )
+        fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
@@ -175,9 +176,10 @@ class ParsedOperationNode(ParsedNode):
                         f'Field(..., alias="{field.gql_key}")'
                     )
                 )
+                fields_added = True
 
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
+        if not fields_added:
+            lines.append(self._empty())
 
         return "\n".join(lines)
 
@@ -189,7 +191,8 @@ class ParsedFragmentDefinitionNode(ParsedNode):
 
     def class_code_string(self) -> str:
         lines = ["\n\n"]
-        lines.append(f"class {self.class_name}(BaseModel):")
+        lines.append(f"class {self.class_name}({BASE_CLASS_NAME}):")
+        fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
@@ -198,9 +201,11 @@ class ParsedFragmentDefinitionNode(ParsedNode):
                         f'Field(..., alias="{field.gql_key}")'
                     )
                 )
+                fields_added = True
 
-        lines.append("")
-        lines.extend(self._pydantic_config_string())
+        if not fields_added:
+            lines.append(self._empty())
+
         return "\n".join(lines)
 
 

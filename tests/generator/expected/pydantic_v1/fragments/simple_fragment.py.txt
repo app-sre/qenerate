@@ -18,12 +18,14 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 )
 
 
-class VaultSecret(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class VaultSecret(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid

@@ -37,45 +37,32 @@ mutation AddComment($body: String = "", $subjectId: ID = "") {
 """
 
 
-class Node(BaseModel):
-
+class BaseModelWithConfig(BaseModel):
     class Config:
-        smart_union = True
-        extra = Extra.forbid
+        smart_union=True
+        extra=Extra.forbid
+
+
+class Node(BaseModelWithConfig):
+    ...
 
 
 class Topic(Node):
     q_id: str = Field(..., alias="id")
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
 
 class User(Node):
     q_id: str = Field(..., alias="id")
     email: str = Field(..., alias="email")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class AddCommentPayload(BaseModel):
+class AddCommentPayload(BaseModelWithConfig):
     subject: Optional[Union[Topic, User, Node]] = Field(..., alias="subject")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class AddCommentMutationResponse(BaseModel):
+class AddCommentMutationResponse(BaseModelWithConfig):
     add_comment: Optional[AddCommentPayload] = Field(..., alias="addComment")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def mutate(mutation_func: Callable, **kwargs: Any) -> AddCommentMutationResponse:

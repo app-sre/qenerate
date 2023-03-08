@@ -55,99 +55,61 @@ query EnumerateCollisions {
 """
 
 
-class ClusterSpecV1(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class ClusterSpecV1(BaseModelWithConfig):
     private: bool = Field(..., alias="private")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterPeeringConnectionV1(BaseModel):
+class ClusterPeeringConnectionV1(BaseModelWithConfig):
     provider: str = Field(..., alias="provider")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterSpecV1__2(BaseModel):
+class ClusterSpecV1__2(BaseModelWithConfig):
     private: bool = Field(..., alias="private")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1__2(BaseModel):
+class ClusterV1__2(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     spec: Optional[ClusterSpecV1__2] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class ClusterPeeringConnectionClusterRequesterV1(ClusterPeeringConnectionV1):
     cluster: ClusterV1__2 = Field(..., alias="cluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterSpecV1__3(BaseModel):
+class ClusterSpecV1__3(BaseModelWithConfig):
     private: bool = Field(..., alias="private")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1__3(BaseModel):
+class ClusterV1__3(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     spec: Optional[ClusterSpecV1__3] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class ClusterPeeringConnectionClusterAccepterV1(ClusterPeeringConnectionV1):
     cluster: ClusterV1__3 = Field(..., alias="cluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterPeeringV1(BaseModel):
+class ClusterPeeringV1(BaseModelWithConfig):
     connections: Optional[list[Union[ClusterPeeringConnectionClusterRequesterV1, ClusterPeeringConnectionClusterAccepterV1, ClusterPeeringConnectionV1]]] = Field(..., alias="connections")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1(BaseModel):
+class ClusterV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     spec: Optional[ClusterSpecV1] = Field(..., alias="spec")
     internal: Optional[bool] = Field(..., alias="internal")
     peering: Optional[ClusterPeeringV1] = Field(..., alias="peering")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class EnumerateCollisionsQueryData(BaseModel):
+class EnumerateCollisionsQueryData(BaseModelWithConfig):
     clusters: Optional[list[Optional[ClusterV1]]] = Field(..., alias="clusters")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> EnumerateCollisionsQueryData:

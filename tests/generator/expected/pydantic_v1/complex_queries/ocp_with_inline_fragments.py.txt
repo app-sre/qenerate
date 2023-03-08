@@ -38,52 +38,35 @@ query OCPWithInterface {
 """
 
 
-class ClusterAuthV1(BaseModel):
-
+class BaseModelWithConfig(BaseModel):
     class Config:
-        smart_union = True
-        extra = Extra.forbid
+        smart_union=True
+        extra=Extra.forbid
+
+
+class ClusterAuthV1(BaseModelWithConfig):
+    ...
 
 
 class ClusterAuthGithubOrgV1(ClusterAuthV1):
     org: str = Field(..., alias="org")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class ClusterAuthGithubOrgTeamV1(ClusterAuthV1):
     org: str = Field(..., alias="org")
     team: str = Field(..., alias="team")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1(BaseModel):
+class ClusterV1(BaseModelWithConfig):
     auth: Optional[Union[ClusterAuthGithubOrgTeamV1, ClusterAuthGithubOrgV1, ClusterAuthV1]] = Field(..., alias="auth")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OcpReleaseMirrorV1(BaseModel):
+class OcpReleaseMirrorV1(BaseModelWithConfig):
     hive_cluster: ClusterV1 = Field(..., alias="hiveCluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OCPWithInterfaceQueryData(BaseModel):
+class OCPWithInterfaceQueryData(BaseModelWithConfig):
     ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> OCPWithInterfaceQueryData:

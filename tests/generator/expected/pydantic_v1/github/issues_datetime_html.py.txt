@@ -33,37 +33,27 @@ query IssuesDate {
 """
 
 
-class Issue(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class Issue(BaseModelWithConfig):
     created_at: datetime = Field(..., alias="createdAt")
     body_html: str = Field(..., alias="bodyHTML")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class IssueConnection(BaseModel):
+class IssueConnection(BaseModelWithConfig):
     nodes: Optional[list[Optional[Issue]]] = Field(..., alias="nodes")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class Repository(BaseModel):
+class Repository(BaseModelWithConfig):
     issues: IssueConnection = Field(..., alias="issues")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class IssuesDateQueryData(BaseModel):
+class IssuesDateQueryData(BaseModelWithConfig):
     repository: Optional[Repository] = Field(..., alias="repository")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> IssuesDateQueryData:

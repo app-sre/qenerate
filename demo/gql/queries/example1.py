@@ -35,34 +35,18 @@ query JenkinsConfigs {
 class JenkinsConfigV1(BaseModel):
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
 
 class ResourceV1(BaseModel):
     content: str = Field(..., alias="content")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class JenkinsConfigV1_JenkinsConfigV1(JenkinsConfigV1):
     q_type: str = Field(..., alias="type")
     config_path: Optional[ResourceV1] = Field(..., alias="config_path")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
-
 
 class JenkinsConfigsQueryData(BaseModel):
     jenkins_configs: Optional[list[Union[JenkinsConfigV1_JenkinsConfigV1, JenkinsConfigV1]]] = Field(..., alias="jenkins_configs")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> JenkinsConfigsQueryData:

@@ -256,66 +256,48 @@ query SaasFilesV2XXL {
 """
 
 
-class AppV1(BaseModel):
+class BaseModelWithConfig(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
+class AppV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PipelinesProviderV1(BaseModel):
+class PipelinesProviderV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     provider: str = Field(..., alias="provider")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class VaultSecretV1(BaseModel):
+class VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterJumpHostV1(BaseModel):
+class ClusterJumpHostV1(BaseModelWithConfig):
     hostname: str = Field(..., alias="hostname")
     known_hosts: str = Field(..., alias="knownHosts")
     user: str = Field(..., alias="user")
     port: Optional[int] = Field(..., alias="port")
     identity: VaultSecretV1 = Field(..., alias="identity")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1_VaultSecretV1(BaseModel):
+class ClusterV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class DisableClusterAutomationsV1(BaseModel):
+class DisableClusterAutomationsV1(BaseModelWithConfig):
     integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1(BaseModel):
+class ClusterV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     console_url: str = Field(..., alias="consoleUrl")
     server_url: str = Field(..., alias="serverUrl")
@@ -325,58 +307,30 @@ class ClusterV1(BaseModel):
     internal: Optional[bool] = Field(..., alias="internal")
     disable: Optional[DisableClusterAutomationsV1] = Field(..., alias="disable")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class NamespaceV1(BaseModel):
+class NamespaceV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     cluster: ClusterV1 = Field(..., alias="cluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PipelinesProviderTektonObjectTemplateV1(BaseModel):
+class PipelinesProviderTektonObjectTemplateV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PipelinesProviderPipelineTemplatesV1(BaseModel):
+class PipelinesProviderPipelineTemplatesV1(BaseModelWithConfig):
     openshift_saas_deploy: PipelinesProviderTektonObjectTemplateV1 = Field(..., alias="openshiftSaasDeploy")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PipelinesProviderTektonProviderDefaultsV1(BaseModel):
+class PipelinesProviderTektonProviderDefaultsV1(BaseModelWithConfig):
     pipeline_templates: PipelinesProviderPipelineTemplatesV1 = Field(..., alias="pipelineTemplates")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1_PipelinesProviderTektonObjectTemplateV1(BaseModel):
+class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1_PipelinesProviderTektonObjectTemplateV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1(BaseModel):
+class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1(BaseModelWithConfig):
     openshift_saas_deploy: PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1_PipelinesProviderTektonObjectTemplateV1 = Field(..., alias="openshiftSaasDeploy")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class PipelinesProviderTektonV1(PipelinesProviderV1):
@@ -384,252 +338,152 @@ class PipelinesProviderTektonV1(PipelinesProviderV1):
     defaults: PipelinesProviderTektonProviderDefaultsV1 = Field(..., alias="defaults")
     pipeline_templates: Optional[PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1] = Field(..., alias="pipelineTemplates")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ResourceRequirementsV1(BaseModel):
+class ResourceRequirementsV1(BaseModelWithConfig):
     cpu: str = Field(..., alias="cpu")
     memory: str = Field(..., alias="memory")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class DeployResourcesV1_ResourceRequirementsV1(BaseModel):
+class DeployResourcesV1_ResourceRequirementsV1(BaseModelWithConfig):
     cpu: str = Field(..., alias="cpu")
     memory: str = Field(..., alias="memory")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class DeployResourcesV1(BaseModel):
+class DeployResourcesV1(BaseModelWithConfig):
     requests: ResourceRequirementsV1 = Field(..., alias="requests")
     limits: DeployResourcesV1_ResourceRequirementsV1 = Field(..., alias="limits")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackWorkspaceIntegrationV1_VaultSecretV1(BaseModel):
+class SlackWorkspaceIntegrationV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackWorkspaceIntegrationV1(BaseModel):
+class SlackWorkspaceIntegrationV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     token: SlackWorkspaceIntegrationV1_VaultSecretV1 = Field(..., alias="token")
     channel: str = Field(..., alias="channel")
     icon_emoji: str = Field(..., alias="icon_emoji")
     username: str = Field(..., alias="username")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackWorkspaceV1(BaseModel):
+class SlackWorkspaceV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackOutputNotificationsV1(BaseModel):
+class SlackOutputNotificationsV1(BaseModelWithConfig):
     start: Optional[bool] = Field(..., alias="start")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SlackOutputV1(BaseModel):
+class SlackOutputV1(BaseModelWithConfig):
     output: Optional[str] = Field(..., alias="output")
     workspace: SlackWorkspaceV1 = Field(..., alias="workspace")
     channel: Optional[str] = Field(..., alias="channel")
     notifications: Optional[SlackOutputNotificationsV1] = Field(..., alias="notifications")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFileAuthenticationV1_VaultSecretV1(BaseModel):
+class SaasFileAuthenticationV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1(BaseModel):
+class SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFileAuthenticationV1(BaseModel):
+class SaasFileAuthenticationV1(BaseModelWithConfig):
     code: Optional[SaasFileAuthenticationV1_VaultSecretV1] = Field(..., alias="code")
     image: Optional[SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1] = Field(..., alias="image")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasSecretParametersV1_VaultSecretV1(BaseModel):
+class SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasSecretParametersV1(BaseModel):
+class SaasSecretParametersV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     secret: SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1(BaseModel):
+class SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateV2_SaasSecretParametersV1(BaseModel):
+class SaasResourceTemplateV2_SaasSecretParametersV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     secret: SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class EnvironmentV1_SaasSecretParametersV1_VaultSecretV1(BaseModel):
+class EnvironmentV1_SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class EnvironmentV1_SaasSecretParametersV1(BaseModel):
+class EnvironmentV1_SaasSecretParametersV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     secret: EnvironmentV1_SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class EnvironmentV1(BaseModel):
+class EnvironmentV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     parameters: Optional[Json] = Field(..., alias="parameters")
     secret_parameters: Optional[list[Optional[EnvironmentV1_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_AppV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_AppV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1(BaseModelWithConfig):
     hostname: str = Field(..., alias="hostname")
     known_hosts: str = Field(..., alias="knownHosts")
     user: str = Field(..., alias="user")
     port: Optional[int] = Field(..., alias="port")
     identity: SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1 = Field(..., alias="identity")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1(BaseModelWithConfig):
     integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     server_url: str = Field(..., alias="serverUrl")
     insecure_skip_tls_verify: Optional[bool] = Field(..., alias="insecureSkipTLSVerify")
@@ -639,98 +493,58 @@ class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(BaseModel):
     internal: Optional[bool] = Field(..., alias="internal")
     disable: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1] = Field(..., alias="disable")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_NamespaceV1(BaseModel):
+class SaasResourceTemplateTargetV2_NamespaceV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     environment: EnvironmentV1 = Field(..., alias="environment")
     app: SaasResourceTemplateTargetV2_NamespaceV1_AppV1 = Field(..., alias="app")
     cluster: SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1 = Field(..., alias="cluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PromotionChannelDataV1(BaseModel):
+class PromotionChannelDataV1(BaseModelWithConfig):
     q_type: str = Field(..., alias="type")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 class ParentSaasPromotionV1(PromotionChannelDataV1):
     parent_saas: Optional[str] = Field(..., alias="parent_saas")
     target_config_hash: Optional[str] = Field(..., alias="target_config_hash")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class PromotionDataV1(BaseModel):
+class PromotionDataV1(BaseModelWithConfig):
     channel: Optional[str] = Field(..., alias="channel")
     data: Optional[list[Optional[Union[ParentSaasPromotionV1, PromotionChannelDataV1]]]] = Field(..., alias="data")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetPromotionV1(BaseModel):
+class SaasResourceTemplateTargetPromotionV1(BaseModelWithConfig):
     auto: Optional[bool] = Field(..., alias="auto")
     publish: Optional[list[Optional[str]]] = Field(..., alias="publish")
     subscribe: Optional[list[Optional[str]]] = Field(..., alias="subscribe")
     promotion_data: Optional[list[Optional[PromotionDataV1]]] = Field(..., alias="promotion_data")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1(BaseModel):
+class SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
     version: Optional[int] = Field(..., alias="version")
     q_format: Optional[str] = Field(..., alias="format")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2_SaasSecretParametersV1(BaseModel):
+class SaasResourceTemplateTargetV2_SaasSecretParametersV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     secret: SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1 = Field(..., alias="secret")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class JenkinsInstanceV1(BaseModel):
+class JenkinsInstanceV1(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     server_url: str = Field(..., alias="serverUrl")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetUpstreamV1(BaseModel):
+class SaasResourceTemplateTargetUpstreamV1(BaseModelWithConfig):
     instance: JenkinsInstanceV1 = Field(..., alias="instance")
     name: str = Field(..., alias="name")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateTargetV2(BaseModel):
+class SaasResourceTemplateTargetV2(BaseModelWithConfig):
     namespace: SaasResourceTemplateTargetV2_NamespaceV1 = Field(..., alias="namespace")
     ref: str = Field(..., alias="ref")
     promotion: Optional[SaasResourceTemplateTargetPromotionV1] = Field(..., alias="promotion")
@@ -740,12 +554,8 @@ class SaasResourceTemplateTargetV2(BaseModel):
     disable: Optional[bool] = Field(..., alias="disable")
     delete: Optional[bool] = Field(..., alias="delete")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasResourceTemplateV2(BaseModel):
+class SaasResourceTemplateV2(BaseModelWithConfig):
     name: str = Field(..., alias="name")
     url: str = Field(..., alias="url")
     path: str = Field(..., alias="path")
@@ -755,29 +565,17 @@ class SaasResourceTemplateV2(BaseModel):
     secret_parameters: Optional[list[Optional[SaasResourceTemplateV2_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
     targets: Optional[list[SaasResourceTemplateTargetV2]] = Field(..., alias="targets")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class UserV1(BaseModel):
+class UserV1(BaseModelWithConfig):
     org_username: str = Field(..., alias="org_username")
     tag_on_merge_requests: Optional[bool] = Field(..., alias="tag_on_merge_requests")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class RoleV1(BaseModel):
+class RoleV1(BaseModelWithConfig):
     users: Optional[list[Optional[UserV1]]] = Field(..., alias="users")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFileV2(BaseModel):
+class SaasFileV2(BaseModelWithConfig):
     path: str = Field(..., alias="path")
     name: str = Field(..., alias="name")
     app: AppV1 = Field(..., alias="app")
@@ -797,17 +595,9 @@ class SaasFileV2(BaseModel):
     resource_templates: Optional[list[SaasResourceTemplateV2]] = Field(..., alias="resourceTemplates")
     roles: Optional[list[Optional[RoleV1]]] = Field(..., alias="roles")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class SaasFilesV2XXLQueryData(BaseModel):
+class SaasFilesV2XXLQueryData(BaseModelWithConfig):
     saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> SaasFilesV2XXLQueryData:
