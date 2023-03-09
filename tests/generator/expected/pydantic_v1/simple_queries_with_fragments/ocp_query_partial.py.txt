@@ -46,47 +46,33 @@ query OCPAuthPartial {
 """
 
 
+class ConfiguredBaseModel(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
 class VaultSecretV1(VaultSecretPartial):
     q_format: Optional[str] = Field(..., alias="format")
     version: Optional[int] = Field(..., alias="version")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OpenShiftClusterManagerV1(BaseModel):
+class OpenShiftClusterManagerV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     offline_token: Optional[VaultSecretV1] = Field(..., alias="offlineToken")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class ClusterV1(BaseModel):
+class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     ocm: Optional[OpenShiftClusterManagerV1] = Field(..., alias="ocm")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OcpReleaseMirrorV1(BaseModel):
+class OcpReleaseMirrorV1(ConfiguredBaseModel):
     hive_cluster: ClusterV1 = Field(..., alias="hiveCluster")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OCPAuthPartialQueryData(BaseModel):
+class OCPAuthPartialQueryData(ConfiguredBaseModel):
     ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> OCPAuthPartialQueryData:

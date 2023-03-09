@@ -34,49 +34,35 @@ query GithubInvitations {
 """
 
 
+class ConfiguredBaseModel(BaseModel):
+    class Config:
+        smart_union=True
+        extra=Extra.forbid
+
+
 class OrganizationInvitationType(Enum):
     USER = "USER"
     EMAIL = "EMAIL"
 
 
-class OrganizationInvitation(BaseModel):
+class OrganizationInvitation(ConfiguredBaseModel):
     invitation_type: OrganizationInvitationType = Field(alias="invitationType")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class OrganizationInvitationConnection(BaseModel):
+class OrganizationInvitationConnection(ConfiguredBaseModel):
     nodes: Optional[list[Optional[OrganizationInvitation]]] = Field(..., alias="nodes")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class Team(BaseModel):
+class Team(ConfiguredBaseModel):
     invitations: Optional[OrganizationInvitationConnection] = Field(..., alias="invitations")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class Organization(BaseModel):
+class Organization(ConfiguredBaseModel):
     team: Optional[Team] = Field(..., alias="team")
 
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
-
-class GithubInvitationsQueryData(BaseModel):
+class GithubInvitationsQueryData(ConfiguredBaseModel):
     organization: Optional[Organization] = Field(..., alias="organization")
-
-    class Config:
-        smart_union = True
-        extra = Extra.forbid
 
 
 def query(query_func: Callable, **kwargs: Any) -> GithubInvitationsQueryData:

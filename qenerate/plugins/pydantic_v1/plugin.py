@@ -31,6 +31,7 @@ from qenerate.plugins.pydantic_v1.typed_ast import (
     ParsedOperationNode,
     ParsedFieldType,
     ParsedClassNode,
+    BASE_CLASS_NAME,
 )
 from qenerate.core.feature_flag_parser import NamingCollisionStrategy, FeatureFlags
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
@@ -63,6 +64,15 @@ IMPORTS = (
     f"{INDENT}Field,\n"
     f"{INDENT}Json,\n"
     ")"
+)
+
+CONF = (
+    f"class {BASE_CLASS_NAME}(BaseModel):\n"
+    f"{INDENT}class Config:\n"
+    # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+    # https://stackoverflow.com/a/69705356/4478420
+    f"{INDENT}{INDENT}smart_union=True\n"
+    f"{INDENT}{INDENT}extra=Extra.forbid"
 )
 
 
@@ -361,6 +371,7 @@ class PydanticV1Plugin(Plugin):
                 if fragment_imports:
                     result += "\n"
                     result += fragment_imports
+                result += f"\n\n\n{CONF}"
                 qf = definition.source_file
                 parser = QueryParser()
                 ast = parser.parse(
@@ -455,6 +466,7 @@ class PydanticV1Plugin(Plugin):
                 )
             )
             result += 'DEFINITION = """\n' f"{assembled_definition}" '\n"""'
+            result += f"\n\n\n{CONF}"
             parser = QueryParser()
             ast = parser.parse(
                 definition=definition,
