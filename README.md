@@ -99,6 +99,21 @@ the generator via comments in your .gql definition file.
 
 This feature flag tells `qenerate` which plugin it should use to generate the code for the given definition.
 
+### Custom Type Mapping
+
+You can tell qenerate to map a primitive GQL type to something that you define. This can be handy if your codebase expects more primitive datatypes like, e.g., `str` instead of `Json` or `datetime`.
+
+```graphql
+# qenerate: custom_type_mapping=Json -> str
+```
+
+The above will tell qenerate to map the pydantic `Json` type to `str` instead. You can also map multiple types, e.g.,
+
+```graphql
+# qenerate: custom_type_mapping=Json -> str
+# qenerate: custom_type_mapping=datetime -> str
+```
+
 ### Naming Collision Strategy
 
 ```graphql

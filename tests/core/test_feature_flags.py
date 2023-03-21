@@ -18,6 +18,7 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                custom_type_mapping={},
             ),
         ],
         [
@@ -29,6 +30,7 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.ENUMERATE,
+                custom_type_mapping={},
             ),
         ],
         [
@@ -40,6 +42,32 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                custom_type_mapping={},
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: custom_type_mapping=Json -> str
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                custom_type_mapping={"Json": "str"},
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: custom_type_mapping=Json -> str
+            # qenerate: custom_type_mapping=A -> B
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                custom_type_mapping={"Json": "str", "A": "B"},
             ),
         ],
     ],

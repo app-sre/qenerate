@@ -269,7 +269,10 @@ class FieldToTypeMatcherVisitor(Visitor):
 
     def _to_python_type(self, graphql_type: GraphQLOutputType) -> str:
         if isinstance(graphql_type, GraphQLScalarType):
-            return graphql_primitive_to_python(graphql_type=graphql_type)
+            return graphql_primitive_to_python(
+                graphql_type=graphql_type,
+                custom_mappings=self.feature_flags.custom_type_mapping,
+            )
         else:
             cur = self.parent
             class_name = graphql_class_name_to_python(graphql_type=graphql_type)

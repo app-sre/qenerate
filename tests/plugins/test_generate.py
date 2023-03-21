@@ -13,7 +13,7 @@ class Schema(Enum):
 
 
 @pytest.mark.parametrize(
-    "case, dep_graph, type_map, collision_strategies, use_schema",
+    "case, dep_graph, type_map, collision_strategies, use_schema, custom_type_mapping",
     [
         [
             "simple_queries",
@@ -27,6 +27,7 @@ class Schema(Enum):
             },
             {},
             Schema.APP_INTERFACE,
+            {},
         ],
         [
             "complex_queries",
@@ -40,6 +41,7 @@ class Schema(Enum):
                 "enumerate_collisions": NamingCollisionStrategy.ENUMERATE,
             },
             Schema.APP_INTERFACE,
+            {},
         ],
         [
             "fragments",
@@ -56,6 +58,7 @@ class Schema(Enum):
             },
             {},
             Schema.APP_INTERFACE,
+            {},
         ],
         [
             "simple_queries_with_fragments",
@@ -74,6 +77,7 @@ class Schema(Enum):
             },
             {},
             Schema.APP_INTERFACE,
+            {},
         ],
         [
             "complex_queries_with_fragments",
@@ -86,6 +90,7 @@ class Schema(Enum):
             },
             {},
             Schema.APP_INTERFACE,
+            {},
         ],
         [
             "github",
@@ -97,6 +102,17 @@ class Schema(Enum):
             },
             {},
             Schema.GITHUB,
+            {},
+        ],
+        [
+            "custom_mappings",
+            {},
+            {
+                "saas_file_json": GQLDefinitionType.QUERY,
+            },
+            {},
+            Schema.APP_INTERFACE,
+            {"Json": "str"},
         ],
     ],
 )
@@ -111,6 +127,7 @@ def test_rendering(
     type_map: dict[str, GQLDefinitionType],
     collision_strategies: dict[str, NamingCollisionStrategy],
     plugin_name,
+    custom_type_mapping,
 ):
     """Test code generation for each CASE x PLUGIN combination."""
     schema = (
@@ -128,7 +145,9 @@ def test_rendering(
         )
         definition = GQLDefinition(
             feature_flags=FeatureFlags(
-                plugin=plugin_name, collision_strategy=collision_strategy
+                plugin=plugin_name,
+                custom_type_mapping=custom_type_mapping,
+                collision_strategy=collision_strategy,
             ),
             source_file=source_file,
             definition=content,

@@ -38,7 +38,7 @@ def fake_preprocessor(files: list[tuple[str, GQLDefinitionType]]) -> Preprocesso
     side_effect = [
         [
             GQLDefinition(
-                feature_flags=FeatureFlags(plugin="fake"),
+                feature_flags=FeatureFlags(plugin="fake", custom_type_mapping={}),
                 definition="",
                 fragment_dependencies=[],
                 kind=f[1],
