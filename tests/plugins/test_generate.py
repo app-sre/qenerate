@@ -112,7 +112,7 @@ class Schema(Enum):
             },
             {},
             Schema.APP_INTERFACE,
-            {"Json": "str"},
+            {"JSON": "str"},
         ],
     ],
 )
@@ -146,7 +146,7 @@ def test_rendering(
         definition = GQLDefinition(
             feature_flags=FeatureFlags(
                 plugin=plugin_name,
-                custom_type_mapping=custom_type_mapping,
+                gql_scalar_mappings=custom_type_mapping,
                 collision_strategy=collision_strategy,
             ),
             source_file=source_file,

@@ -36,7 +36,10 @@ def graphql_class_name_str_to_python(class_name: str) -> str:
 def graphql_primitive_to_python(
     graphql_type: GraphQLOutputType, custom_mappings: Mapping[str, str]
 ) -> str:
-    mapping = {
+    key = str(graphql_type)
+    if key in custom_mappings:
+        return custom_mappings[key]
+    pre_defined_mappings = {
         "ID": "str",
         "String": "str",
         "Int": "int",
@@ -45,8 +48,7 @@ def graphql_primitive_to_python(
         "DateTime": "datetime",
         "JSON": "Json",
     }
-    primitive = mapping.get(str(graphql_type), "str")
-    return custom_mappings.get(primitive, primitive)
+    return pre_defined_mappings.get(key, "str")
 
 
 def graphql_field_name_to_python(name: str) -> str:

@@ -25,7 +25,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/queries/single_query.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.QUERY,
                     name="MyQuery",
                     definition="query MyQuery { some { name } }",
@@ -39,7 +39,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/queries/multiple_queries.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.QUERY,
                     name="FirstQuery",
                     definition="query FirstQuery { some { name } }",
@@ -47,7 +47,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.QUERY,
                     name="SecondQuery",
                     definition="query SecondQuery { other { name } }",
@@ -61,7 +61,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/queries/mutation.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.MUTATION,
                     name="CreateReviewForEpisode",
                     definition="mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }",
@@ -75,7 +75,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/fragments/single_fragment.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { name }",
@@ -89,7 +89,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/fragments/multiple_fragments.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { name }",
@@ -97,7 +97,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="My2ndFragment",
                     definition="fragment My2ndFragment on My2ndObject { name }",
@@ -111,7 +111,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/fragments/nested_fragments.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { some { ... NestedFragment } }",
@@ -119,7 +119,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="NestedFragment",
                     definition="fragment NestedFragment on NestedObject { name }",
@@ -133,7 +133,7 @@ def normalize_definition(definition: str) -> str:
             Path("tests/core/preprocessor/queries/query_with_fragments.gql"),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.QUERY,
                     name="FirstQuery",
                     definition="query FirstQuery { some { ... FirstFragment } other { ... SecondFragment } }",
@@ -141,7 +141,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="FirstFragment",
                     definition="fragment FirstFragment on SomeObject { name }",
@@ -149,7 +149,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="SecondFragment",
                     definition="fragment SecondFragment on OtherObject { other { ... NestedFragment } }",
@@ -157,7 +157,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="NestedFragment",
                     definition="fragment NestedFragment on NestedObject { name }",
@@ -173,7 +173,7 @@ def normalize_definition(definition: str) -> str:
             ),
             [
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.QUERY,
                     name="FirstQuery",
                     definition="query FirstQuery { some { ... MyFragment } other { ... MyFragment } }",
@@ -181,7 +181,7 @@ def normalize_definition(definition: str) -> str:
                     source_file="",  # adjusted in test
                 ),
                 GQLDefinition(
-                    feature_flags=FeatureFlags(plugin="test", custom_type_mapping={}),
+                    feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="MyFragment",
                     definition="fragment MyFragment on SomeObject { name }",
@@ -259,7 +259,7 @@ def test_preprocessor_exception(
     definition_objects = [
         GQLDefinition(
             definition=definition,
-            feature_flags=FeatureFlags(plugin="fake", custom_type_mapping={}),
+            feature_flags=FeatureFlags(plugin="fake", gql_scalar_mappings={}),
             fragment_dependencies=[],
             kind=GQLDefinitionType.QUERY,
             source_file=Path("/tmp"),

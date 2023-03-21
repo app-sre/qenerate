@@ -271,7 +271,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         if isinstance(graphql_type, GraphQLScalarType):
             return graphql_primitive_to_python(
                 graphql_type=graphql_type,
-                custom_mappings=self.feature_flags.custom_type_mapping,
+                custom_mappings=self.feature_flags.gql_scalar_mappings,
             )
         else:
             cur = self.parent

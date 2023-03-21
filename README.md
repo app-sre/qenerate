@@ -101,17 +101,17 @@ This feature flag tells `qenerate` which plugin it should use to generate the co
 
 ### Custom Type Mapping
 
-You can tell qenerate to map a primitive GQL type to something that you define. This can be handy if your codebase expects more primitive datatypes like, e.g., `str` instead of `Json` or `datetime`.
+You can tell qenerate to map a primitive GQL type (a.k.a. Scalar) to something that you want. This can be handy if your codebase expects other primitive datatypes like, e.g., `str` instead of `Json` or `datetime`. This can be especially useful for custom GQL primitives.
 
 ```graphql
-# qenerate: custom_type_mapping=Json -> str
+# qenerate: map_gql_scalar=JSON -> str
 ```
 
-The above will tell qenerate to map the pydantic `Json` type to `str` instead. You can also map multiple types, e.g.,
+The above will tell qenerate to map the GQL `JSON` type to `str` instead of pydantic's `Json`. You can also map multiple types, e.g.,
 
 ```graphql
-# qenerate: custom_type_mapping=Json -> str
-# qenerate: custom_type_mapping=datetime -> str
+# qenerate: map_gql_scalar=JSON -> str
+# qenerate: map_gql_scalar=DateTime -> str
 ```
 
 ### Naming Collision Strategy

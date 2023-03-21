@@ -18,7 +18,7 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
-                custom_type_mapping={},
+                gql_scalar_mappings={},
             ),
         ],
         [
@@ -30,7 +30,7 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.ENUMERATE,
-                custom_type_mapping={},
+                gql_scalar_mappings={},
             ),
         ],
         [
@@ -42,32 +42,32 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
-                custom_type_mapping={},
+                gql_scalar_mappings={},
             ),
         ],
         [
             """
             # qenerate: plugin=PluginV1
-            # qenerate: custom_type_mapping=Json -> str
+            # qenerate: map_gql_scalar=JSON -> str
             query {}
             """,
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
-                custom_type_mapping={"Json": "str"},
+                gql_scalar_mappings={"JSON": "str"},
             ),
         ],
         [
             """
             # qenerate: plugin=PluginV1
-            # qenerate: custom_type_mapping=Json -> str
-            # qenerate: custom_type_mapping=A -> B
+            # qenerate: map_gql_scalar=JSON -> str
+            # qenerate: map_gql_scalar=A -> B
             query {}
             """,
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
-                custom_type_mapping={"Json": "str", "A": "B"},
+                gql_scalar_mappings={"JSON": "str", "A": "B"},
             ),
         ],
     ],

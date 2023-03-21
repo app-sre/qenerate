@@ -12,7 +12,7 @@ class NamingCollisionStrategy(Enum):
 @dataclass
 class FeatureFlags:
     plugin: str
-    custom_type_mapping: Mapping[str, str]
+    gql_scalar_mappings: Mapping[str, str]
     collision_strategy: NamingCollisionStrategy = NamingCollisionStrategy.PARENT_CONTEXT
 
 
@@ -50,7 +50,7 @@ class FeatureFlagParser:
     def custom_type_mapping(definition: str) -> dict[str, str]:
         mappings: dict[str, str] = {}
         m = re.findall(
-            r"#\s*qenerate:\s*custom_type_mapping\s*=\s*(\w+)\s*->\s*(\w+)\s*",
+            r"#\s*qenerate:\s*map_gql_scalar\s*=\s*(\w+)\s*->\s*(\w+)\s*",
             definition,
         )
         for groups in m:
@@ -64,7 +64,7 @@ class FeatureFlagParser:
             collision_strategy=FeatureFlagParser.naming_collision_strategy(
                 definition=definition
             ),
-            custom_type_mapping=FeatureFlagParser.custom_type_mapping(
+            gql_scalar_mappings=FeatureFlagParser.custom_type_mapping(
                 definition=definition
             ),
         )
