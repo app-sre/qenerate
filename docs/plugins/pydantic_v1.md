@@ -23,6 +23,15 @@ Currently it maps the following:
 
 Any other custom scalar will be mapped to `str`.
 
+Note, that you can also re-map these scalars, e.g.,
+
+```graphql
+# qenerate: map_gql_scalar=JSON -> str
+# qenerate: map_gql_scalar=DateTime -> str
+```
+
+See section about `Custom Type Mapping` in README.
+
 ## Examples
 
 ### Query with inline fragments

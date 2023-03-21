@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 import re
 
 from graphql import GraphQLOutputType
@@ -32,8 +33,13 @@ def graphql_class_name_str_to_python(class_name: str) -> str:
     return result
 
 
-def graphql_primitive_to_python(graphql_type: GraphQLOutputType) -> str:
-    mapping = {
+def graphql_primitive_to_python(
+    graphql_type: GraphQLOutputType, custom_mappings: Mapping[str, str]
+) -> str:
+    key = str(graphql_type)
+    if key in custom_mappings:
+        return custom_mappings[key]
+    pre_defined_mappings = {
         "ID": "str",
         "String": "str",
         "Int": "int",
@@ -42,7 +48,7 @@ def graphql_primitive_to_python(graphql_type: GraphQLOutputType) -> str:
         "DateTime": "datetime",
         "JSON": "Json",
     }
-    return mapping.get(str(graphql_type), "str")
+    return pre_defined_mappings.get(key, "str")
 
 
 def graphql_field_name_to_python(name: str) -> str:

@@ -18,6 +18,7 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={},
             ),
         ],
         [
@@ -29,6 +30,7 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.ENUMERATE,
+                gql_scalar_mappings={},
             ),
         ],
         [
@@ -40,6 +42,32 @@ from qenerate.core.feature_flag_parser import (
             FeatureFlags(
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={},
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: map_gql_scalar=JSON -> str
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={"JSON": "str"},
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: map_gql_scalar=JSON -> str
+            # qenerate: map_gql_scalar=A -> B
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={"JSON": "str", "A": "B"},
             ),
         ],
     ],

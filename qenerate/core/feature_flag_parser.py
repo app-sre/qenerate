@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from enum import Enum
 import re
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ class NamingCollisionStrategy(Enum):
 @dataclass
 class FeatureFlags:
     plugin: str
+    gql_scalar_mappings: Mapping[str, str]
     collision_strategy: NamingCollisionStrategy = NamingCollisionStrategy.PARENT_CONTEXT
 
 
@@ -45,10 +47,24 @@ class FeatureFlagParser:
         return strategy
 
     @staticmethod
+    def custom_type_mapping(definition: str) -> dict[str, str]:
+        mappings: dict[str, str] = {}
+        m = re.findall(
+            r"#\s*qenerate:\s*map_gql_scalar\s*=\s*(\w+)\s*->\s*(\w+)\s*",
+            definition,
+        )
+        for groups in m:
+            mappings[groups[0]] = groups[1]
+        return mappings
+
+    @staticmethod
     def parse(definition: str) -> FeatureFlags:
         return FeatureFlags(
             plugin=FeatureFlagParser.plugin(definition=definition),
             collision_strategy=FeatureFlagParser.naming_collision_strategy(
+                definition=definition
+            ),
+            gql_scalar_mappings=FeatureFlagParser.custom_type_mapping(
                 definition=definition
             ),
         )
