@@ -4,7 +4,7 @@
 
 New Features:
 
-* Allow custom type mapping of GQL scalars ([#75](https://github.com/app-sre/qenerate/pull/75))
+* Allow custom type mapping of GQL scalars ([#76](https://github.com/app-sre/qenerate/pull/76))
 
 ## 0.5.2
 
