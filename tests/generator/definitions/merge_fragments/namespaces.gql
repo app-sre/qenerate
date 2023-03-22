@@ -1,0 +1,14 @@
+query NamespacesMinimal {
+  namespaces: namespaces_v1 {
+    ... NamespaceProtocol
+    delete
+    labels
+    cluster {
+      serverUrl
+      insecureSkipTLSVerify
+      disable {
+        e2eTests
+      }
+    }
+  }
+}

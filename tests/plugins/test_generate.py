@@ -114,6 +114,19 @@ class Schema(Enum):
             Schema.APP_INTERFACE,
             {"JSON": "str"},
         ],
+        [
+            "merge_fragments",
+            {
+                "namespaces": ["NamespaceProtocol"],
+            },
+            {
+                "namespaces": GQLDefinitionType.QUERY,
+                "namespace_protocol_fragment": GQLDefinitionType.FRAGMENT,
+            },
+            {},
+            Schema.APP_INTERFACE,
+            {},
+        ],
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())

@@ -17,6 +17,7 @@ class GeneratedFile:
 
 @dataclass
 class Fragment(GeneratedFile):
+    # TODO: keep the generated AST here -> needed to follow in operation definitions
     definition: GQLDefinition
     import_path: str
     fragment_name: str

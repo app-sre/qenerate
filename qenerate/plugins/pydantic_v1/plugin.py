@@ -133,6 +133,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         definition: GQLDefinition,
         feature_flags: FeatureFlags,
     ):
+        # TODO: We need the fragment_map here -> follow the AST in parallel
         Visitor.__init__(self)
         self.schema = schema
         self.type_info = type_info
@@ -193,6 +194,7 @@ class FieldToTypeMatcherVisitor(Visitor):
             raise ValueError(f"{node} does not have a graphql type")
         field_type = self._parse_type(graphql_type=graphql_type)
         name = graphql_class_name_str_to_python(node.name.value)
+        # TODO: We must follow the corresponding fragment AST here and add any parallel class
         current = ParsedFragmentDefinitionNode(
             fields=[],
             parent=self.parent,
@@ -205,6 +207,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         self.parent = current
 
     def leave_fragment_definition(self, *_):
+        # TODO: We must un-follow the current fragment AST
         self.parent = self.parent.parent if self.parent else self.parent
 
     def enter_fragment_spread(self, node: FragmentSpreadNode, *_):
