@@ -144,16 +144,20 @@ relying on a collision strategy. Here are some [fragment examples](https://githu
 As of now `qenerate` does not support operations with overlapping properties. E.g.,
 
 ```graphql
-fragment MyFragment on B {
-    e
-    f
+fragment MyFragment on Namespace {
+    b {
+        e
+        f
+    }
 }
 
 query MyQuery {
-    a
-    ... B
-    b {
-        c  # This overlapps with properties in MyFragment
+    namespaces {
+        a
+        ... MyFragment
+        b {
+            c  # This overlapps with properties in MyFragment
+        }
     }
 }
 ```
