@@ -20,7 +20,7 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 from tests.generator.definitions.merge_fragments.namespace_protocol_fragment import (
     NamespaceProtocol,
     ClusterV1 as NamespaceProtocolClusterV1,
-    DisableClusterAutomationsV1 as NamespaceProtocolDisableClusterAutomationsV1
+    DisableClusterAutomationsV1 as NamespaceProtocolDisableClusterAutomationsV1,
 )
 
 

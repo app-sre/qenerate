@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Mapping
+from typing import Mapping, Optional
 from functools import reduce
 import operator
 
@@ -20,6 +20,7 @@ from graphql import (
 )
 from qenerate.core.plugin import (
     Fragment,
+    FragmentClass,
     Plugin,
     GeneratedFile,
 )
@@ -132,13 +133,14 @@ class FieldToTypeMatcherVisitor(Visitor):
         type_info: TypeInfo,
         definition: GQLDefinition,
         feature_flags: FeatureFlags,
+        fragment_map: Mapping[str, Fragment],
     ):
-        # TODO: We need the fragment_map here -> follow the AST in parallel
         Visitor.__init__(self)
         self.schema = schema
         self.type_info = type_info
         self.definition = definition
         self.feature_flags = feature_flags
+        self.fragment_map = fragment_map
         self.parsed = ParsedNode(
             parent=None,
             fields=[],
@@ -194,12 +196,11 @@ class FieldToTypeMatcherVisitor(Visitor):
             raise ValueError(f"{node} does not have a graphql type")
         field_type = self._parse_type(graphql_type=graphql_type)
         name = graphql_class_name_str_to_python(node.name.value)
-        # TODO: We must follow the corresponding fragment AST here and add any parallel class
         current = ParsedFragmentDefinitionNode(
             fields=[],
             parent=self.parent,
             parsed_type=field_type,
-            class_name=name,
+            fragment_class_name=name,
             fragment_name=node.name.value,
         )
 
@@ -207,11 +208,11 @@ class FieldToTypeMatcherVisitor(Visitor):
         self.parent = current
 
     def leave_fragment_definition(self, *_):
-        # TODO: We must un-follow the current fragment AST
         self.parent = self.parent.parent if self.parent else self.parent
 
     def enter_fragment_spread(self, node: FragmentSpreadNode, *_):
         fragment_name = graphql_class_name_str_to_python(node.name.value)
+        self.current_fragment_class = self.fragment_map[fragment_name].root_class
         field_type = ParsedFieldType(
             is_primitive=False,
             unwrapped_python_type=fragment_name,
@@ -220,6 +221,8 @@ class FieldToTypeMatcherVisitor(Visitor):
         )
         current = ParsedFragmentSpreadNode(
             fields=[],
+            fragment_root_class=self.fragment_map[fragment_name].root_class,
+            fragment_name=fragment_name,
             parent=self.parent,
             parsed_type=field_type,
         )
@@ -242,6 +245,7 @@ class FieldToTypeMatcherVisitor(Visitor):
             parsed_type=field_type,
             py_key=py_key,
             gql_key=gql_key,
+            fragment_base_classes=[],
         )
 
         self.parent.fields.append(current)
@@ -306,12 +310,16 @@ class FieldToTypeMatcherVisitor(Visitor):
 class QueryParser:
     @staticmethod
     def parse(
-        definition: GQLDefinition, schema: GraphQLSchema, feature_flags: FeatureFlags
+        definition: GQLDefinition,
+        schema: GraphQLSchema,
+        feature_flags: FeatureFlags,
+        fragment_map: Mapping[str, Fragment],
     ) -> ParsedNode:
         document_ast = parse(definition.definition)
         type_info = TypeInfo(schema)
         visitor = FieldToTypeMatcherVisitor(
             schema=schema,
+            fragment_map=fragment_map,
             type_info=type_info,
             definition=definition,
             feature_flags=feature_flags,
@@ -339,6 +347,22 @@ class PydanticV1Plugin(Plugin):
             if isinstance(child, ParsedInlineFragmentNode):
                 result = f"{result}{self._traverse(child)}"
         return result
+
+    def _traverse_fragment_classes(
+        self, node: ParsedNode, parent: Optional[FragmentClass] = None
+    ) -> FragmentClass:
+        fragment_class = FragmentClass(
+            class_name=node.class_name(),
+            fields={},
+            parent=parent,
+        )
+        for field in node.fields:
+            if not isinstance(field, ParsedClassNode):
+                continue
+            fragment_class.fields[field.py_key] = self._traverse_fragment_classes(
+                node=field, parent=fragment_class
+            )
+        return fragment_class
 
     def generate_fragments(
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
@@ -369,9 +393,17 @@ class PydanticV1Plugin(Plugin):
                     # this and will try again in the next iteration.
                     next_to_process.append(definition)
                     continue
+                parser = QueryParser()
+                ast = parser.parse(
+                    fragment_map=processed,
+                    definition=definition,
+                    schema=schema,
+                    feature_flags=definition.feature_flags,
+                )
                 fragment_imports = self._fragment_imports(
                     definition=definition,
                     fragment_map=processed,
+                    root_node=ast,
                 )
                 result = HEADER + IMPORTS
                 if fragment_imports:
@@ -379,12 +411,6 @@ class PydanticV1Plugin(Plugin):
                     result += fragment_imports
                 result += f"\n\n\n{CONF}"
                 qf = definition.source_file
-                parser = QueryParser()
-                ast = parser.parse(
-                    definition=definition,
-                    schema=schema,
-                    feature_flags=definition.feature_flags,
-                )
                 fragment = ast.fields[0]
                 if not isinstance(fragment, ParsedFragmentDefinitionNode):
                     print(f"[WARNING] {qf} is not a fragment")
@@ -398,7 +424,7 @@ class PydanticV1Plugin(Plugin):
                     definition=definition,
                     file=qf.with_suffix(".py"),
                     content=result,
-                    class_name=fragment.class_name,
+                    root_class=self._traverse_fragment_classes(fragment),
                     import_path=import_path,
                     fragment_name=fragment.fragment_name,
                 )
@@ -416,12 +442,37 @@ class PydanticV1Plugin(Plugin):
         return list(processed.values())
 
     def _fragment_imports(
-        self, definition: GQLDefinition, fragment_map: Mapping[str, Fragment]
+        self,
+        definition: GQLDefinition,
+        fragment_map: Mapping[str, Fragment],
+        root_node: ParsedNode,
     ) -> str:
+        def traverse(node: ParsedNode) -> dict[str, dict[str, str]]:
+            ans = {}
+            for field in node.fields:
+                if isinstance(field, ParsedFragmentSpreadNode):
+                    ans[field.fragment_name] = field.add_fragment_base_classes_to_nodes(
+                        node=node, fragment_class=field.fragment_root_class
+                    )
+                ans.update(traverse(field))
+            return ans
+
+        fragment_classes = traverse(node=root_node)
         imports = ""
         for dep in sorted(definition.fragment_dependencies):
             fragment = fragment_map[dep]
-            imports += f"\nfrom {fragment.import_path} import {fragment.class_name}"
+            imported_cls = fragment_classes[fragment.root_class.class_name]
+            if len(imported_cls) == 1:
+                imports += f"\nfrom {fragment.import_path} import "
+                imports += fragment.root_class.class_name
+            else:
+                imports += f"\nfrom {fragment.import_path} import (\n"
+                for k, v in imported_cls.items():
+                    if k == v:
+                        imports += f"{INDENT}{k},\n"
+                    else:
+                        imports += f"{INDENT}{k} as {v},\n"
+                imports += ")"
         return imports
 
     def _assemble_definition(
@@ -450,9 +501,17 @@ class PydanticV1Plugin(Plugin):
         fragment_map = {f.fragment_name: f for f in fragments}
         fragment_definitions = {f.fragment_name: f.definition for f in fragments}
         for definition in definitions:
+            parser = QueryParser()
+            ast = parser.parse(
+                fragment_map=fragment_map,
+                definition=definition,
+                schema=schema,
+                feature_flags=definition.feature_flags,
+            )
             fragment_imports = self._fragment_imports(
                 definition=definition,
                 fragment_map=fragment_map,
+                root_node=ast,
             )
 
             result = HEADER + IMPORTS
@@ -473,12 +532,6 @@ class PydanticV1Plugin(Plugin):
             )
             result += 'DEFINITION = """\n' f"{assembled_definition}" '\n"""'
             result += f"\n\n\n{CONF}"
-            parser = QueryParser()
-            ast = parser.parse(
-                definition=definition,
-                schema=schema,
-                feature_flags=definition.feature_flags,
-            )
             result += self._traverse(ast)
             result += "\n\n"
             cls = ast.fields[0].parsed_type.unwrapped_python_type

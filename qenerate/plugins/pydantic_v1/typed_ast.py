@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 from qenerate.core.preprocessor import GQLDefinitionType
+from qenerate.core.plugin import FragmentClass
 
 
 BASE_CLASS_NAME = "ConfiguredBaseModel"
@@ -14,6 +15,9 @@ class ParsedNode:
     parent: Optional[ParsedNode]
     fields: list[ParsedNode]
     parsed_type: ParsedFieldType
+
+    def class_name(self) -> str:
+        return "TODO: implement class_name()"
 
     def class_code_string(self) -> str:
         return ""
@@ -72,6 +76,10 @@ class ParsedInlineFragmentNode(ParsedNode):
 class ParsedClassNode(ParsedNode):
     gql_key: str
     py_key: str
+    fragment_base_classes: list[str]
+
+    def class_name(self) -> str:
+        return self.parsed_type.unwrapped_python_type
 
     def class_code_string(self) -> str:
         if not self._needs_class_rendering():
@@ -83,9 +91,9 @@ class ParsedClassNode(ParsedNode):
             return self._class_code()
 
     def _class_code(self) -> str:
-        base_classes = ", ".join(self._base_classes())
+        base_classes = ", ".join(self.fragment_base_classes or [BASE_CLASS_NAME])
         lines = ["\n\n"]
-        lines.append(f"class {self.parsed_type.unwrapped_python_type}({base_classes}):")
+        lines.append(f"class {self.class_name()}({base_classes}):")
         fields_added = False
         for field in self.fields:
             field_arg = "..., "
@@ -112,16 +120,6 @@ class ParsedClassNode(ParsedNode):
             val = f'"{v}"' if isinstance(v, str) else v
             lines.append(f"{INDENT}{k} = {val}")
         return "\n".join(lines)
-
-    def _base_classes(self) -> list[str]:
-        base_classes: list[str] = []
-        for field in self.fields:
-            if not isinstance(field, ParsedFragmentSpreadNode):
-                continue
-            base_classes.append(field.parsed_type.unwrapped_python_type)
-        if not base_classes:
-            base_classes.append(BASE_CLASS_NAME)
-        return base_classes
 
     def field_type(self) -> str:
         # This is a full (non-partial) fragment spread
@@ -186,12 +184,15 @@ class ParsedOperationNode(ParsedNode):
 
 @dataclass
 class ParsedFragmentDefinitionNode(ParsedNode):
-    class_name: str
+    fragment_class_name: str
     fragment_name: str
+
+    def class_name(self) -> str:
+        return self.fragment_class_name
 
     def class_code_string(self) -> str:
         lines = ["\n\n"]
-        lines.append(f"class {self.class_name}({BASE_CLASS_NAME}):")
+        lines.append(f"class {self.class_name()}({BASE_CLASS_NAME}):")
         fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
@@ -211,8 +212,37 @@ class ParsedFragmentDefinitionNode(ParsedNode):
 
 @dataclass
 class ParsedFragmentSpreadNode(ParsedNode):
+    fragment_root_class: FragmentClass
+    fragment_name: str
+
     def class_code_string(self) -> str:
         return ""
+
+    def add_fragment_base_classes_to_nodes(
+        self, node: ParsedNode, fragment_class: FragmentClass
+    ) -> dict[str, str]:
+        return self._traverse(node=node, fragment_class=fragment_class)
+
+    def _traverse(
+        self, node: ParsedNode, fragment_class: FragmentClass
+    ) -> dict[str, str]:
+        ans = {}
+        if isinstance(node, ParsedClassNode):
+            cls_name = "" if not fragment_class.parent else self.fragment_name
+            cls_name += fragment_class.class_name
+            node.fragment_base_classes.append(cls_name)
+            ans[fragment_class.class_name] = cls_name
+        for field in node.fields:
+            if not isinstance(field, ParsedClassNode):
+                continue
+            if field.py_key not in fragment_class.fields:
+                continue
+            ans.update(
+                self._traverse(
+                    node=field, fragment_class=fragment_class.fields[field.py_key]
+                )
+            )
+        return ans
 
 
 @dataclass

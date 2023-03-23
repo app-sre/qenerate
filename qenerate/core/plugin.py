@@ -1,5 +1,7 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional, MutableMapping
 
 from graphql import GraphQLSchema
 
@@ -16,12 +18,18 @@ class GeneratedFile:
 
 
 @dataclass
+class FragmentClass:
+    class_name: str
+    fields: MutableMapping[str, FragmentClass]
+    parent: Optional[FragmentClass]
+
+
+@dataclass
 class Fragment(GeneratedFile):
-    # TODO: keep the generated AST here -> needed to follow in operation definitions
+    root_class: FragmentClass
     definition: GQLDefinition
     import_path: str
     fragment_name: str
-    class_name: str
 
 
 class Plugin:
