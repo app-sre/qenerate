@@ -137,6 +137,31 @@ This strategy adds the number of occurrences of this name as a suffix.
 However, in most cases it might be cleaner to define a re-usable fragment instead of
 relying on a collision strategy. Here are some [fragment examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions/fragments). 
 
+## Limitations
+
+### Overlapping properties
+
+As of now `qenerate` does not support operations with overlapping properties. E.g.,
+
+```graphql
+fragment MyFragment on B {
+    e
+    f
+}
+
+query MyQuery {
+    a
+    ... B
+    b {
+        c  # This overlapps with properties in MyFragment
+    }
+}
+```
+
+The above is valid GQL syntax and will merge properties defined in `MyFragment` and `b { c }` into `b {c,e,f}`.
+However, currently `qenerate` will fail to deduce proper base classes for these overlapps.
+Work on this is being conducted in [#77](https://github.com/app-sre/qenerate/pull/77).
+
 ## Development
 
 ### CI
