@@ -43,13 +43,13 @@ class ParsedInlineFragmentNode(ParsedNode):
         if self.parsed_type.is_primitive:
             return ""
 
+        base_class = self.parent.parsed_type.unwrapped_python_type
+        if isinstance(self.parent, ParsedFragmentDefinitionNode):
+            base_class = self.parent.fragment_name
+
         lines = ["\n\n"]
         lines.append(
-            (
-                "class "
-                f"{self.parsed_type.unwrapped_python_type}"
-                f"({self.parent.parsed_type.unwrapped_python_type}):"
-            )
+            ("class " f"{self.parsed_type.unwrapped_python_type}" f"({base_class}):")
         )
         fields_added = False
         for field in self.fields:
