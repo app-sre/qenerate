@@ -9,6 +9,7 @@ from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
 
 class Schema(Enum):
     APP_INTERFACE = "app-interface"
+    APP_INTERFACE_2023_03 = "app-interface_2023_03"
     GITHUB = "github"
 
 
@@ -58,6 +59,16 @@ class Schema(Enum):
             },
             {},
             Schema.APP_INTERFACE,
+            {},
+        ],
+        [
+            "fragments_2023_03",
+            {},
+            {
+                "fragment_with_inline": GQLDefinitionType.FRAGMENT,
+            },
+            {},
+            Schema.APP_INTERFACE_2023_03,
             {},
         ],
         [
@@ -120,6 +131,7 @@ class Schema(Enum):
 def test_rendering(
     use_schema,
     app_interface_schema,
+    app_interface_2023_03_schema,
     github_schema,
     expected_files,
     case,
@@ -130,9 +142,11 @@ def test_rendering(
     custom_type_mapping,
 ):
     """Test code generation for each CASE x PLUGIN combination."""
-    schema = (
-        app_interface_schema if use_schema == Schema.APP_INTERFACE else github_schema
-    )
+    schema = app_interface_schema
+    if use_schema == Schema.GITHUB:
+        schema = github_schema
+    elif use_schema == Schema.APP_INTERFACE_2023_03:
+        schema = app_interface_2023_03_schema
     fragment_definitions = []
     operation_definitions = []
     for source_file in Path(f"tests/generator/definitions/{case}").glob("**/*"):

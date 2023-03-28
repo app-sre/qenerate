@@ -31,6 +31,13 @@ def app_interface_schema():
 
 
 @pytest.fixture()
+def app_interface_2023_03_schema():
+    with open("tests/generator/introspection-app-interface_2023_03.json") as f:
+        raw_schema = json.loads(f.read())["data"]
+    return build_client_schema(cast(IntrospectionQuery, raw_schema))
+
+
+@pytest.fixture()
 def github_schema():
     with open("tests/generator/introspection-github.json") as f:
         raw_schema = json.loads(f.read())["data"]
