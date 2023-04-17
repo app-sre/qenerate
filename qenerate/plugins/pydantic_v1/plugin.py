@@ -63,6 +63,7 @@ IMPORTS = (
     f"{INDENT}Extra,\n"
     f"{INDENT}Field,\n"
     f"{INDENT}Json,\n"
+    f"{INDENT}root_validator,\n"
     ")"
 )
 

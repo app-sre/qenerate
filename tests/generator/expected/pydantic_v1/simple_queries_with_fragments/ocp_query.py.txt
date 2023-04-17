@@ -15,6 +15,7 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
     Extra,
     Field,
     Json,
+    root_validator,
 )
 
 from tests.generator.definitions.simple_queries_with_fragments.vault_secret_fragment import VaultSecret
