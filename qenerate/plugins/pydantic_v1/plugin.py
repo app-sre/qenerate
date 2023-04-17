@@ -76,6 +76,25 @@ CONF = (
 )
 
 
+CONF_WITH_VALIDATOR = (
+    f"class {BASE_CLASS_NAME}(BaseModel):\n"
+    f"{INDENT}@root_validator(pre=True)\n"
+    f"{INDENT}def remove_empty(cls, values: dict):\n"
+    f"{INDENT}{INDENT}fields = list(values.keys())\n"
+    f"{INDENT}{INDENT}for field in fields:\n"
+    f"{INDENT}{INDENT}{INDENT}value = values[field]\n"
+    f"{INDENT}{INDENT}{INDENT}if isinstance(value, dict):\n"
+    f"{INDENT}{INDENT}{INDENT}{INDENT}if not values[field]:\n"
+    f"{INDENT}{INDENT}{INDENT}{INDENT}{INDENT}values[field] = None\n"
+    f"{INDENT}{INDENT}return values\n\n"
+    f"{INDENT}class Config:\n"
+    # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+    # https://stackoverflow.com/a/69705356/4478420
+    f"{INDENT}{INDENT}smart_union=True\n"
+    f"{INDENT}{INDENT}extra=Extra.forbid"
+)
+
+
 def query_convenience_function(cls: str) -> str:
     return f"""
 def query(query_func: Callable, **kwargs: Any) -> {cls}:
@@ -374,7 +393,10 @@ class PydanticV1Plugin(Plugin):
                 if fragment_imports:
                     result += "\n"
                     result += fragment_imports
-                result += f"\n\n\n{CONF}"
+                if definition.feature_flags.empty_map_to_none:
+                    result += f"\n\n\n{CONF_WITH_VALIDATOR}"
+                else:
+                    result += f"\n\n\n{CONF}"
                 qf = definition.source_file
                 parser = QueryParser()
                 ast = parser.parse(
@@ -469,7 +491,10 @@ class PydanticV1Plugin(Plugin):
                 )
             )
             result += 'DEFINITION = """\n' f"{assembled_definition}" '\n"""'
-            result += f"\n\n\n{CONF}"
+            if definition.feature_flags.empty_map_to_none:
+                result += f"\n\n\n{CONF_WITH_VALIDATOR}"
+            else:
+                result += f"\n\n\n{CONF}"
             parser = QueryParser()
             ast = parser.parse(
                 definition=definition,

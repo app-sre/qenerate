@@ -19,6 +19,7 @@ from qenerate.core.feature_flag_parser import (
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={},
+                empty_map_to_none=False,
             ),
         ],
         [
@@ -31,6 +32,7 @@ from qenerate.core.feature_flag_parser import (
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.ENUMERATE,
                 gql_scalar_mappings={},
+                empty_map_to_none=False,
             ),
         ],
         [
@@ -43,6 +45,7 @@ from qenerate.core.feature_flag_parser import (
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={},
+                empty_map_to_none=False,
             ),
         ],
         [
@@ -55,6 +58,7 @@ from qenerate.core.feature_flag_parser import (
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={"JSON": "str"},
+                empty_map_to_none=False,
             ),
         ],
         [
@@ -68,6 +72,46 @@ from qenerate.core.feature_flag_parser import (
                 plugin="PluginV1",
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={"JSON": "str", "A": "B"},
+                empty_map_to_none=False,
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: empty_map_to_none=True
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={},
+                empty_map_to_none=True,
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: empty_map_to_none=true
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={},
+                empty_map_to_none=True,
+            ),
+        ],
+        [
+            """
+            # qenerate: plugin=PluginV1
+            # qenerate: empty_map_to_none=no
+            query {}
+            """,
+            FeatureFlags(
+                plugin="PluginV1",
+                collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
+                gql_scalar_mappings={},
+                empty_map_to_none=False,
             ),
         ],
     ],

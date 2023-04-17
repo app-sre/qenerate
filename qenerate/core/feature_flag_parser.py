@@ -14,6 +14,7 @@ class FeatureFlags:
     plugin: str
     gql_scalar_mappings: Mapping[str, str]
     collision_strategy: NamingCollisionStrategy = NamingCollisionStrategy.PARENT_CONTEXT
+    empty_map_to_none: bool = False
 
 
 class FeatureFlagError(Exception):
@@ -56,6 +57,17 @@ class FeatureFlagParser:
         for groups in m:
             mappings[groups[0]] = groups[1]
         return mappings
+    
+    @staticmethod
+    def empty_map_to_none(definition: str) -> bool:
+        m = re.search(
+            r"#\s*qenerate:\s*empty_map_to_none\s*=\s*(\w+)\s*",
+            definition,
+        )
+        allow = False
+        if m:
+            allow = m.group(1) in ("True", "true", "TRUE", "yes")
+        return allow
 
     @staticmethod
     def parse(definition: str) -> FeatureFlags:
@@ -67,4 +79,7 @@ class FeatureFlagParser:
             gql_scalar_mappings=FeatureFlagParser.custom_type_mapping(
                 definition=definition
             ),
+            empty_map_to_none=FeatureFlagParser.empty_map_to_none(
+                definition=definition
+            )
         )
