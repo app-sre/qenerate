@@ -14,7 +14,7 @@ class Schema(Enum):
 
 
 @pytest.mark.parametrize(
-    "case, dep_graph, type_map, collision_strategies, use_schema, custom_type_mapping",
+    "case, dep_graph, type_map, collision_strategies, use_schema, custom_type_mapping, empty_map_to_none",
     [
         [
             "simple_queries",
@@ -29,6 +29,7 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
+            False,
         ],
         [
             "complex_queries",
@@ -43,6 +44,7 @@ class Schema(Enum):
             },
             Schema.APP_INTERFACE,
             {},
+            False,
         ],
         [
             "fragments",
@@ -60,6 +62,7 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
+            False,
         ],
         [
             "fragments_2023_03",
@@ -70,6 +73,7 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE_2023_03,
             {},
+            False,
         ],
         [
             "simple_queries_with_fragments",
@@ -89,6 +93,7 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
+            False,
         ],
         [
             "complex_queries_with_fragments",
@@ -102,6 +107,7 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
+            False,
         ],
         [
             "github",
@@ -114,6 +120,7 @@ class Schema(Enum):
             {},
             Schema.GITHUB,
             {},
+            False,
         ],
         [
             "custom_mappings",
@@ -124,6 +131,19 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {"JSON": "str"},
+            False,
+        ],
+        [
+            "empty_map_to_none",
+            {},
+            {
+                "query": GQLDefinitionType.QUERY,
+                "fragment": GQLDefinitionType.FRAGMENT,
+            },
+            {},
+            Schema.APP_INTERFACE,
+            {},
+            True,
         ],
     ],
 )
@@ -140,6 +160,7 @@ def test_rendering(
     collision_strategies: dict[str, NamingCollisionStrategy],
     plugin_name,
     custom_type_mapping,
+    empty_map_to_none,
 ):
     """Test code generation for each CASE x PLUGIN combination."""
     schema = app_interface_schema
@@ -162,6 +183,7 @@ def test_rendering(
                 plugin=plugin_name,
                 gql_scalar_mappings=custom_type_mapping,
                 collision_strategy=collision_strategy,
+                empty_map_to_none=empty_map_to_none,
             ),
             source_file=source_file,
             definition=content,

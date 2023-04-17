@@ -114,6 +114,17 @@ The above will tell qenerate to map the GQL `JSON` type to `str` instead of pyda
 # qenerate: map_gql_scalar=DateTime -> str
 ```
 
+### Allow Empty Maps
+
+Some GQL servers might return an empty map `{}` instead of `null`. In that case you can use `empty_map_to_none=True`.
+This will properly convert `{}` to `None`. By default this behavior is disabled, because it adds some
+extra overhead when converting untyped data to typed classes. E.g., in case of `pydantic_v1` we add
+a `@root_validator` to iterate over each given value. 
+
+```graphql
+# qenerate: empty_map_to_none=True
+```
+
 ### Naming Collision Strategy
 
 ```graphql

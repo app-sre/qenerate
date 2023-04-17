@@ -1,5 +1,11 @@
 # Qenerate Changelog
 
+## 0.7.0
+
+New Features:
+
+* Add `empty_map_to_none` to properly handle `{}` responses ([#81](https://github.com/app-sre/qenerate/pull/81))
+
 ## 0.6.1
 
 BUGFIX:

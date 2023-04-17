@@ -20,12 +20,11 @@ from pydantic import (  # noqa: F401 # pylint: disable=W0611
 
 
 DEFINITION = """
-query SaasFilesSimple {
+query SaasFilesWithEnum {
   apps_v1 {
     saasFiles {
-      name
       pipelinesProvider {
-        name
+        labels
       }
     }
   }
@@ -35,17 +34,26 @@ query SaasFilesSimple {
 
 
 class ConfiguredBaseModel(BaseModel):
+    @root_validator(pre=True)
+    def remove_empty(cls, values: dict):
+        fields = list(values.keys())
+        for field in fields:
+            value = values[field]
+            if isinstance(value, dict):
+                if not values[field]:
+                    values[field] = None
+        return values
+
     class Config:
         smart_union=True
         extra=Extra.forbid
 
 
 class PipelinesProviderV1(ConfiguredBaseModel):
-    name: str = Field(..., alias="name")
+    labels: Optional[Json] = Field(..., alias="labels")
 
 
 class SaasFileV2(ConfiguredBaseModel):
-    name: str = Field(..., alias="name")
     pipelines_provider: PipelinesProviderV1 = Field(..., alias="pipelinesProvider")
 
 
@@ -53,11 +61,11 @@ class AppV1(ConfiguredBaseModel):
     saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saasFiles")
 
 
-class SaasFilesSimpleQueryData(ConfiguredBaseModel):
+class SaasFilesWithEnumQueryData(ConfiguredBaseModel):
     apps_v1: Optional[list[Optional[AppV1]]] = Field(..., alias="apps_v1")
 
 
-def query(query_func: Callable, **kwargs: Any) -> SaasFilesSimpleQueryData:
+def query(query_func: Callable, **kwargs: Any) -> SaasFilesWithEnumQueryData:
     """
     This is a convenience function which queries and parses the data into
     concrete types. It should be compatible with most GQL clients.
@@ -70,7 +78,7 @@ def query(query_func: Callable, **kwargs: Any) -> SaasFilesSimpleQueryData:
         kwargs: optional arguments that will be passed to the query function
 
     Returns:
-        SaasFilesSimpleQueryData: queried data parsed into generated classes
+        SaasFilesWithEnumQueryData: queried data parsed into generated classes
     """
     raw_data: dict[Any, Any] = query_func(DEFINITION, **kwargs)
-    return SaasFilesSimpleQueryData(**raw_data)
+    return SaasFilesWithEnumQueryData(**raw_data)
