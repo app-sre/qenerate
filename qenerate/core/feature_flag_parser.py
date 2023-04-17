@@ -57,7 +57,7 @@ class FeatureFlagParser:
         for groups in m:
             mappings[groups[0]] = groups[1]
         return mappings
-    
+
     @staticmethod
     def empty_map_to_none(definition: str) -> bool:
         m = re.search(
@@ -81,5 +81,5 @@ class FeatureFlagParser:
             ),
             empty_map_to_none=FeatureFlagParser.empty_map_to_none(
                 definition=definition
-            )
+            ),
         )
