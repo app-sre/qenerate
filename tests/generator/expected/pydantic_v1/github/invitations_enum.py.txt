@@ -50,19 +50,19 @@ class OrganizationInvitation(ConfiguredBaseModel):
 
 
 class OrganizationInvitationConnection(ConfiguredBaseModel):
-    nodes: Optional[list[Optional[OrganizationInvitation]]] = Field(..., alias="nodes")
+    nodes: Optional[list[Optional[OrganizationInvitation]]] = Field(alias="nodes")
 
 
 class Team(ConfiguredBaseModel):
-    invitations: Optional[OrganizationInvitationConnection] = Field(..., alias="invitations")
+    invitations: Optional[OrganizationInvitationConnection] = Field(alias="invitations")
 
 
 class Organization(ConfiguredBaseModel):
-    team: Optional[Team] = Field(..., alias="team")
+    team: Optional[Team] = Field(alias="team")
 
 
 class GithubInvitationsQueryData(ConfiguredBaseModel):
-    organization: Optional[Organization] = Field(..., alias="organization")
+    organization: Optional[Organization] = Field(alias="organization")
 
 
 def query(query_func: Callable, **kwargs: Any) -> GithubInvitationsQueryData:

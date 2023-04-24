@@ -58,7 +58,7 @@ class ClusterAuthGithubOrgTeamV1(ClusterAuthV1):
 
 
 class ClusterV1(ConfiguredBaseModel):
-    auth: Optional[Union[ClusterAuthGithubOrgTeamV1, ClusterAuthGithubOrgV1, ClusterAuthV1]] = Field(..., alias="auth")
+    auth: Optional[Union[ClusterAuthGithubOrgTeamV1, ClusterAuthGithubOrgV1, ClusterAuthV1]] = Field(alias="auth")
 
 
 class OcpReleaseMirrorV1(ConfiguredBaseModel):
@@ -66,7 +66,7 @@ class OcpReleaseMirrorV1(ConfiguredBaseModel):
 
 
 class OCPWithInterfaceQueryData(ConfiguredBaseModel):
-    ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
+    ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(alias="ocp_release_mirror")
 
 
 def query(query_func: Callable, **kwargs: Any) -> OCPWithInterfaceQueryData:

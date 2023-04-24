@@ -57,11 +57,11 @@ class SLODocumentSLOV1(ConfiguredBaseModel):
 
 
 class SLODocumentV1(ConfiguredBaseModel):
-    slos: Optional[list[Optional[SLODocumentSLOV1]]] = Field(..., alias="slos")
+    slos: Optional[list[Optional[SLODocumentSLOV1]]] = Field(alias="slos")
 
 
 class SLODocumentsQueryData(ConfiguredBaseModel):
-    slo_documents: Optional[list[Optional[SLODocumentV1]]] = Field(..., alias="slo_documents")
+    slo_documents: Optional[list[Optional[SLODocumentV1]]] = Field(alias="slo_documents")
 
 
 def query(query_func: Callable, **kwargs: Any) -> SLODocumentsQueryData:

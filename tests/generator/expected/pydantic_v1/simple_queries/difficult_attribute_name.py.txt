@@ -41,11 +41,11 @@ class ClusterV1(ConfiguredBaseModel):
 
 
 class AppInterfaceSettingsV1(ConfiguredBaseModel):
-    push_gateway_cluster: Optional[ClusterV1] = Field(..., alias="pushGatewayCluster")
+    push_gateway_cluster: Optional[ClusterV1] = Field(alias="pushGatewayCluster")
 
 
 class DifficultAttributeNameQueryData(ConfiguredBaseModel):
-    app_interface_settings_v1: Optional[list[Optional[AppInterfaceSettingsV1]]] = Field(..., alias="app_interface_settings_v1")
+    app_interface_settings_v1: Optional[list[Optional[AppInterfaceSettingsV1]]] = Field(alias="app_interface_settings_v1")
 
 
 def query(query_func: Callable, **kwargs: Any) -> DifficultAttributeNameQueryData:

@@ -52,7 +52,7 @@ class GitlabInstanceV1(ConfiguredBaseModel):
 
 
 class GitlabInstanceQueryData(ConfiguredBaseModel):
-    instances: Optional[list[GitlabInstanceV1]] = Field(..., alias="instances")
+    instances: Optional[list[GitlabInstanceV1]] = Field(alias="instances")
 
 
 def query(query_func: Callable, **kwargs: Any) -> GitlabInstanceQueryData:

@@ -58,11 +58,11 @@ class User(Node):
 
 
 class AddCommentPayload(ConfiguredBaseModel):
-    subject: Optional[Union[Topic, User, Node]] = Field(..., alias="subject")
+    subject: Optional[Union[Topic, User, Node]] = Field(alias="subject")
 
 
 class AddCommentMutationResponse(ConfiguredBaseModel):
-    add_comment: Optional[AddCommentPayload] = Field(..., alias="addComment")
+    add_comment: Optional[AddCommentPayload] = Field(alias="addComment")
 
 
 def mutate(mutation_func: Callable, **kwargs: Any) -> AddCommentMutationResponse:

@@ -49,11 +49,11 @@ class ResourceV1(ConfiguredBaseModel):
 
 class JenkinsConfigV1_JenkinsConfigV1(JenkinsConfigV1):
     q_type: str = Field(..., alias="type")
-    config_path: Optional[ResourceV1] = Field(..., alias="config_path")
+    config_path: Optional[ResourceV1] = Field(alias="config_path")
 
 
 class JenkinsConfigsQueryData(ConfiguredBaseModel):
-    jenkins_configs: Optional[list[Union[JenkinsConfigV1_JenkinsConfigV1, JenkinsConfigV1]]] = Field(..., alias="jenkins_configs")
+    jenkins_configs: Optional[list[Union[JenkinsConfigV1_JenkinsConfigV1, JenkinsConfigV1]]] = Field(alias="jenkins_configs")
 
 
 def query(query_func: Callable, **kwargs: Any) -> JenkinsConfigsQueryData:

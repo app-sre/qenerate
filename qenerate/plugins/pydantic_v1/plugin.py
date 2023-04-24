@@ -145,6 +145,7 @@ class FieldToTypeMatcherVisitor(Visitor):
                 unwrapped_python_type="",
                 wrapped_python_type="",
                 is_primitive=False,
+                is_optional=False,
                 enum_map={},
             ),
         )
@@ -178,6 +179,7 @@ class FieldToTypeMatcherVisitor(Visitor):
                 unwrapped_python_type=node.name.value,
                 wrapped_python_type=node.name.value,
                 is_primitive=False,
+                is_optional=False,
                 enum_map={},
             ),
         )
@@ -211,6 +213,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         fragment_name = graphql_class_name_str_to_python(node.name.value)
         field_type = ParsedFieldType(
             is_primitive=False,
+            is_optional=False,
             unwrapped_python_type=fragment_name,
             wrapped_python_type=fragment_name,
             enum_map={},
@@ -253,6 +256,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         unwrapped_type = self._to_python_type(unwrapper_result.inner_gql_type)
         is_primitive = unwrapper_result.is_primitive
         enum_map = unwrapper_result.enum_map
+        is_optional = self._is_optional_type(unwrapper_result.wrapper_stack)
         wrapped_type = unwrapped_type
         for wrapper in reversed(unwrapper_result.wrapper_stack):
             if wrapper == WrapperType.LIST:
@@ -264,8 +268,15 @@ class FieldToTypeMatcherVisitor(Visitor):
             unwrapped_python_type=unwrapped_type,
             wrapped_python_type=wrapped_type,
             is_primitive=is_primitive,
+            is_optional=is_optional,
             enum_map=enum_map,
         )
+
+    @staticmethod
+    def _is_optional_type(wrapper_stack: list[WrapperType]) -> bool:
+        if not wrapper_stack:
+            return False
+        return wrapper_stack[0] == WrapperType.OPTIONAL
 
     def _to_python_type(self, graphql_type: GraphQLOutputType) -> str:
         if isinstance(graphql_type, GraphQLScalarType):
