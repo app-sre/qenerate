@@ -72,8 +72,7 @@ CONF = (
     # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
     # https://stackoverflow.com/a/69705356/4478420
     f"{INDENT}{INDENT}smart_union=True\n"
-    f"{INDENT}{INDENT}extra=Extra.forbid\n"
-    f"{INDENT}{INDENT}allow_population_by_field_name=True"
+    f"{INDENT}{INDENT}extra=Extra.forbid"
 )
 
 

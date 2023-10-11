@@ -1,5 +1,11 @@
 # Qenerate Changelog
 
+## 0.6.3
+
+Bugfixes:
+
+* revert `allow_population_by_field_name` Pydantic model config. This was causing troubles with mypy.
+*
 ## 0.6.2
 
 New Features:

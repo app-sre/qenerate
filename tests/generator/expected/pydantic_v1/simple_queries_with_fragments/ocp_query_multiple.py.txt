@@ -56,7 +56,6 @@ class ConfiguredBaseModel(BaseModel):
     class Config:
         smart_union=True
         extra=Extra.forbid
-        allow_population_by_field_name=True
 
 
 class VaultSecretV1(VaultSecretPartial, VaultSecretVersion):
