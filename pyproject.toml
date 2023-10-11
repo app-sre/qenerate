@@ -1,13 +1,9 @@
 [tool.poetry]
 name = "qenerate"
-version = "0.6.1"
+version = "0.6.3"
 description = "Code Generator for GraphQL Query and Fragment Data Classes"
-authors = [
-    "Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"
-]
-maintainers = [
-    "Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"
-]
+authors = ["Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"]
+maintainers = ["Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"]
 license = "Apache-2.0"
 homepage = "https://github.com/app-sre/qenerate"
 repository = "https://github.com/app-sre/qenerate"
