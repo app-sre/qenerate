@@ -1,0 +1,11 @@
+fragment NamespaceProtocol on Namespace_v1 {
+    name
+    clusterAdmin
+    cluster {
+      name
+      internal
+      disable {
+        integrations
+      }
+    }
+}
