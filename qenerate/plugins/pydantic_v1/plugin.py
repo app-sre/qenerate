@@ -17,6 +17,7 @@ from graphql import (
     TypeInfoVisitor,
     visit,
     parse,
+    NamedTypeNode,
 )
 from qenerate.core.plugin import (
     Fragment,
@@ -170,6 +171,13 @@ class FieldToTypeMatcherVisitor(Visitor):
     def enter_operation_definition(self, node: OperationDefinitionNode, *_):
         if not node.name:
             raise ValueError(f"{node} does not have a name")
+        for var in node.variable_definitions:
+            var_name = var.variable.name.value
+            kind = var.type
+            if isinstance(kind, NamedTypeNode):
+                var_type = kind.name.value
+            # TODO: handle nested input types
+
         current = ParsedOperationNode(
             parent=self.parent,
             fields=[],
