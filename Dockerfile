@@ -5,6 +5,6 @@ USER root
 COPY . .
 
 RUN pip install --upgrade pip && \
-    pip install poetry==1.1.13
+    pip install poetry==1.2.2
 RUN make venv
 RUN make test
