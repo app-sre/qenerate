@@ -4,3 +4,4 @@ __pycache__
 .vscode
 .mypy_cache
 demo/gql/introspection.json
+.ruff_cache

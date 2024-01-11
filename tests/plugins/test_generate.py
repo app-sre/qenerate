@@ -1,8 +1,11 @@
+import locale
 from enum import Enum
 from pathlib import Path
+
 import pytest
+
 from qenerate.core.code_command import plugins
-from qenerate.core.feature_flag_parser import NamingCollisionStrategy, FeatureFlags
+from qenerate.core.feature_flag_parser import FeatureFlags, NamingCollisionStrategy
 from qenerate.core.plugin import GeneratedFile
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
 
@@ -151,7 +154,7 @@ def test_rendering(
     operation_definitions = []
     for source_file in Path(f"tests/generator/definitions/{case}").glob("**/*"):
         file_id = source_file.with_suffix("").name
-        with open(source_file, "r") as f:
+        with open(source_file, "r", encoding=locale.getpreferredencoding(False)) as f:
             content = f.read()
         kind = type_map[file_id]
         collision_strategy = collision_strategies.get(

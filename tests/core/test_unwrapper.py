@@ -1,15 +1,14 @@
 import pytest
-
-from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
-
 from graphql import (
     GraphQLEnumType,
+    GraphQLList,
+    GraphQLNonNull,
+    GraphQLObjectType,
     GraphQLOutputType,
     GraphQLScalarType,
-    GraphQLNonNull,
-    GraphQLList,
-    GraphQLObjectType,
 )
+
+from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
 
 
 @pytest.mark.parametrize(

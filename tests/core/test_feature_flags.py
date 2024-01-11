@@ -1,9 +1,10 @@
 import pytest
+
 from qenerate.core.feature_flag_parser import (
-    NamingCollisionStrategy,
     FeatureFlagError,
-    FeatureFlags,
     FeatureFlagParser,
+    FeatureFlags,
+    NamingCollisionStrategy,
 )
 
 

@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
+
 from graphql import (
     GraphQLEnumType,
-    GraphQLOutputType,
-    GraphQLNonNull,
     GraphQLList,
+    GraphQLNonNull,
+    GraphQLOutputType,
     GraphQLScalarType,
 )
 

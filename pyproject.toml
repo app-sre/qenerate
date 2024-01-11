@@ -14,14 +14,13 @@ python = "^3.9"
 requests = "^2.22"
 graphql-core = "^3.2"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^5.2"
-black = "^22.3"
 requests-mock = "^1.9"
 types-requests = "^2.27"
-flake8 = "^4.0"
 pyfakefs = "^4.5"
-mypy = "0.961"
+mypy = "^1.8.0"
+ruff = "^0.1.11"
 
 [tool.poetry.scripts]
 qenerate = 'qenerate.cli:run'
@@ -30,10 +29,36 @@ qenerate = 'qenerate.cli:run'
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
+[tool.ruff]
 line-length = 88
-target-version = ['py39']
-include = '^.*\.py$'
+target-version = 'py39'
+required-version = "0.1.11"
 
-[tool.flake8]
-max-line-length = 88
+src = ["qenerate"]
+extend-exclude = ["demo"]
+fix = true
+
+[tool.ruff.lint]
+preview = true
+
+# defaults are ["E4", "E7", "E9", "F"]
+extend-select = [
+    # flake8 default rules
+    "E1", # preview rule
+    "E2", # preview rule
+    "W",
+    # isort
+    "I",
+    # pylint
+    "PL",
+]
+ignore = [
+    "PLR0913", # Too many arguments
+    "PLR0917", # Too many positional arguments
+    "PLR6301", # Method `...` could be a function, class method, or static method
+]
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["qenerate"]

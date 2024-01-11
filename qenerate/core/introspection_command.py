@@ -1,6 +1,6 @@
 import json
-import requests
 
+import requests
 from graphql import get_introspection_query
 
 
@@ -9,7 +9,7 @@ class IntrospectionCommand:
     def introspection_query(url: str):
         query = get_introspection_query()
         request = requests.post(url, json={"query": query})
-        if request.status_code == 200:
+        if request.status_code == requests.codes.ok:
             print(json.dumps(request.json(), indent=4))
             return
         raise Exception(f"Could not query {url}")

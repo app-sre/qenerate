@@ -1,48 +1,49 @@
 from __future__ import annotations
-from typing import Mapping
-from functools import reduce
+
 import operator
+from functools import reduce
+from typing import Mapping
 
 from graphql import (
     FieldNode,
+    FragmentDefinitionNode,
+    FragmentSpreadNode,
     GraphQLOutputType,
     GraphQLScalarType,
     GraphQLSchema,
     InlineFragmentNode,
     OperationDefinitionNode,
-    FragmentDefinitionNode,
-    FragmentSpreadNode,
-    Visitor,
     TypeInfo,
     TypeInfoVisitor,
-    visit,
+    Visitor,
     parse,
+    visit,
 )
+
+from qenerate.core.feature_flag_parser import FeatureFlags, NamingCollisionStrategy
 from qenerate.core.plugin import (
     Fragment,
-    Plugin,
     GeneratedFile,
+    Plugin,
+)
+from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
+from qenerate.core.unwrapper import Unwrapper, WrapperType
+from qenerate.plugins.pydantic_v1.mapper import (
+    graphql_class_name_str_to_python,
+    graphql_class_name_to_python,
+    graphql_field_name_to_python,
+    graphql_primitive_to_python,
 )
 from qenerate.plugins.pydantic_v1.typed_ast import (
+    BASE_CLASS_NAME,
+    ParsedClassNode,
+    ParsedFieldType,
     ParsedFragmentDefinitionNode,
     ParsedFragmentSpreadNode,
-    ParsedNode,
     ParsedInlineFragmentNode,
+    ParsedNode,
     ParsedOperationNode,
-    ParsedFieldType,
-    ParsedClassNode,
-    BASE_CLASS_NAME,
 )
-from qenerate.core.feature_flag_parser import NamingCollisionStrategy, FeatureFlags
-from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
-
-from qenerate.plugins.pydantic_v1.mapper import (
-    graphql_class_name_to_python,
-    graphql_class_name_str_to_python,
-    graphql_primitive_to_python,
-    graphql_field_name_to_python,
-)
-from qenerate.core.unwrapper import Unwrapper, WrapperType
 
 INDENT = "    "
 
@@ -285,7 +286,7 @@ class FieldToTypeMatcherVisitor(Visitor):
                     self.feature_flags.collision_strategy
                     == NamingCollisionStrategy.ENUMERATE
                 ):
-                    if collision_enum_suffix == 2:
+                    if collision_enum_suffix == 2:  # noqa: PLR2004
                         class_name = f"{class_name}__{collision_enum_suffix}"
                     else:
                         idx = class_name.rfind("_") - 1

@@ -1,5 +1,5 @@
-from collections.abc import Mapping
 import re
+from collections.abc import Mapping
 
 from graphql import GraphQLOutputType
 
