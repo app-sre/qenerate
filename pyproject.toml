@@ -35,7 +35,7 @@ target-version = 'py39'
 required-version = "0.1.11"
 
 src = ["qenerate"]
-extend-exclude = ["demo"]
+extend-exclude = ["demo", ".local"]
 fix = true
 
 [tool.ruff.lint]
