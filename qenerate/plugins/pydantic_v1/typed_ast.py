@@ -1,9 +1,9 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Optional
 
 from qenerate.core.preprocessor import GQLDefinitionType
-
 
 BASE_CLASS_NAME = "ConfiguredBaseModel"
 INDENT = "    "

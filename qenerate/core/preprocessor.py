@@ -1,20 +1,22 @@
 from __future__ import annotations
+
+import locale
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Iterable, Union
 
 from graphql import (
-    parse,
-    validate,
-    get_operation_ast,
-    visit,
-    Visitor,
-    OperationDefinitionNode,
-    OperationType,
     FragmentDefinitionNode,
     FragmentSpreadNode,
     GraphQLSchema,
+    OperationDefinitionNode,
+    OperationType,
+    Visitor,
+    get_operation_ast,
+    parse,
+    validate,
+    visit,
 )
 
 from qenerate.core.feature_flag_parser import FeatureFlagParser, FeatureFlags
@@ -150,7 +152,7 @@ class Preprocessor:
             raise error
 
     def process_file(self, file_path: Path) -> list[GQLDefinition]:
-        with open(file_path, "r") as f:
+        with open(file_path, "r", encoding=locale.getpreferredencoding(False)) as f:
             content = f.read()
         feature_flags = FeatureFlagParser.parse(
             definition=content,

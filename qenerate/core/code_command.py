@@ -1,17 +1,17 @@
 import json
+import locale
 import os
 from pathlib import Path
 from typing import cast
 
-from graphql import build_client_schema, IntrospectionQuery, GraphQLSchema
+from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
 
+from qenerate.core.feature_flag_parser import FeatureFlagError
 from qenerate.core.plugin import GeneratedFile, Plugin
-from qenerate.core.preprocessor import GQLDefinitionType, Preprocessor, GQLDefinition
+from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
 from qenerate.plugins.pydantic_v1.plugin import (
     PydanticV1Plugin,
 )
-from qenerate.core.feature_flag_parser import FeatureFlagError
-
 
 plugins: dict[str, Plugin] = {
     "pydantic_v1": PydanticV1Plugin(),
@@ -52,7 +52,9 @@ class CodeCommand:
         return definitions
 
     def generate_code(self, introspection_file_path: str, dir: str):
-        with open(introspection_file_path) as f:
+        with open(
+            introspection_file_path, encoding=locale.getpreferredencoding(False)
+        ) as f:
             introspection = json.loads(f.read())["data"]
 
         schema = build_client_schema(cast(IntrospectionQuery, introspection))
@@ -78,7 +80,7 @@ class CodeCommand:
                 )
                 continue
 
-            if definition.kind in (GQLDefinitionType.QUERY, GQLDefinitionType.MUTATION):
+            if definition.kind in {GQLDefinitionType.QUERY, GQLDefinitionType.MUTATION}:
                 operations_by_plugin[definition.feature_flags.plugin].append(definition)
             elif definition.kind == GQLDefinitionType.FRAGMENT:
                 fragments_by_plugin[definition.feature_flags.plugin].append(definition)

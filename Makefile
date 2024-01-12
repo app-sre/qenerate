@@ -7,13 +7,14 @@ venv:
 	. .venv/bin/activate && pip install poetry2setup
 
 format:
-	poetry run black qenerate tests
+	poetry run ruff format
+	poetry run ruff check
 
 setup.py:
 	. .venv/bin/activate && poetry2setup > setup.py
-	
+
 test:
 	poetry run pytest -vv
-	poetry run flake8 qenerate
+	poetry run ruff format --check
+	poetry run ruff check --no-fix
 	poetry run mypy qenerate
-	poetry run black --check qenerate tests

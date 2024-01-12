@@ -2,7 +2,7 @@
 
 `qenerate` is a pluggable code generator for GraphQL Query and Fragment Data Classes.
 It works hand in hand with GraphQL clients like [gql](https://github.com/graphql-python/gql).
-Clients like gql return nested untyped dictionaries as result to a query. 
+Clients like gql return nested untyped dictionaries as result to a query.
 `qenerate` generated classes easily transform these nested untyped dictionaries into concrete classes.
 `qenerate` itself is not a GraphQL client and solely focuses on generating code
 for transforming untyped dictionaries into concrete types.
@@ -44,7 +44,7 @@ while traversing the given directory.
 Note, that the given directory and every `gql.` file in it share the same scope.
 I.e., within this scope fragment and query names must be unique. Further, you can
 freely use any fragment within queries, as long as the fragment is defined somewhere
-within the scope (directory). 
+within the scope (directory).
 
 #### Example for Single Query
 
@@ -135,7 +135,7 @@ parent node in the query as a prefix.
 This strategy adds the number of occurrences of this name as a suffix.
 
 However, in most cases it might be cleaner to define a re-usable fragment instead of
-relying on a collision strategy. Here are some [fragment examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions/fragments). 
+relying on a collision strategy. Here are some [fragment examples](https://github.com/app-sre/qontract-reconcile/tree/master/reconcile/gql_definitions/fragments).
 
 ## Limitations
 
@@ -173,7 +173,7 @@ Work on this is being conducted in [#77](https://github.com/app-sre/qenerate/pul
 CI happens on an [app-sre](https://github.com/app-sre/) owned Jenkins instance.
 
 - [Releases](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-build-main/)
-- [PR Checks](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-pr-check/) 
+- [PR Checks](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-pr-check/)
 
 ### Build and Dependency Management
 
@@ -181,7 +181,7 @@ CI happens on an [app-sre](https://github.com/app-sre/) owned Jenkins instance.
 
 ### Formatting
 
-`qenerate` uses [black](https://github.com/psf/black) for formatting.
+`qenerate` uses [ruff](https://docs.astral.sh/ruff/) for code checking and formatting.
 
 ### Generating setup.py
 

@@ -1,8 +1,8 @@
 from json import JSONDecodeError
+
 from pytest import raises
 
 from qenerate.core.introspection_command import IntrospectionCommand
-
 
 TEST_URL = "http://my-url.zzzzz"
 

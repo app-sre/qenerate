@@ -1,16 +1,16 @@
 from pathlib import Path
 from typing import Iterable
-import pytest
 
+import pytest
 from graphql import GraphQLError, GraphQLSyntaxError
 
+from qenerate.core.feature_flag_parser import FeatureFlags
 from qenerate.core.preprocessor import (
     AnonymousOperationError,
     GQLDefinition,
     GQLDefinitionType,
     Preprocessor,
 )
-from qenerate.core.feature_flag_parser import FeatureFlags
 
 
 def normalize_definition(definition: str) -> str:

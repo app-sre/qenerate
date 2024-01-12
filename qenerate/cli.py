@@ -1,8 +1,8 @@
 import argparse
+
 import pkg_resources  # type: ignore
 
 from qenerate.core.code_command import CodeCommand
-
 from qenerate.core.introspection_command import IntrospectionCommand
 from qenerate.core.preprocessor import Preprocessor
 
