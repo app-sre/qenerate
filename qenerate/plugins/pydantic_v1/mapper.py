@@ -70,5 +70,5 @@ def graphql_field_name_to_python(name: str) -> str:
             result += cur
         else:
             result += f"_{cur}"
-    result = result.lstrip('_')
+    result = result.lstrip("_")
     return _keyword_sanitizer(result)
