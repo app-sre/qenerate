@@ -1,8 +1,14 @@
 # Qenerate Changelog
 
-## 0.6.4 (unreleased)
+## 0.6.4
+
+Misc:
 
 * Use [ruff](https://docs.astral.sh/ruff/) to check and format the code
+
+Bugfixes:
+
+* Remove leading underscores from attribute names ([#88](https://github.com/app-sre/qenerate/pull/89))
 
 ## 0.6.3
 
