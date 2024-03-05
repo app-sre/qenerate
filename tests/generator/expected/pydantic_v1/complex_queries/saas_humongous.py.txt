@@ -274,38 +274,38 @@ class PipelinesProviderV1(ConfiguredBaseModel):
 class VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class ClusterJumpHostV1(ConfiguredBaseModel):
     hostname: str = Field(..., alias="hostname")
     known_hosts: str = Field(..., alias="knownHosts")
     user: str = Field(..., alias="user")
-    port: Optional[int] = Field(..., alias="port")
+    port: Optional[int] = Field(alias="port")
     identity: VaultSecretV1 = Field(..., alias="identity")
 
 
 class ClusterV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class DisableClusterAutomationsV1(ConfiguredBaseModel):
-    integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[str]]] = Field(alias="integrations")
 
 
 class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     console_url: str = Field(..., alias="consoleUrl")
     server_url: str = Field(..., alias="serverUrl")
-    insecure_skip_tls_verify: Optional[bool] = Field(..., alias="insecureSkipTLSVerify")
-    jump_host: Optional[ClusterJumpHostV1] = Field(..., alias="jumpHost")
-    automation_token: Optional[ClusterV1_VaultSecretV1] = Field(..., alias="automationToken")
-    internal: Optional[bool] = Field(..., alias="internal")
-    disable: Optional[DisableClusterAutomationsV1] = Field(..., alias="disable")
+    insecure_skip_tls_verify: Optional[bool] = Field(alias="insecureSkipTLSVerify")
+    jump_host: Optional[ClusterJumpHostV1] = Field(alias="jumpHost")
+    automation_token: Optional[ClusterV1_VaultSecretV1] = Field(alias="automationToken")
+    internal: Optional[bool] = Field(alias="internal")
+    disable: Optional[DisableClusterAutomationsV1] = Field(alias="disable")
 
 
 class NamespaceV1(ConfiguredBaseModel):
@@ -336,7 +336,7 @@ class PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1(ConfiguredB
 class PipelinesProviderTektonV1(PipelinesProviderV1):
     namespace: NamespaceV1 = Field(..., alias="namespace")
     defaults: PipelinesProviderTektonProviderDefaultsV1 = Field(..., alias="defaults")
-    pipeline_templates: Optional[PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1] = Field(..., alias="pipelineTemplates")
+    pipeline_templates: Optional[PipelinesProviderTektonV1_PipelinesProviderPipelineTemplatesV1] = Field(alias="pipelineTemplates")
 
 
 class ResourceRequirementsV1(ConfiguredBaseModel):
@@ -357,8 +357,8 @@ class DeployResourcesV1(ConfiguredBaseModel):
 class SlackWorkspaceIntegrationV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SlackWorkspaceIntegrationV1(ConfiguredBaseModel):
@@ -371,44 +371,44 @@ class SlackWorkspaceIntegrationV1(ConfiguredBaseModel):
 
 class SlackWorkspaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(alias="integrations")
 
 
 class SlackOutputNotificationsV1(ConfiguredBaseModel):
-    start: Optional[bool] = Field(..., alias="start")
+    start: Optional[bool] = Field(alias="start")
 
 
 class SlackOutputV1(ConfiguredBaseModel):
-    output: Optional[str] = Field(..., alias="output")
+    output: Optional[str] = Field(alias="output")
     workspace: SlackWorkspaceV1 = Field(..., alias="workspace")
-    channel: Optional[str] = Field(..., alias="channel")
-    notifications: Optional[SlackOutputNotificationsV1] = Field(..., alias="notifications")
+    channel: Optional[str] = Field(alias="channel")
+    notifications: Optional[SlackOutputNotificationsV1] = Field(alias="notifications")
 
 
 class SaasFileAuthenticationV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasFileAuthenticationV1(ConfiguredBaseModel):
-    code: Optional[SaasFileAuthenticationV1_VaultSecretV1] = Field(..., alias="code")
-    image: Optional[SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1] = Field(..., alias="image")
+    code: Optional[SaasFileAuthenticationV1_VaultSecretV1] = Field(alias="code")
+    image: Optional[SaasFileV2_SaasFileAuthenticationV1_VaultSecretV1] = Field(alias="image")
 
 
 class SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasSecretParametersV1(ConfiguredBaseModel):
@@ -419,8 +419,8 @@ class SaasSecretParametersV1(ConfiguredBaseModel):
 class SaasResourceTemplateV2_SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasResourceTemplateV2_SaasSecretParametersV1(ConfiguredBaseModel):
@@ -431,8 +431,8 @@ class SaasResourceTemplateV2_SaasSecretParametersV1(ConfiguredBaseModel):
 class EnvironmentV1_SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class EnvironmentV1_SaasSecretParametersV1(ConfiguredBaseModel):
@@ -442,8 +442,8 @@ class EnvironmentV1_SaasSecretParametersV1(ConfiguredBaseModel):
 
 class EnvironmentV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[Optional[EnvironmentV1_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
+    parameters: Optional[Json] = Field(alias="parameters")
+    secret_parameters: Optional[list[Optional[EnvironmentV1_SaasSecretParametersV1]]] = Field(alias="secretParameters")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_AppV1(ConfiguredBaseModel):
@@ -453,45 +453,45 @@ class SaasResourceTemplateTargetV2_NamespaceV1_AppV1(ConfiguredBaseModel):
 class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1(ConfiguredBaseModel):
     hostname: str = Field(..., alias="hostname")
     known_hosts: str = Field(..., alias="knownHosts")
     user: str = Field(..., alias="user")
-    port: Optional[int] = Field(..., alias="port")
+    port: Optional[int] = Field(alias="port")
     identity: SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1_VaultSecretV1 = Field(..., alias="identity")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1(ConfiguredBaseModel):
-    integrations: Optional[list[Optional[str]]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[str]]] = Field(alias="integrations")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     server_url: str = Field(..., alias="serverUrl")
-    insecure_skip_tls_verify: Optional[bool] = Field(..., alias="insecureSkipTLSVerify")
-    jump_host: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1] = Field(..., alias="jumpHost")
-    automation_token: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1] = Field(..., alias="automationToken")
-    cluster_admin_automation_token: Optional[SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1] = Field(..., alias="clusterAdminAutomationToken")
-    internal: Optional[bool] = Field(..., alias="internal")
-    disable: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1] = Field(..., alias="disable")
+    insecure_skip_tls_verify: Optional[bool] = Field(alias="insecureSkipTLSVerify")
+    jump_host: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_ClusterJumpHostV1] = Field(alias="jumpHost")
+    automation_token: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1] = Field(alias="automationToken")
+    cluster_admin_automation_token: Optional[SaasResourceTemplateTargetV2_NamespaceV1_SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_VaultSecretV1] = Field(alias="clusterAdminAutomationToken")
+    internal: Optional[bool] = Field(alias="internal")
+    disable: Optional[SaasResourceTemplateTargetV2_NamespaceV1_ClusterV1_DisableClusterAutomationsV1] = Field(alias="disable")
 
 
 class SaasResourceTemplateTargetV2_NamespaceV1(ConfiguredBaseModel):
@@ -506,27 +506,27 @@ class PromotionChannelDataV1(ConfiguredBaseModel):
 
 
 class ParentSaasPromotionV1(PromotionChannelDataV1):
-    parent_saas: Optional[str] = Field(..., alias="parent_saas")
-    target_config_hash: Optional[str] = Field(..., alias="target_config_hash")
+    parent_saas: Optional[str] = Field(alias="parent_saas")
+    target_config_hash: Optional[str] = Field(alias="target_config_hash")
 
 
 class PromotionDataV1(ConfiguredBaseModel):
-    channel: Optional[str] = Field(..., alias="channel")
-    data: Optional[list[Optional[Union[ParentSaasPromotionV1, PromotionChannelDataV1]]]] = Field(..., alias="data")
+    channel: Optional[str] = Field(alias="channel")
+    data: Optional[list[Optional[Union[ParentSaasPromotionV1, PromotionChannelDataV1]]]] = Field(alias="data")
 
 
 class SaasResourceTemplateTargetPromotionV1(ConfiguredBaseModel):
-    auto: Optional[bool] = Field(..., alias="auto")
-    publish: Optional[list[Optional[str]]] = Field(..., alias="publish")
-    subscribe: Optional[list[Optional[str]]] = Field(..., alias="subscribe")
-    promotion_data: Optional[list[Optional[PromotionDataV1]]] = Field(..., alias="promotion_data")
+    auto: Optional[bool] = Field(alias="auto")
+    publish: Optional[list[Optional[str]]] = Field(alias="publish")
+    subscribe: Optional[list[Optional[str]]] = Field(alias="subscribe")
+    promotion_data: Optional[list[Optional[PromotionDataV1]]] = Field(alias="promotion_data")
 
 
 class SaasResourceTemplateTargetV2_SaasSecretParametersV1_VaultSecretV1(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")
 
 
 class SaasResourceTemplateTargetV2_SaasSecretParametersV1(ConfiguredBaseModel):
@@ -547,32 +547,32 @@ class SaasResourceTemplateTargetUpstreamV1(ConfiguredBaseModel):
 class SaasResourceTemplateTargetV2(ConfiguredBaseModel):
     namespace: SaasResourceTemplateTargetV2_NamespaceV1 = Field(..., alias="namespace")
     ref: str = Field(..., alias="ref")
-    promotion: Optional[SaasResourceTemplateTargetPromotionV1] = Field(..., alias="promotion")
-    parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[Optional[SaasResourceTemplateTargetV2_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
-    upstream: Optional[SaasResourceTemplateTargetUpstreamV1] = Field(..., alias="upstream")
-    disable: Optional[bool] = Field(..., alias="disable")
-    delete: Optional[bool] = Field(..., alias="delete")
+    promotion: Optional[SaasResourceTemplateTargetPromotionV1] = Field(alias="promotion")
+    parameters: Optional[Json] = Field(alias="parameters")
+    secret_parameters: Optional[list[Optional[SaasResourceTemplateTargetV2_SaasSecretParametersV1]]] = Field(alias="secretParameters")
+    upstream: Optional[SaasResourceTemplateTargetUpstreamV1] = Field(alias="upstream")
+    disable: Optional[bool] = Field(alias="disable")
+    delete: Optional[bool] = Field(alias="delete")
 
 
 class SaasResourceTemplateV2(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     url: str = Field(..., alias="url")
     path: str = Field(..., alias="path")
-    provider: Optional[str] = Field(..., alias="provider")
-    hash_length: Optional[int] = Field(..., alias="hash_length")
-    parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[Optional[SaasResourceTemplateV2_SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
-    targets: Optional[list[SaasResourceTemplateTargetV2]] = Field(..., alias="targets")
+    provider: Optional[str] = Field(alias="provider")
+    hash_length: Optional[int] = Field(alias="hash_length")
+    parameters: Optional[Json] = Field(alias="parameters")
+    secret_parameters: Optional[list[Optional[SaasResourceTemplateV2_SaasSecretParametersV1]]] = Field(alias="secretParameters")
+    targets: Optional[list[SaasResourceTemplateTargetV2]] = Field(alias="targets")
 
 
 class UserV1(ConfiguredBaseModel):
     org_username: str = Field(..., alias="org_username")
-    tag_on_merge_requests: Optional[bool] = Field(..., alias="tag_on_merge_requests")
+    tag_on_merge_requests: Optional[bool] = Field(alias="tag_on_merge_requests")
 
 
 class RoleV1(ConfiguredBaseModel):
-    users: Optional[list[Optional[UserV1]]] = Field(..., alias="users")
+    users: Optional[list[Optional[UserV1]]] = Field(alias="users")
 
 
 class SaasFileV2(ConfiguredBaseModel):
@@ -580,24 +580,24 @@ class SaasFileV2(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
     app: AppV1 = Field(..., alias="app")
     pipelines_provider: Union[PipelinesProviderTektonV1, PipelinesProviderV1] = Field(..., alias="pipelinesProvider")
-    deploy_resources: Optional[DeployResourcesV1] = Field(..., alias="deployResources")
-    slack: Optional[SlackOutputV1] = Field(..., alias="slack")
-    managed_resource_types: Optional[list[str]] = Field(..., alias="managedResourceTypes")
-    takeover: Optional[bool] = Field(..., alias="takeover")
-    compare: Optional[bool] = Field(..., alias="compare")
-    publish_job_logs: Optional[bool] = Field(..., alias="publishJobLogs")
-    cluster_admin: Optional[bool] = Field(..., alias="clusterAdmin")
-    image_patterns: Optional[list[str]] = Field(..., alias="imagePatterns")
-    use_channel_in_image_tag: Optional[bool] = Field(..., alias="use_channel_in_image_tag")
-    authentication: Optional[SaasFileAuthenticationV1] = Field(..., alias="authentication")
-    parameters: Optional[Json] = Field(..., alias="parameters")
-    secret_parameters: Optional[list[Optional[SaasSecretParametersV1]]] = Field(..., alias="secretParameters")
-    resource_templates: Optional[list[SaasResourceTemplateV2]] = Field(..., alias="resourceTemplates")
-    roles: Optional[list[Optional[RoleV1]]] = Field(..., alias="roles")
+    deploy_resources: Optional[DeployResourcesV1] = Field(alias="deployResources")
+    slack: Optional[SlackOutputV1] = Field(alias="slack")
+    managed_resource_types: Optional[list[str]] = Field(alias="managedResourceTypes")
+    takeover: Optional[bool] = Field(alias="takeover")
+    compare: Optional[bool] = Field(alias="compare")
+    publish_job_logs: Optional[bool] = Field(alias="publishJobLogs")
+    cluster_admin: Optional[bool] = Field(alias="clusterAdmin")
+    image_patterns: Optional[list[str]] = Field(alias="imagePatterns")
+    use_channel_in_image_tag: Optional[bool] = Field(alias="use_channel_in_image_tag")
+    authentication: Optional[SaasFileAuthenticationV1] = Field(alias="authentication")
+    parameters: Optional[Json] = Field(alias="parameters")
+    secret_parameters: Optional[list[Optional[SaasSecretParametersV1]]] = Field(alias="secretParameters")
+    resource_templates: Optional[list[SaasResourceTemplateV2]] = Field(alias="resourceTemplates")
+    roles: Optional[list[Optional[RoleV1]]] = Field(alias="roles")
 
 
 class SaasFilesV2XXLQueryData(ConfiguredBaseModel):
-    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
+    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(alias="saas_files")
 
 
 def query(query_func: Callable, **kwargs: Any) -> SaasFilesV2XXLQueryData:

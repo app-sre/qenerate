@@ -45,7 +45,7 @@ class Issue(ConfiguredBaseModel):
 
 
 class IssueConnection(ConfiguredBaseModel):
-    nodes: Optional[list[Optional[Issue]]] = Field(..., alias="nodes")
+    nodes: Optional[list[Optional[Issue]]] = Field(alias="nodes")
 
 
 class Repository(ConfiguredBaseModel):
@@ -53,7 +53,7 @@ class Repository(ConfiguredBaseModel):
 
 
 class IssuesDateQueryData(ConfiguredBaseModel):
-    repository: Optional[Repository] = Field(..., alias="repository")
+    repository: Optional[Repository] = Field(alias="repository")
 
 
 def query(query_func: Callable, **kwargs: Any) -> IssuesDateQueryData:

@@ -41,11 +41,11 @@ class SaasFileV2(ConfiguredBaseModel):
 
 
 class AppV1(ConfiguredBaseModel):
-    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saasFiles")
+    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(alias="saasFiles")
 
 
 class SaasFilesReducedQueryData(ConfiguredBaseModel):
-    apps_v1: Optional[list[Optional[AppV1]]] = Field(..., alias="apps_v1")
+    apps_v1: Optional[list[Optional[AppV1]]] = Field(alias="apps_v1")
 
 
 def query(query_func: Callable, **kwargs: Any) -> SaasFilesReducedQueryData:

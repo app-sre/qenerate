@@ -29,5 +29,5 @@ class ConfiguredBaseModel(BaseModel):
 
 class MinimalCluster(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    jump_host: Optional[CommonJumphostFields] = Field(..., alias="jumpHost")
-    automation_token: Optional[VaultSecret] = Field(..., alias="automationToken")
+    jump_host: Optional[CommonJumphostFields] = Field(alias="jumpHost")
+    automation_token: Optional[VaultSecret] = Field(alias="automationToken")

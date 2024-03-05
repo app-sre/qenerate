@@ -75,8 +75,8 @@ class ClusterSpecV1__2(ConfiguredBaseModel):
 
 class ClusterV1__2(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    spec: Optional[ClusterSpecV1__2] = Field(..., alias="spec")
-    internal: Optional[bool] = Field(..., alias="internal")
+    spec: Optional[ClusterSpecV1__2] = Field(alias="spec")
+    internal: Optional[bool] = Field(alias="internal")
 
 
 class ClusterPeeringConnectionClusterRequesterV1(ClusterPeeringConnectionV1):
@@ -89,8 +89,8 @@ class ClusterSpecV1__3(ConfiguredBaseModel):
 
 class ClusterV1__3(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    spec: Optional[ClusterSpecV1__3] = Field(..., alias="spec")
-    internal: Optional[bool] = Field(..., alias="internal")
+    spec: Optional[ClusterSpecV1__3] = Field(alias="spec")
+    internal: Optional[bool] = Field(alias="internal")
 
 
 class ClusterPeeringConnectionClusterAccepterV1(ClusterPeeringConnectionV1):
@@ -98,18 +98,18 @@ class ClusterPeeringConnectionClusterAccepterV1(ClusterPeeringConnectionV1):
 
 
 class ClusterPeeringV1(ConfiguredBaseModel):
-    connections: Optional[list[Union[ClusterPeeringConnectionClusterRequesterV1, ClusterPeeringConnectionClusterAccepterV1, ClusterPeeringConnectionV1]]] = Field(..., alias="connections")
+    connections: Optional[list[Union[ClusterPeeringConnectionClusterRequesterV1, ClusterPeeringConnectionClusterAccepterV1, ClusterPeeringConnectionV1]]] = Field(alias="connections")
 
 
 class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    spec: Optional[ClusterSpecV1] = Field(..., alias="spec")
-    internal: Optional[bool] = Field(..., alias="internal")
-    peering: Optional[ClusterPeeringV1] = Field(..., alias="peering")
+    spec: Optional[ClusterSpecV1] = Field(alias="spec")
+    internal: Optional[bool] = Field(alias="internal")
+    peering: Optional[ClusterPeeringV1] = Field(alias="peering")
 
 
 class EnumerateCollisionsQueryData(ConfiguredBaseModel):
-    clusters: Optional[list[Optional[ClusterV1]]] = Field(..., alias="clusters")
+    clusters: Optional[list[Optional[ClusterV1]]] = Field(alias="clusters")
 
 
 def query(query_func: Callable, **kwargs: Any) -> EnumerateCollisionsQueryData:

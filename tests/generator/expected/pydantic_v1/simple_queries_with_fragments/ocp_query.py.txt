@@ -54,12 +54,12 @@ class ConfiguredBaseModel(BaseModel):
 
 class OpenShiftClusterManagerV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    offline_token: Optional[VaultSecret] = Field(..., alias="offlineToken")
+    offline_token: Optional[VaultSecret] = Field(alias="offlineToken")
 
 
 class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    ocm: Optional[OpenShiftClusterManagerV1] = Field(..., alias="ocm")
+    ocm: Optional[OpenShiftClusterManagerV1] = Field(alias="ocm")
 
 
 class OcpReleaseMirrorV1(ConfiguredBaseModel):
@@ -67,7 +67,7 @@ class OcpReleaseMirrorV1(ConfiguredBaseModel):
 
 
 class OCPAuthFullQueryData(ConfiguredBaseModel):
-    ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(..., alias="ocp_release_mirror")
+    ocp_release_mirror: Optional[list[Optional[OcpReleaseMirrorV1]]] = Field(alias="ocp_release_mirror")
 
 
 def query(query_func: Callable, **kwargs: Any) -> OCPAuthFullQueryData:

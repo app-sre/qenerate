@@ -9,6 +9,16 @@ BASE_CLASS_NAME = "ConfiguredBaseModel"
 INDENT = "    "
 
 
+def _build_field_code_string(field: ParsedClassNode) -> str:
+    field_arg = (
+        "" if field.parsed_type.is_optional or field.parsed_type.enum_map else "..., "
+    )
+    return (
+        f"{INDENT}{field.py_key}: {field.field_type()} = "
+        f'Field({field_arg}alias="{field.gql_key}")'
+    )
+
+
 @dataclass
 class ParsedNode:
     parent: Optional[ParsedNode]
@@ -54,12 +64,7 @@ class ParsedInlineFragmentNode(ParsedNode):
         fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
-                )
+                lines.append(_build_field_code_string(field))
                 fields_added = True
 
         if not fields_added:
@@ -88,16 +93,8 @@ class ParsedClassNode(ParsedNode):
         lines.append(f"class {self.parsed_type.unwrapped_python_type}({base_classes}):")
         fields_added = False
         for field in self.fields:
-            field_arg = "..., "
-            if field.parsed_type.enum_map:
-                field_arg = ""
             if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field({field_arg}alias="{field.gql_key}")'
-                    )
-                )
+                lines.append(_build_field_code_string(field))
                 fields_added = True
 
         if not fields_added:
@@ -170,12 +167,7 @@ class ParsedOperationNode(ParsedNode):
         fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
-                )
+                lines.append(_build_field_code_string(field))
                 fields_added = True
 
         if not fields_added:
@@ -195,12 +187,7 @@ class ParsedFragmentDefinitionNode(ParsedNode):
         fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
-                lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
-                )
+                lines.append(_build_field_code_string(field))
                 fields_added = True
 
         if not fields_added:
@@ -220,4 +207,5 @@ class ParsedFieldType:
     unwrapped_python_type: str
     wrapped_python_type: str
     is_primitive: bool
+    is_optional: bool
     enum_map: dict[str, Any]

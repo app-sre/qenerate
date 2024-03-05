@@ -27,5 +27,5 @@ class ConfiguredBaseModel(BaseModel):
 class VaultSecret(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     field: str = Field(..., alias="field")
-    version: Optional[int] = Field(..., alias="version")
-    q_format: Optional[str] = Field(..., alias="format")
+    version: Optional[int] = Field(alias="version")
+    q_format: Optional[str] = Field(alias="format")

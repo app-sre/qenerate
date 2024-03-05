@@ -97,8 +97,8 @@ class ClusterJumpHostV1(ConfiguredBaseModel):
 
 class ClusterV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    jump_host: Optional[ClusterJumpHostV1] = Field(..., alias="jumpHost")
-    automation_token: Optional[VaultSecret] = Field(..., alias="automationToken")
+    jump_host: Optional[ClusterJumpHostV1] = Field(alias="jumpHost")
+    automation_token: Optional[VaultSecret] = Field(alias="automationToken")
 
 
 class NamespaceV1(ConfiguredBaseModel):
@@ -120,29 +120,29 @@ class SlackWorkspaceIntegrationV1(ConfiguredBaseModel):
 
 class SlackWorkspaceV1(ConfiguredBaseModel):
     name: str = Field(..., alias="name")
-    integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(..., alias="integrations")
+    integrations: Optional[list[Optional[SlackWorkspaceIntegrationV1]]] = Field(alias="integrations")
 
 
 class SlackOutputNotificationsV1(ConfiguredBaseModel):
-    start: Optional[bool] = Field(..., alias="start")
+    start: Optional[bool] = Field(alias="start")
 
 
 class SlackOutputV1(ConfiguredBaseModel):
-    output: Optional[str] = Field(..., alias="output")
+    output: Optional[str] = Field(alias="output")
     workspace: SlackWorkspaceV1 = Field(..., alias="workspace")
-    channel: Optional[str] = Field(..., alias="channel")
-    notifications: Optional[SlackOutputNotificationsV1] = Field(..., alias="notifications")
+    channel: Optional[str] = Field(alias="channel")
+    notifications: Optional[SlackOutputNotificationsV1] = Field(alias="notifications")
 
 
 class SaasFileV2(ConfiguredBaseModel):
     path: str = Field(..., alias="path")
     name: str = Field(..., alias="name")
     pipelines_provider: Union[PipelinesProviderTektonV1, PipelinesProviderV1] = Field(..., alias="pipelinesProvider")
-    slack: Optional[SlackOutputV1] = Field(..., alias="slack")
+    slack: Optional[SlackOutputV1] = Field(alias="slack")
 
 
 class SaasFilesV2XXLQueryData(ConfiguredBaseModel):
-    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(..., alias="saas_files")
+    saas_files: Optional[list[Optional[SaasFileV2]]] = Field(alias="saas_files")
 
 
 def query(query_func: Callable, **kwargs: Any) -> SaasFilesV2XXLQueryData:
