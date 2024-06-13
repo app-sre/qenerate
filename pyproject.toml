@@ -20,7 +20,7 @@ requests-mock = "^1.9"
 types-requests = "^2.27"
 pyfakefs = "^4.5"
 mypy = "^1.8.0"
-ruff = "^0.1.11"
+ruff = "^0.4.8"
 
 [tool.poetry.scripts]
 qenerate = 'qenerate.cli:run'
@@ -32,7 +32,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 88
 target-version = 'py39'
-required-version = "0.1.11"
+required-version = "0.4.8"
 
 src = ["qenerate"]
 extend-exclude = ["demo", ".local"]
@@ -51,6 +51,8 @@ extend-select = [
     "I",
     # pylint
     "PL",
+    # pyupgrade
+    "UP",
 ]
 ignore = [
     "PLR0913", # Too many arguments
