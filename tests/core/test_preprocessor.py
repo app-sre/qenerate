@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 import pytest
-from graphql import GraphQLError, GraphQLSyntaxError
+from graphql import GraphQLError, GraphQLSchema, GraphQLSyntaxError
 
 from qenerate.core.feature_flag_parser import FeatureFlags
 from qenerate.core.preprocessor import (
@@ -30,7 +30,7 @@ def normalize_definition(definition: str) -> str:
                     name="MyQuery",
                     definition="query MyQuery { some { name } }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -44,7 +44,7 @@ def normalize_definition(definition: str) -> str:
                     name="FirstQuery",
                     definition="query FirstQuery { some { name } }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -52,7 +52,7 @@ def normalize_definition(definition: str) -> str:
                     name="SecondQuery",
                     definition="query SecondQuery { other { name } }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -66,7 +66,7 @@ def normalize_definition(definition: str) -> str:
                     name="CreateReviewForEpisode",
                     definition="mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -80,7 +80,7 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -94,7 +94,7 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -102,7 +102,7 @@ def normalize_definition(definition: str) -> str:
                     name="My2ndFragment",
                     definition="fragment My2ndFragment on My2ndObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -116,7 +116,7 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { some { ... NestedFragment } }",
                     fragment_dependencies=set(["NestedFragment"]),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -124,7 +124,7 @@ def normalize_definition(definition: str) -> str:
                     name="NestedFragment",
                     definition="fragment NestedFragment on NestedObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -138,7 +138,7 @@ def normalize_definition(definition: str) -> str:
                     name="FirstQuery",
                     definition="query FirstQuery { some { ... FirstFragment } other { ... SecondFragment } }",
                     fragment_dependencies=set(["FirstFragment", "SecondFragment"]),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -146,7 +146,7 @@ def normalize_definition(definition: str) -> str:
                     name="FirstFragment",
                     definition="fragment FirstFragment on SomeObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -154,7 +154,7 @@ def normalize_definition(definition: str) -> str:
                     name="SecondFragment",
                     definition="fragment SecondFragment on OtherObject { other { ... NestedFragment } }",
                     fragment_dependencies=set(["NestedFragment"]),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -162,7 +162,7 @@ def normalize_definition(definition: str) -> str:
                     name="NestedFragment",
                     definition="fragment NestedFragment on NestedObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
@@ -178,7 +178,7 @@ def normalize_definition(definition: str) -> str:
                     name="FirstQuery",
                     definition="query FirstQuery { some { ... MyFragment } other { ... MyFragment } }",
                     fragment_dependencies=set(["MyFragment"]),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -186,13 +186,13 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on SomeObject { name }",
                     fragment_dependencies=set(),
-                    source_file="",  # adjusted in test
+                    source_file=Path(""),  # adjusted in test
                 ),
             ],
         ],
     ],
 )
-def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]):
+def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]) -> None:
     for ex in expected:
         ex.source_file = file
 
@@ -254,13 +254,15 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]):
     ],
 )
 def test_preprocessor_exception(
-    app_interface_schema, raise_error, definitions: Iterable[str]
-):
+    app_interface_schema: GraphQLSchema,
+    raise_error: type[Exception],
+    definitions: Iterable[str],
+) -> None:
     definition_objects = [
         GQLDefinition(
             definition=definition,
             feature_flags=FeatureFlags(plugin="fake", gql_scalar_mappings={}),
-            fragment_dependencies=[],
+            fragment_dependencies=set(),
             kind=GQLDefinitionType.QUERY,
             source_file=Path("/tmp"),
             name="",

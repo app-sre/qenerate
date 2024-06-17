@@ -1,16 +1,17 @@
 import json
 import locale
+from collections.abc import Callable
 from pathlib import Path
 from typing import cast
 
 import pytest
-from graphql import IntrospectionQuery, build_client_schema
+from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
 
 from qenerate.core.plugin import GeneratedFile
 
 
 @pytest.fixture()
-def expected_files():
+def expected_files() -> Callable[[str, str], list[GeneratedFile]]:
     """Read fixture files from tests/definitions/expected/PLUGIN/CASE and remove .txt suffix."""
 
     def _(plugin: str, case: str) -> list[GeneratedFile]:
@@ -23,7 +24,7 @@ def expected_files():
 
 
 @pytest.fixture()
-def app_interface_schema():
+def app_interface_schema() -> GraphQLSchema:
     with open(
         "tests/generator/introspection-app-interface.json",
         encoding=locale.getpreferredencoding(False),
@@ -33,7 +34,7 @@ def app_interface_schema():
 
 
 @pytest.fixture()
-def app_interface_2023_03_schema():
+def app_interface_2023_03_schema() -> GraphQLSchema:
     with open(
         "tests/generator/introspection-app-interface_2023_03.json",
         encoding=locale.getpreferredencoding(False),
@@ -43,7 +44,7 @@ def app_interface_2023_03_schema():
 
 
 @pytest.fixture()
-def github_schema():
+def github_schema() -> GraphQLSchema:
     with open(
         "tests/generator/introspection-github.json",
         encoding=locale.getpreferredencoding(False),

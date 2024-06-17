@@ -1,3 +1,3 @@
 #!/bin/bash
-
-docker build -t qenerate-local-test .
+set -e
+make pr-check

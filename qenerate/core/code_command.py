@@ -51,7 +51,7 @@ class CodeCommand:
         )
         return definitions
 
-    def generate_code(self, introspection_file_path: str, dir: str):
+    def generate_code(self, introspection_file_path: str, dir: str) -> None:
         with open(
             introspection_file_path, encoding=locale.getpreferredencoding(False)
         ) as f:

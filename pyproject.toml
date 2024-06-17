@@ -35,7 +35,7 @@ target-version = 'py39'
 required-version = "0.4.8"
 
 src = ["qenerate"]
-extend-exclude = ["demo", ".local"]
+extend-exclude = ["demo", ".local", ".cache"]
 fix = true
 
 [tool.ruff.lint]
@@ -64,3 +64,20 @@ preview = true
 
 [tool.ruff.lint.isort]
 known-first-party = ["qenerate"]
+
+# Mypy configuration
+[tool.mypy]
+files = ["qenerate", "tests"]
+enable_error_code = ["truthy-bool", "redundant-expr"]
+no_implicit_optional = true
+check_untyped_defs = true
+warn_unused_ignores = true
+show_error_codes = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+# Below are all of the packages that don't implement stub packages. Mypy will throw an error if we don't ignore the
+# missing imports. See: https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+module = ["pytest.*", "pyfakefs.*"]
+ignore_missing_imports = true

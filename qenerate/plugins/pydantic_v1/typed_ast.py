@@ -37,7 +37,7 @@ class ParsedNode:
 class ParsedInlineFragmentNode(ParsedNode):
     def class_code_string(self) -> str:
         # Assure not Optional[]
-        if not (self.parent and self.parsed_type):
+        if not (self.parent and self.parsed_type):  # type: ignore
             return ""
 
         if self.parsed_type.is_primitive:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import operator
 from collections.abc import Mapping
 from functools import reduce
+from typing import Any
 
 from graphql import (
     FieldNode,
@@ -149,10 +150,10 @@ class FieldToTypeMatcherVisitor(Visitor):
                 enum_map={},
             ),
         )
-        self.parent = self.parsed
+        self.parent: ParsedNode | None = self.parsed
         self.deduplication_cache: set[str] = set()
 
-    def enter_inline_fragment(self, node: InlineFragmentNode, *_):
+    def enter_inline_fragment(self, node: InlineFragmentNode, *_: Any) -> None:
         graphql_type = self.type_info.get_type()
         if not graphql_type:
             raise ValueError(f"{node} does not have a graphql type")
@@ -162,13 +163,17 @@ class FieldToTypeMatcherVisitor(Visitor):
             parent=self.parent,
             parsed_type=field_type,
         )
+        if not self.parent:
+            raise ValueError("Parent is None")
         self.parent.fields.append(current)
         self.parent = current
 
-    def leave_inline_fragment(self, *_):
+    def leave_inline_fragment(self, *_: Any) -> None:
         self.parent = self.parent.parent if self.parent else self.parent
 
-    def enter_operation_definition(self, node: OperationDefinitionNode, *_):
+    def enter_operation_definition(
+        self, node: OperationDefinitionNode, *_: Any
+    ) -> None:
         if not node.name:
             raise ValueError(f"{node} does not have a name")
         current = ParsedOperationNode(
@@ -182,13 +187,15 @@ class FieldToTypeMatcherVisitor(Visitor):
                 enum_map={},
             ),
         )
+        if not self.parent:
+            raise ValueError("Parent is None")
         self.parent.fields.append(current)
         self.parent = current
 
-    def leave_operation_definition(self, *_):
+    def leave_operation_definition(self, *_: Any) -> None:
         self.parent = self.parent.parent if self.parent else self.parent
 
-    def enter_fragment_definition(self, node: FragmentDefinitionNode, *_):
+    def enter_fragment_definition(self, node: FragmentDefinitionNode, *_: Any) -> None:
         graphql_type = self.type_info.get_type()
         if not graphql_type:
             raise ValueError(f"{node} does not have a graphql type")
@@ -201,14 +208,15 @@ class FieldToTypeMatcherVisitor(Visitor):
             class_name=name,
             fragment_name=node.name.value,
         )
-
+        if not self.parent:
+            raise ValueError("Parent is None")
         self.parent.fields.append(current)
         self.parent = current
 
-    def leave_fragment_definition(self, *_):
+    def leave_fragment_definition(self, *_: Any) -> None:
         self.parent = self.parent.parent if self.parent else self.parent
 
-    def enter_fragment_spread(self, node: FragmentSpreadNode, *_):
+    def enter_fragment_spread(self, node: FragmentSpreadNode, *_: Any) -> None:
         fragment_name = graphql_class_name_str_to_python(node.name.value)
         field_type = ParsedFieldType(
             is_primitive=False,
@@ -221,13 +229,15 @@ class FieldToTypeMatcherVisitor(Visitor):
             parent=self.parent,
             parsed_type=field_type,
         )
+        if not self.parent:
+            raise ValueError("Parent is None")
         self.parent.fields.append(current)
         self.parent = current
 
-    def leave_fragment_spread(self, *_):
+    def leave_fragment_spread(self, *_: Any) -> None:
         self.parent = self.parent.parent if self.parent else self.parent
 
-    def enter_field(self, node: FieldNode, *_):
+    def enter_field(self, node: FieldNode, *_: Any) -> None:
         graphql_type = self.type_info.get_type()
         if not graphql_type:
             raise ValueError(f"{node} does not have a graphql type")
@@ -241,11 +251,12 @@ class FieldToTypeMatcherVisitor(Visitor):
             py_key=py_key,
             gql_key=gql_key,
         )
-
+        if not self.parent:
+            raise ValueError("Parent is None")
         self.parent.fields.append(current)
         self.parent = current
 
-    def leave_field(self, *_):
+    def leave_field(self, *_: Any) -> None:
         self.parent = self.parent.parent if self.parent else self.parent
 
     # Custom Functions

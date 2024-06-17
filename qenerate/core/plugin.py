@@ -11,7 +11,7 @@ class GeneratedFile:
     file: Path = field(compare=False)
     content: str
 
-    def save(self):
+    def save(self) -> None:
         self.file.write_text(self.content)
 
 

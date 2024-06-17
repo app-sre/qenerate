@@ -73,7 +73,7 @@ from qenerate.core.feature_flag_parser import (
         ],
     ],
 )
-def test_valid_feature_flags(definition: str, expected_flags: FeatureFlags):
+def test_valid_feature_flags(definition: str, expected_flags: FeatureFlags) -> None:
     flags = FeatureFlagParser.parse(
         definition=definition,
     )
@@ -103,7 +103,7 @@ def test_valid_feature_flags(definition: str, expected_flags: FeatureFlags):
         ],
     ],
 )
-def test_feature_flags_exceptions(definition: str, expected_message: str):
+def test_feature_flags_exceptions(definition: str, expected_message: str) -> None:
     with pytest.raises(FeatureFlagError) as f:
         FeatureFlagParser.parse(
             definition=definition,

@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 from graphql import (
     FragmentDefinitionNode,
@@ -72,11 +73,13 @@ class DefinitionVisitor(Visitor):
         body = node.loc.source.body[start:end]
         return body
 
-    def _add_definition(self):
+    def _add_definition(self) -> None:
         if self._stack:
             self.definitions.append(self._stack.pop())
 
-    def enter_operation_definition(self, node: OperationDefinitionNode, *_):
+    def enter_operation_definition(
+        self, node: OperationDefinitionNode, *_: Any
+    ) -> None:
         body = self._node_body(node)
         name = self._node_name(node)
 
@@ -107,13 +110,13 @@ class DefinitionVisitor(Visitor):
             return
         self._stack.append(definition)
 
-    def leave_operation_definition(self, *_):
+    def leave_operation_definition(self, *_: Any) -> None:
         self._add_definition()
 
-    def enter_fragment_spread(self, node: FragmentSpreadNode, *_):
+    def enter_fragment_spread(self, node: FragmentSpreadNode, *_: Any) -> None:
         self._stack[-1].fragment_dependencies.add(self._node_name(node))
 
-    def enter_fragment_definition(self, node: FragmentDefinitionNode, *_):
+    def enter_fragment_definition(self, node: FragmentDefinitionNode, *_: Any) -> None:
         body = self._node_body(node)
         name = self._node_name(node)
 
@@ -127,12 +130,14 @@ class DefinitionVisitor(Visitor):
         )
         self._stack.append(definition)
 
-    def leave_fragment_definition(self, *_):
+    def leave_fragment_definition(self, *_: Any) -> None:
         self._add_definition()
 
 
 class Preprocessor:
-    def validate(self, definitions: Iterable[GQLDefinition], schema: GraphQLSchema):
+    def validate(
+        self, definitions: Iterable[GQLDefinition], schema: GraphQLSchema
+    ) -> None:
         all_definitions = ""
         for definition in definitions:
             all_definitions += definition.definition + " "

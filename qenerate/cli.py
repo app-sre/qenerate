@@ -7,7 +7,7 @@ from qenerate.core.introspection_command import IntrospectionCommand
 from qenerate.core.preprocessor import Preprocessor
 
 
-def run():
+def run() -> None:
     parser = argparse.ArgumentParser(prog="qenerate")
     parser.add_argument(
         "-v",
