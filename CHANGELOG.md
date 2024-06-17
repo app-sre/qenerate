@@ -1,5 +1,11 @@
 # Qenerate Changelog
 
+## 0.6.5
+
+Misc:
+
+* Upgrade [ruff](https://docs.astral.sh/ruff/)
+
 ## 0.6.4
 
 Misc:

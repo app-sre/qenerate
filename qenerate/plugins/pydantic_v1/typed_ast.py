@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from qenerate.core.preprocessor import GQLDefinitionType
 
@@ -11,7 +11,7 @@ INDENT = "    "
 
 @dataclass
 class ParsedNode:
-    parent: Optional[ParsedNode]
+    parent: ParsedNode | None
     fields: list[ParsedNode]
     parsed_type: ParsedFieldType
 
@@ -49,16 +49,14 @@ class ParsedInlineFragmentNode(ParsedNode):
 
         lines = ["\n\n"]
         lines.append(
-            ("class " f"{self.parsed_type.unwrapped_python_type}" f"({base_class}):")
+            "class " f"{self.parsed_type.unwrapped_python_type}" f"({base_class}):"
         )
         fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
+                    f"{INDENT}{field.py_key}: {field.field_type()} = "
+                    f'Field(..., alias="{field.gql_key}")'
                 )
                 fields_added = True
 
@@ -93,10 +91,8 @@ class ParsedClassNode(ParsedNode):
                 field_arg = ""
             if isinstance(field, ParsedClassNode):
                 lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field({field_arg}alias="{field.gql_key}")'
-                    )
+                    f"{INDENT}{field.py_key}: {field.field_type()} = "
+                    f'Field({field_arg}alias="{field.gql_key}")'
                 )
                 fields_added = True
 
@@ -171,10 +167,8 @@ class ParsedOperationNode(ParsedNode):
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
+                    f"{INDENT}{field.py_key}: {field.field_type()} = "
+                    f'Field(..., alias="{field.gql_key}")'
                 )
                 fields_added = True
 
@@ -196,10 +190,8 @@ class ParsedFragmentDefinitionNode(ParsedNode):
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
                 lines.append(
-                    (
-                        f"{INDENT}{field.py_key}: {field.field_type()} = "
-                        f'Field(..., alias="{field.gql_key}")'
-                    )
+                    f"{INDENT}{field.py_key}: {field.field_type()} = "
+                    f'Field(..., alias="{field.gql_key}")'
                 )
                 fields_added = True
 

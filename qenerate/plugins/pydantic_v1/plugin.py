@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import operator
+from collections.abc import Mapping
 from functools import reduce
-from typing import Mapping
 
 from graphql import (
     FieldNode,

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import locale
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Union
 
 from graphql import (
     FragmentDefinitionNode,
@@ -53,9 +53,7 @@ class DefinitionVisitor(Visitor):
 
     def _node_name(
         self,
-        node: Union[
-            OperationDefinitionNode, FragmentDefinitionNode, FragmentSpreadNode
-        ],
+        node: OperationDefinitionNode | FragmentDefinitionNode | FragmentSpreadNode,
     ) -> str:
         if not node.name:
             # TODO: proper error
@@ -64,7 +62,7 @@ class DefinitionVisitor(Visitor):
 
     def _node_body(
         self,
-        node: Union[OperationDefinitionNode, FragmentDefinitionNode],
+        node: OperationDefinitionNode | FragmentDefinitionNode,
     ) -> str:
         if not node.loc:
             # TODO: proper error
@@ -152,7 +150,7 @@ class Preprocessor:
             raise error
 
     def process_file(self, file_path: Path) -> list[GQLDefinition]:
-        with open(file_path, "r", encoding=locale.getpreferredencoding(False)) as f:
+        with open(file_path, encoding=locale.getpreferredencoding(False)) as f:
             content = f.read()
         feature_flags = FeatureFlagParser.parse(
             definition=content,
