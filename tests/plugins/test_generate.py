@@ -1,8 +1,10 @@
 import locale
+from collections.abc import Callable, Mapping
 from enum import Enum
 from pathlib import Path
 
 import pytest
+from graphql import GraphQLSchema
 
 from qenerate.core.code_command import plugins
 from qenerate.core.feature_flag_parser import FeatureFlags, NamingCollisionStrategy
@@ -132,18 +134,18 @@ class Schema(Enum):
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
 def test_rendering(
-    use_schema,
-    app_interface_schema,
-    app_interface_2023_03_schema,
-    github_schema,
-    expected_files,
-    case,
-    dep_graph: dict[str, list[str]],
+    use_schema: Schema,
+    app_interface_schema: GraphQLSchema,
+    app_interface_2023_03_schema: GraphQLSchema,
+    github_schema: GraphQLSchema,
+    expected_files: Callable,
+    case: str,
+    dep_graph: dict[str, set[str]],
     type_map: dict[str, GQLDefinitionType],
     collision_strategies: dict[str, NamingCollisionStrategy],
-    plugin_name,
-    custom_type_mapping,
-):
+    plugin_name: str,
+    custom_type_mapping: Mapping[str, str],
+) -> None:
     """Test code generation for each CASE x PLUGIN combination."""
     schema = app_interface_schema
     if use_schema == Schema.GITHUB:
@@ -168,7 +170,7 @@ def test_rendering(
             ),
             source_file=source_file,
             definition=content,
-            fragment_dependencies=dep_graph.get(file_id, []),
+            fragment_dependencies=dep_graph.get(file_id, set()),
             kind=kind,
             name=file_id,
         )

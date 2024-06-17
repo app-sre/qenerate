@@ -24,10 +24,10 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
             ),
         ],
         [
-            GraphQLNonNull(GraphQLList(GraphQLObjectType(name="MyObject", fields=[]))),
+            GraphQLNonNull(GraphQLList(GraphQLObjectType(name="MyObject", fields={}))),
             UnwrapperResult(
                 wrapper_stack=[WrapperType.LIST, WrapperType.OPTIONAL],
-                inner_gql_type=GraphQLObjectType(name="MyObject", fields=[]),
+                inner_gql_type=GraphQLObjectType(name="MyObject", fields={}),
                 is_primitive=False,
                 enum_map={},
             ),
@@ -78,9 +78,9 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
         ],
     ],
 )
-def test_unwrapper(input: GraphQLOutputType, expected: UnwrapperResult):
+def test_unwrapper(input: GraphQLOutputType, expected: UnwrapperResult) -> None:
     result = Unwrapper.unwrap(input)
 
     assert result.is_primitive == expected.is_primitive
     assert result.wrapper_stack == expected.wrapper_stack
-    assert result.inner_gql_type.name == expected.inner_gql_type.name
+    assert result.inner_gql_type.name == expected.inner_gql_type.name  # type: ignore

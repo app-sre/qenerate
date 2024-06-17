@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 from graphql import GraphQLSchema
+from pyfakefs.fake_filesystem_unittest import FakeFilesystem
 
 from qenerate.core.code_command import CodeCommand
 from qenerate.core.feature_flag_parser import FeatureFlags
@@ -22,8 +23,8 @@ class FakePlugin(Plugin):
     def generate_operations(
         self,
         definitions: list[GQLDefinition],
-        fragments: list[Fragment],
         schema: GraphQLSchema,
+        fragments: list[Fragment],
     ) -> list[GeneratedFile]:
         return [
             GeneratedFile(
@@ -39,7 +40,7 @@ def fake_preprocessor(files: list[tuple[str, GQLDefinitionType]]) -> Preprocesso
             GQLDefinition(
                 feature_flags=FeatureFlags(plugin="fake", gql_scalar_mappings={}),
                 definition="",
-                fragment_dependencies=[],
+                fragment_dependencies=set(),
                 kind=f[1],
                 name="",
                 source_file=Path(f[0]),
@@ -54,7 +55,7 @@ def fake_preprocessor(files: list[tuple[str, GQLDefinitionType]]) -> Preprocesso
     return preprocessor
 
 
-def test_single_file(fs):
+def test_single_file(fs: FakeFilesystem) -> None:
     fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
@@ -75,7 +76,7 @@ def test_single_file(fs):
     assert os.path.exists("/tmp/my_query.py")
 
 
-def test_unknown_plugin_flag(fs):
+def test_unknown_plugin_flag(fs: FakeFilesystem) -> None:
     fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
@@ -96,7 +97,7 @@ def test_unknown_plugin_flag(fs):
     assert not os.path.exists("/tmp/my_query.py")
 
 
-def test_dir_tree_with_different_operations(fs):
+def test_dir_tree_with_different_operations(fs: FakeFilesystem) -> None:
     fs.add_real_directory(SCHEMA_DIR)
     fs.create_file(
         "/tmp/my_query.gql",
