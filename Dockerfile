@@ -11,7 +11,7 @@ ENV \
 
 # Install dependencies
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project
+RUN uv sync --frozen --no-install-project --python /usr/bin/python3
 
 # other project related files
 COPY LICENSE README.md Makefile ./

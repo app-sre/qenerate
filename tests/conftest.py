@@ -1,5 +1,4 @@
 import json
-import locale
 from collections.abc import Callable
 from pathlib import Path
 from typing import cast
@@ -10,7 +9,7 @@ from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
 from qenerate.core.plugin import GeneratedFile
 
 
-@pytest.fixture()
+@pytest.fixture
 def expected_files() -> Callable[[str, str], list[GeneratedFile]]:
     """Read fixture files from tests/definitions/expected/PLUGIN/CASE and remove .txt suffix."""
 
@@ -23,31 +22,29 @@ def expected_files() -> Callable[[str, str], list[GeneratedFile]]:
     return _
 
 
-@pytest.fixture()
+@pytest.fixture
 def app_interface_schema() -> GraphQLSchema:
-    with open(
-        "tests/generator/introspection-app-interface.json",
-        encoding=locale.getpreferredencoding(False),
-    ) as f:
-        raw_schema = json.loads(f.read())["data"]
-    return build_client_schema(cast(IntrospectionQuery, raw_schema))
+    raw_schema = json.loads(
+        Path("tests/generator/introspection-app-interface.json").read_text(
+            encoding="utf-8"
+        )
+    )["data"]
+    return build_client_schema(cast("IntrospectionQuery", raw_schema))
 
 
-@pytest.fixture()
+@pytest.fixture
 def app_interface_2023_03_schema() -> GraphQLSchema:
-    with open(
-        "tests/generator/introspection-app-interface_2023_03.json",
-        encoding=locale.getpreferredencoding(False),
-    ) as f:
-        raw_schema = json.loads(f.read())["data"]
-    return build_client_schema(cast(IntrospectionQuery, raw_schema))
+    raw_schema = json.loads(
+        Path("tests/generator/introspection-app-interface_2023_03.json").read_text(
+            encoding="utf-8"
+        )
+    )["data"]
+    return build_client_schema(cast("IntrospectionQuery", raw_schema))
 
 
-@pytest.fixture()
+@pytest.fixture
 def github_schema() -> GraphQLSchema:
-    with open(
-        "tests/generator/introspection-github.json",
-        encoding=locale.getpreferredencoding(False),
-    ) as f:
-        raw_schema = json.loads(f.read())["data"]
-    return build_client_schema(cast(IntrospectionQuery, raw_schema))
+    raw_schema = json.loads(
+        Path("tests/generator/introspection-github.json").read_text(encoding="utf-8")
+    )["data"]
+    return build_client_schema(cast("IntrospectionQuery", raw_schema))

@@ -43,7 +43,7 @@ class FeatureFlagParser:
             except KeyError:
                 raise FeatureFlagError(
                     f"Unknown naming_collision_strategy: {m.group(1)}"
-                )
+                ) from None
         return strategy
 
     @staticmethod

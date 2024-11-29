@@ -18,10 +18,10 @@ def normalize_definition(definition: str) -> str:
 
 
 @pytest.mark.parametrize(
-    "file, expected",
+    ("file", "expected"),
     [
         # Test a file with a single query
-        [
+        (
             Path("tests/core/preprocessor/queries/single_query.gql"),
             [
                 GQLDefinition(
@@ -30,12 +30,12 @@ def normalize_definition(definition: str) -> str:
                     name="MyQuery",
                     definition="query MyQuery { some { name } }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing multiple queries
-        [
+        (
             Path("tests/core/preprocessor/queries/multiple_queries.gql"),
             [
                 GQLDefinition(
@@ -44,7 +44,7 @@ def normalize_definition(definition: str) -> str:
                     name="FirstQuery",
                     definition="query FirstQuery { some { name } }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -52,12 +52,12 @@ def normalize_definition(definition: str) -> str:
                     name="SecondQuery",
                     definition="query SecondQuery { other { name } }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing a mutation
-        [
+        (
             Path("tests/core/preprocessor/queries/mutation.gql"),
             [
                 GQLDefinition(
@@ -66,12 +66,12 @@ def normalize_definition(definition: str) -> str:
                     name="CreateReviewForEpisode",
                     definition="mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) { createReview(episode: $ep, review: $review) { stars commentary } }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing a single fragment
-        [
+        (
             Path("tests/core/preprocessor/fragments/single_fragment.gql"),
             [
                 GQLDefinition(
@@ -80,12 +80,12 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing multiple fragments
-        [
+        (
             Path("tests/core/preprocessor/fragments/multiple_fragments.gql"),
             [
                 GQLDefinition(
@@ -94,7 +94,7 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -102,12 +102,12 @@ def normalize_definition(definition: str) -> str:
                     name="My2ndFragment",
                     definition="fragment My2ndFragment on My2ndObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing nested fragments
-        [
+        (
             Path("tests/core/preprocessor/fragments/nested_fragments.gql"),
             [
                 GQLDefinition(
@@ -115,8 +115,8 @@ def normalize_definition(definition: str) -> str:
                     kind=GQLDefinitionType.FRAGMENT,
                     name="MyFragment",
                     definition="fragment MyFragment on MyObject { some { ... NestedFragment } }",
-                    fragment_dependencies=set(["NestedFragment"]),
-                    source_file=Path(""),  # adjusted in test
+                    fragment_dependencies={"NestedFragment"},
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -124,12 +124,12 @@ def normalize_definition(definition: str) -> str:
                     name="NestedFragment",
                     definition="fragment NestedFragment on NestedObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing query with nested fragments
-        [
+        (
             Path("tests/core/preprocessor/queries/query_with_fragments.gql"),
             [
                 GQLDefinition(
@@ -137,8 +137,8 @@ def normalize_definition(definition: str) -> str:
                     kind=GQLDefinitionType.QUERY,
                     name="FirstQuery",
                     definition="query FirstQuery { some { ... FirstFragment } other { ... SecondFragment } }",
-                    fragment_dependencies=set(["FirstFragment", "SecondFragment"]),
-                    source_file=Path(""),  # adjusted in test
+                    fragment_dependencies={"FirstFragment", "SecondFragment"},
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -146,15 +146,15 @@ def normalize_definition(definition: str) -> str:
                     name="FirstFragment",
                     definition="fragment FirstFragment on SomeObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
                     kind=GQLDefinitionType.FRAGMENT,
                     name="SecondFragment",
                     definition="fragment SecondFragment on OtherObject { other { ... NestedFragment } }",
-                    fragment_dependencies=set(["NestedFragment"]),
-                    source_file=Path(""),  # adjusted in test
+                    fragment_dependencies={"NestedFragment"},
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -162,12 +162,12 @@ def normalize_definition(definition: str) -> str:
                     name="NestedFragment",
                     definition="fragment NestedFragment on NestedObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
         # Test a file containing query having multiple references to same fragment
-        [
+        (
             Path(
                 "tests/core/preprocessor/queries/query_with_multiple_fragment_references.gql"
             ),
@@ -177,8 +177,8 @@ def normalize_definition(definition: str) -> str:
                     kind=GQLDefinitionType.QUERY,
                     name="FirstQuery",
                     definition="query FirstQuery { some { ... MyFragment } other { ... MyFragment } }",
-                    fragment_dependencies=set(["MyFragment"]),
-                    source_file=Path(""),  # adjusted in test
+                    fragment_dependencies={"MyFragment"},
+                    source_file=Path(),  # adjusted in test
                 ),
                 GQLDefinition(
                     feature_flags=FeatureFlags(plugin="test", gql_scalar_mappings={}),
@@ -186,10 +186,10 @@ def normalize_definition(definition: str) -> str:
                     name="MyFragment",
                     definition="fragment MyFragment on SomeObject { name }",
                     fragment_dependencies=set(),
-                    source_file=Path(""),  # adjusted in test
+                    source_file=Path(),  # adjusted in test
                 ),
             ],
-        ],
+        ),
     ],
 )
 def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]) -> None:
@@ -205,52 +205,52 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]) -> None:
 
 
 @pytest.mark.parametrize(
-    "definitions, raise_error",
+    ("definitions", "raise_error"),
     [
-        [
+        (
             # Bad Syntax
             [
                 "{}",
                 "blub",
             ],
             GraphQLSyntaxError,
-        ],
-        [
+        ),
+        (
             # Valid simple query
             [
                 "query Test { users_v1 { name } }",
             ],
             None,
-        ],
-        [
+        ),
+        (
             # Valid query with fragments
             [
                 "query Test { users_v1 { ... MyFragment } }",
                 "fragment MyFragment on User_v1 { name }",
             ],
             None,
-        ],
-        [
+        ),
+        (
             # Unused fragment - allow it
             [
                 "fragment MyFragment on User_v1 { name }",
             ],
             None,
-        ],
-        [
+        ),
+        (
             # Unknown fragment
             [
                 "query Test { users_v1 { ... MyFragment } }",
             ],
             GraphQLError,
-        ],
-        [
+        ),
+        (
             # Anonymous query
             [
                 "query { users_v1 { name } }",
             ],
             AnonymousOperationError,
-        ],
+        ),
     ],
 )
 def test_preprocessor_exception(
@@ -264,7 +264,7 @@ def test_preprocessor_exception(
             feature_flags=FeatureFlags(plugin="fake", gql_scalar_mappings={}),
             fragment_dependencies=set(),
             kind=GQLDefinitionType.QUERY,
-            source_file=Path("/tmp"),
+            source_file=Path("/tmp"),  # noqa: S108
             name="",
         )
         for definition in definitions

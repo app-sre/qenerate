@@ -41,13 +41,15 @@ only-include = ["qenerate"]
 
 # Ruff configuration
 [tool.ruff]
+target-version = 'py39'
 line-length = 88
-src = [""]
+src = ["qenerate", "tests"]
 extend-exclude = [
     # exclude some common cache and tmp directories
     ".local",
     ".cache",
     "tmp",
+    "demo",
 ]
 fix = true
 
@@ -70,6 +72,7 @@ ignore = [
     "D4",      # Doc string style
     "E501",    # Line too long
     "G004",    # Logging statement uses f-string
+    "PD011",   # use to_numpy()
     "PLR0904", # Too many public methods
     "PLR0913", # Too many arguments
     "PLR0917", # Too many positional arguments
@@ -92,16 +95,20 @@ ignore = [
     "COM812",
     "COM819",
     "ISC001",
+    # Change in the future
+    "PTH118", # use pathlib.Path instead of os.path.join
+    "TD",     # TODOs
+    "FIX002", # TODOs
 ]
 [tool.ruff.format]
 preview = true
 
 [tool.ruff.lint.isort]
-known-first-party = [""]
+known-first-party = ["qenerate"]
 
 # Mypy configuration
 [tool.mypy]
-files = ["", "tests"]
+files = ["qenerate", "tests"]
 enable_error_code = ["truthy-bool", "redundant-expr"]
 no_implicit_optional = true
 check_untyped_defs = true

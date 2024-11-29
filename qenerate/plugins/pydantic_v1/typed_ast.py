@@ -15,7 +15,7 @@ class ParsedNode:
     fields: list[ParsedNode]
     parsed_type: ParsedFieldType
 
-    def class_code_string(self) -> str:
+    def class_code_string(self) -> str:  # noqa: PLR6301
         return ""
 
     def _needs_class_rendering(self) -> bool:
@@ -29,7 +29,8 @@ class ParsedNode:
             self.fields[0], ParsedFragmentSpreadNode
         )
 
-    def _empty(self) -> str:
+    @staticmethod
+    def _empty() -> str:
         return f"{INDENT}..."
 
 
@@ -37,7 +38,7 @@ class ParsedNode:
 class ParsedInlineFragmentNode(ParsedNode):
     def class_code_string(self) -> str:
         # Assure not Optional[]
-        if not (self.parent and self.parsed_type):  # type: ignore
+        if not (self.parent and self.parsed_type):  # type: ignore[truthy-bool]
             return ""
 
         if self.parsed_type.is_primitive:
@@ -48,9 +49,7 @@ class ParsedInlineFragmentNode(ParsedNode):
             base_class = self.parent.fragment_name
 
         lines = ["\n\n"]
-        lines.append(
-            "class " f"{self.parsed_type.unwrapped_python_type}" f"({base_class}):"
-        )
+        lines.append(f"class {self.parsed_type.unwrapped_python_type}({base_class}):")
         fields_added = False
         for field in self.fields:
             if isinstance(field, ParsedClassNode):
@@ -77,8 +76,7 @@ class ParsedClassNode(ParsedNode):
 
         if self.parsed_type.enum_map:
             return self._enum_code()
-        else:
-            return self._class_code()
+        return self._class_code()
 
     def _class_code(self) -> str:
         base_classes = ", ".join(self._base_classes())
@@ -139,9 +137,11 @@ class ParsedClassNode(ParsedNode):
         https://pydantic-docs.helpmanual.io/usage/types/#unions
         """
         self.fields.sort(key=lambda a: len(a.fields), reverse=True)
-        for field in self.fields:
-            if isinstance(field, ParsedInlineFragmentNode):
-                unions.append(field.parsed_type.unwrapped_python_type)
+        unions.extend(
+            field.parsed_type.unwrapped_python_type
+            for field in self.fields
+            if isinstance(field, ParsedInlineFragmentNode)
+        )
         if len(unions) > 0:
             unions.append(self.parsed_type.unwrapped_python_type)
             return self.parsed_type.wrapped_python_type.replace(
@@ -203,7 +203,7 @@ class ParsedFragmentDefinitionNode(ParsedNode):
 
 @dataclass
 class ParsedFragmentSpreadNode(ParsedNode):
-    def class_code_string(self) -> str:
+    def class_code_string(self) -> str:  # noqa: PLR6301
         return ""
 
 

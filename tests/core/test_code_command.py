@@ -1,3 +1,4 @@
+# ruff: noqa: PLR6301,ARG002,S108,PTH110
 import os
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -70,7 +71,7 @@ def test_single_file(fs: FakeFilesystem) -> None:
     )
     code_command.generate_code(
         introspection_file_path=f"{SCHEMA_DIR}/{APP_INTERFACE_INTROSPECTION}",
-        dir="/tmp",
+        directory="/tmp",
     )
 
     assert os.path.exists("/tmp/my_query.py")
@@ -91,7 +92,7 @@ def test_unknown_plugin_flag(fs: FakeFilesystem) -> None:
     )
     code_command.generate_code(
         introspection_file_path=f"{SCHEMA_DIR}/{APP_INTERFACE_INTROSPECTION}",
-        dir="/tmp",
+        directory="/tmp",
     )
 
     assert not os.path.exists("/tmp/my_query.py")
@@ -124,7 +125,7 @@ def test_dir_tree_with_different_operations(fs: FakeFilesystem) -> None:
     )
     code_command.generate_code(
         introspection_file_path=f"{SCHEMA_DIR}/{APP_INTERFACE_INTROSPECTION}",
-        dir="/tmp",
+        directory="/tmp",
     )
 
     assert os.path.exists("/tmp/my_query.py")
