@@ -54,7 +54,7 @@ def graphql_primitive_to_python(
 def graphql_field_name_to_python(name: str) -> str:
     # ElbFQDN -> ["elb", "f", "q", "d", "n"]
     # SLOParameter -> ["s", "l", "o", "parameter"]
-    parts = re.split("(?=[A-Z])", name)
+    parts = re.split(r"(?=[A-Z])", name)
     if not parts[0]:
         # if first letter was capital, then split will add '' first
         parts = parts[1:]

@@ -1,9 +1,9 @@
+# ruff: noqa: ANN401
 from __future__ import annotations
 
 import operator
-from collections.abc import Mapping
 from functools import reduce
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from graphql import (
     FieldNode,
@@ -45,6 +45,9 @@ from qenerate.plugins.pydantic_v1.typed_ast import (
     ParsedNode,
     ParsedOperationNode,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 INDENT = "    "
 
@@ -134,7 +137,7 @@ class FieldToTypeMatcherVisitor(Visitor):
         type_info: TypeInfo,
         definition: GQLDefinition,
         feature_flags: FeatureFlags,
-    ):
+    ) -> None:
         Visitor.__init__(self)
         self.schema = schema
         self.type_info = type_info
@@ -285,31 +288,30 @@ class FieldToTypeMatcherVisitor(Visitor):
                 graphql_type=graphql_type,
                 custom_mappings=self.feature_flags.gql_scalar_mappings,
             )
-        else:
-            cur = self.parent
-            class_name = graphql_class_name_to_python(graphql_type=graphql_type)
-            collision_enum_suffix = 2
+        cur = self.parent
+        class_name = graphql_class_name_to_python(graphql_type=graphql_type)
+        collision_enum_suffix = 2
 
-            # handle name collisions
-            while cur and cur.parent and class_name in self.deduplication_cache:
-                # Enumerate (1,2,3, ...) if you see a collision
-                if (
-                    self.feature_flags.collision_strategy
-                    == NamingCollisionStrategy.ENUMERATE
-                ):
-                    if collision_enum_suffix == 2:  # noqa: PLR2004
-                        class_name = f"{class_name}__{collision_enum_suffix}"
-                    else:
-                        idx = class_name.rfind("_") - 1
-                        class_name = f"{class_name[:idx]}__{collision_enum_suffix}"
-                    collision_enum_suffix += 1
-                # By default, prefix with parent name if you see a collision
+        # handle name collisions
+        while cur and cur.parent and class_name in self.deduplication_cache:
+            # Enumerate (1,2,3, ...) if you see a collision
+            if (
+                self.feature_flags.collision_strategy
+                == NamingCollisionStrategy.ENUMERATE
+            ):
+                if collision_enum_suffix == 2:  # noqa: PLR2004
+                    class_name = f"{class_name}__{collision_enum_suffix}"
                 else:
-                    class_name = f"{cur.parsed_type.unwrapped_python_type}_{class_name}"
-                cur = cur.parent
+                    idx = class_name.rfind("_") - 1
+                    class_name = f"{class_name[:idx]}__{collision_enum_suffix}"
+                collision_enum_suffix += 1
+            # By default, prefix with parent name if you see a collision
+            else:
+                class_name = f"{cur.parsed_type.unwrapped_python_type}_{class_name}"
+            cur = cur.parent
 
-            self.deduplication_cache.add(class_name)
-            return class_name
+        self.deduplication_cache.add(class_name)
+        return class_name
 
 
 class QueryParser:
@@ -331,7 +333,8 @@ class QueryParser:
 
 class PydanticV1Plugin(Plugin):
     def _traverse(self, node: ParsedNode) -> str:
-        """
+        """Traverse the AST.
+
         Pydantic doesnt play well with from __future__ import annotations
         --> order of class declaration is important:
         - post-order for non-inline fragment nodes, i.e., non-interface nodes
@@ -352,8 +355,9 @@ class PydanticV1Plugin(Plugin):
     def generate_fragments(
         self, definitions: list[GQLDefinition], schema: GraphQLSchema
     ) -> list[Fragment]:
-        """
-        Render all fragments. Handle nested fragments, i.e., fragments which
+        """Render all fragments.
+
+        Handle nested fragments, i.e., fragments which
         depend on other fragments. The current dependency resolving approach
         is brute-force, but will get the job done for most likely use-cases.
 
@@ -370,7 +374,7 @@ class PydanticV1Plugin(Plugin):
                 has_unrendered_dependencies = reduce(
                     operator.or_,
                     [dep not in processed for dep in definition.fragment_dependencies],
-                    False,
+                    False,  # noqa: FBT003
                 )
                 if has_unrendered_dependencies:
                     # not all dependencies rendered yet. It will
@@ -396,7 +400,6 @@ class PydanticV1Plugin(Plugin):
                 )
                 fragment = ast.fields[0]
                 if not isinstance(fragment, ParsedFragmentDefinitionNode):
-                    print(f"[WARNING] {qf} is not a fragment")
                     continue
                 result += self._traverse(ast)
                 result += "\n"
@@ -424,8 +427,9 @@ class PydanticV1Plugin(Plugin):
 
         return list(processed.values())
 
+    @staticmethod
     def _fragment_imports(
-        self, definition: GQLDefinition, fragment_map: Mapping[str, Fragment]
+        definition: GQLDefinition, fragment_map: Mapping[str, Fragment]
     ) -> str:
         imports = ""
         for dep in sorted(definition.fragment_dependencies):
@@ -472,15 +476,13 @@ class PydanticV1Plugin(Plugin):
             qf = definition.source_file
             assembled_definition = "\n\n".join(
                 sorted(
-                    list(
-                        self._assemble_definition(
-                            definition=definition,
-                            fragment_definitions=fragment_definitions,
-                        )
+                    self._assemble_definition(
+                        definition=definition,
+                        fragment_definitions=fragment_definitions,
                     )
                 )
             )
-            result += 'DEFINITION = """\n' f"{assembled_definition}" '\n"""'
+            result += f'DEFINITION = """\n{assembled_definition}\n"""'
             result += f"\n\n\n{CONF}"
             parser = QueryParser()
             ast = parser.parse(

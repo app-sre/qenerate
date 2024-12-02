@@ -1,11 +1,9 @@
+# ruff: noqa: ANN401
 from __future__ import annotations
 
-import locale
-from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from graphql import (
     FragmentDefinitionNode,
@@ -22,9 +20,13 @@ from graphql import (
 
 from qenerate.core.feature_flag_parser import FeatureFlagParser, FeatureFlags
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+
 
 class AnonymousOperationError(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(f"All operations must be named:\n{message}")
 
 
@@ -45,15 +47,15 @@ class GQLDefinition:
 
 
 class DefinitionVisitor(Visitor):
-    def __init__(self, source_file_path: Path, feature_flags: FeatureFlags):
+    def __init__(self, source_file_path: Path, feature_flags: FeatureFlags) -> None:
         Visitor.__init__(self)
         self.definitions: list[GQLDefinition] = []
         self._feature_flags = feature_flags
         self._source_file_path = source_file_path
         self._stack: list[GQLDefinition] = []
 
+    @staticmethod
     def _node_name(
-        self,
         node: OperationDefinitionNode | FragmentDefinitionNode | FragmentSpreadNode,
     ) -> str:
         if not node.name:
@@ -61,8 +63,8 @@ class DefinitionVisitor(Visitor):
             raise ValueError(f"{node} does not have a name")
         return node.name.value
 
+    @staticmethod
     def _node_body(
-        self,
         node: OperationDefinitionNode | FragmentDefinitionNode,
     ) -> str:
         if not node.loc:
@@ -70,8 +72,7 @@ class DefinitionVisitor(Visitor):
             raise ValueError(f"{node} does not have loc set")
         start = node.loc.start_token.start
         end = node.loc.end_token.end
-        body = node.loc.source.body[start:end]
-        return body
+        return node.loc.source.body[start:end]
 
     def _add_definition(self) -> None:
         if self._stack:
@@ -103,10 +104,6 @@ class DefinitionVisitor(Visitor):
             )
         else:
             # TODO: logger
-            print(
-                "[WARNING] Skipping operation definition because"
-                f" it is neither a query nor a mutation: \n{body}"
-            )
             return
         self._stack.append(definition)
 
@@ -135,9 +132,8 @@ class DefinitionVisitor(Visitor):
 
 
 class Preprocessor:
-    def validate(
-        self, definitions: Iterable[GQLDefinition], schema: GraphQLSchema
-    ) -> None:
+    @staticmethod
+    def validate(definitions: Iterable[GQLDefinition], schema: GraphQLSchema) -> None:
         all_definitions = ""
         for definition in definitions:
             all_definitions += definition.definition + " "
@@ -154,18 +150,11 @@ class Preprocessor:
                 continue
             raise error
 
-    def process_file(self, file_path: Path) -> list[GQLDefinition]:
-        with open(file_path, encoding=locale.getpreferredencoding(False)) as f:
-            content = f.read()
-        feature_flags = FeatureFlagParser.parse(
-            definition=content,
-        )
-        try:
-            document_ast = parse(content)
-        except Exception as e:
-            print(f"[ERROR] preprocessing file {file_path}")
-            raise e
-
+    @staticmethod
+    def process_file(file_path: Path) -> list[GQLDefinition]:
+        content = file_path.read_text(encoding="utf-8")
+        feature_flags = FeatureFlagParser.parse(definition=content)
+        document_ast = parse(content)
         visitor = DefinitionVisitor(
             feature_flags=feature_flags,
             source_file_path=file_path,

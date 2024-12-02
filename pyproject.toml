@@ -1,63 +1,104 @@
-[tool.poetry]
+[project]
 name = "qenerate"
-version = "0.6.5"
+version = "0.7.0"
+requires-python = ">=3.9"
 description = "Code Generator for GraphQL Query and Fragment Data Classes"
-authors = ["Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"]
-maintainers = ["Red Hat - Service Delivery - AppSRE <sd-app-sre@redhat.com>"]
-license = "Apache-2.0"
+readme = "README.md"
+license = { text = "Apache 2.0" }
+authors = [
+    { name = "Red Hat - Service Delivery - AppSRE", email = "sd-app-sre@redhat.com" },
+]
+dependencies = ["graphql-core ~=3.2.5", "requests ~=2.32.3"]
+
+
+[project.urls]
 homepage = "https://github.com/app-sre/qenerate"
 repository = "https://github.com/app-sre/qenerate"
 documentation = "https://github.com/app-sre/qenerate"
 
-[tool.poetry.dependencies]
-python = "^3.9"
-requests = "^2.22"
-graphql-core = "^3.2"
+[dependency-groups]
+dev = [
+    "mypy ~=1.13.0",
+    "pyfakefs ~=5.7.1",
+    "pytest ~=8.3.3",
+    "requests-mock ~=1.12.1",
+    "ruff ~=0.8",
+    "types-requests ~=2.32.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^5.2"
-requests-mock = "^1.9"
-types-requests = "^2.27"
-pyfakefs = "^4.5"
-mypy = "^1.8.0"
-ruff = "^0.4.8"
-
-[tool.poetry.scripts]
+[project.scripts]
 qenerate = 'qenerate.cli:run'
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.sdist]
+only-include = ["qenerate"]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["qenerate"]
+
+# Ruff configuration
 [tool.ruff]
-line-length = 88
 target-version = 'py39'
-required-version = "0.4.8"
-
-src = ["qenerate"]
-extend-exclude = ["demo", ".local", ".cache"]
+line-length = 88
+src = ["qenerate", "tests"]
+extend-exclude = [
+    # exclude some common cache and tmp directories
+    ".local",
+    ".cache",
+    "tmp",
+    "demo",
+]
 fix = true
 
 [tool.ruff.lint]
 preview = true
-
-# defaults are ["E4", "E7", "E9", "F"]
-extend-select = [
-    # flake8 default rules
-    "E1", # preview rule
-    "E2", # preview rule
-    "W",
-    # isort
-    "I",
-    # pylint
-    "PL",
-    # pyupgrade
-    "UP",
-]
+select = ["ALL"]
 ignore = [
+    "CPY",     # Missing copyright header
+    "D100",    # Missing docstring in public module
+    "D101",    # Missing docstring in public class
+    "D102",    # Missing docstring in public method
+    "D103",    # Missing docstring in public function
+    "D104",    # Missing docstring in public package
+    "D105",    # Missing docstring in magic method
+    "D107",    # Missing docstring in __init__
+    "D203",    # 1 blank line required before class docstring
+    "D211",    # No blank lines allowed before class docstring
+    "D212",    # multi-line-summary-first-line
+    "D213",    # multi-line-summary-second-line
+    "D4",      # Doc string style
+    "E501",    # Line too long
+    "G004",    # Logging statement uses f-string
+    "PD011",   # use to_numpy()
+    "PLR0904", # Too many public methods
     "PLR0913", # Too many arguments
     "PLR0917", # Too many positional arguments
-    "PLR6301", # Method `...` could be a function, class method, or static method
+    "S101",    # Use of assert detected. Pytest uses assert
+    "S404",    # subprocess import
+    "EM101",   # Exception must not use a string literal, assign to variable first
+    "EM102",   # Exception must not use an f-string literal, assign to variable first
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "TRY300",  # try-consider-else
+    # pydoclint
+    "DOC",
+    # May conflict with the formatter, https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q",
+    "COM812",
+    "COM819",
+    "ISC001",
+    # Change in the future
+    "PTH118", # use pathlib.Path instead of os.path.join
+    "TD",     # TODOs
+    "FIX002", # TODOs
 ]
 [tool.ruff.format]
 preview = true

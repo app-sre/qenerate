@@ -1,7 +1,7 @@
 from json import JSONDecodeError
 
+import pytest
 import requests_mock
-from pytest import raises
 
 from qenerate.core.introspection_command import IntrospectionCommand
 
@@ -16,5 +16,5 @@ def test_valid_response(requests_mock: requests_mock.Mocker) -> None:
 def test_does_not_return_json(requests_mock: requests_mock.Mocker) -> None:
     requests_mock.post(TEST_URL, text="Not a json")
 
-    with raises(JSONDecodeError):
+    with pytest.raises(JSONDecodeError):
         IntrospectionCommand.introspection_query(TEST_URL)

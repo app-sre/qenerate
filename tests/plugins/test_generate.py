@@ -1,4 +1,3 @@
-import locale
 from collections.abc import Callable, Mapping
 from enum import Enum
 from pathlib import Path
@@ -19,9 +18,16 @@ class Schema(Enum):
 
 
 @pytest.mark.parametrize(
-    "case, dep_graph, type_map, collision_strategies, use_schema, custom_type_mapping",
+    (
+        "case",
+        "dep_graph",
+        "type_map",
+        "collision_strategies",
+        "use_schema",
+        "custom_type_mapping",
+    ),
     [
-        [
+        (
             "simple_queries",
             {},
             {
@@ -34,8 +40,8 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
-        ],
-        [
+        ),
+        (
             "complex_queries",
             {},
             {
@@ -48,8 +54,8 @@ class Schema(Enum):
             },
             Schema.APP_INTERFACE,
             {},
-        ],
-        [
+        ),
+        (
             "fragments",
             {
                 "nested_fragment": ["VaultSecret"],
@@ -65,8 +71,8 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
-        ],
-        [
+        ),
+        (
             "fragments_2023_03",
             {},
             {
@@ -75,8 +81,8 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE_2023_03,
             {},
-        ],
-        [
+        ),
+        (
             "simple_queries_with_fragments",
             {
                 "ocp_query": ["VaultSecret"],
@@ -94,8 +100,8 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
-        ],
-        [
+        ),
+        (
             "complex_queries_with_fragments",
             {
                 "saas_with_multiple_fragment_references": ["VaultSecret"],
@@ -107,8 +113,8 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {},
-        ],
-        [
+        ),
+        (
             "github",
             {},
             {
@@ -119,8 +125,8 @@ class Schema(Enum):
             {},
             Schema.GITHUB,
             {},
-        ],
-        [
+        ),
+        (
             "custom_mappings",
             {},
             {
@@ -129,7 +135,7 @@ class Schema(Enum):
             {},
             Schema.APP_INTERFACE,
             {"JSON": "str"},
-        ],
+        ),
     ],
 )
 @pytest.mark.parametrize("plugin_name", plugins.keys())
@@ -156,8 +162,7 @@ def test_rendering(
     operation_definitions = []
     for source_file in Path(f"tests/generator/definitions/{case}").glob("**/*"):
         file_id = source_file.with_suffix("").name
-        with open(source_file, encoding=locale.getpreferredencoding(False)) as f:
-            content = f.read()
+        content = source_file.read_text()
         kind = type_map[file_id]
         collision_strategy = collision_strategies.get(
             file_id, NamingCollisionStrategy.PARENT_CONTEXT
@@ -181,20 +186,18 @@ def test_rendering(
 
     plugin = plugins[plugin_name]
 
-    generated_files = []
-
     fragments = plugin.generate_fragments(
         definitions=fragment_definitions,
         schema=schema,
     )
 
-    for fragment in fragments:
-        generated_files.append(
-            GeneratedFile(
-                file=fragment.file,
-                content=fragment.content,
-            )
+    generated_files = [
+        GeneratedFile(
+            file=fragment.file,
+            content=fragment.content,
         )
+        for fragment in fragments
+    ]
 
     generated_files.extend(
         plugin.generate_operations(

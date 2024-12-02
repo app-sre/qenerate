@@ -1,6 +1,5 @@
 import argparse
-
-import pkg_resources  # type: ignore
+from importlib.metadata import version
 
 from qenerate.core.code_command import CodeCommand
 from qenerate.core.introspection_command import IntrospectionCommand
@@ -10,10 +9,7 @@ from qenerate.core.preprocessor import Preprocessor
 def run() -> None:
     parser = argparse.ArgumentParser(prog="qenerate")
     parser.add_argument(
-        "-v",
-        "--version",
-        action="version",
-        version=pkg_resources.require("qenerate")[0].version,
+        "-v", "--version", action="version", version=version("qenerate")
     )
 
     subparsers = parser.add_subparsers(help="Supported commands", dest="subcommand")
@@ -46,7 +42,7 @@ def run() -> None:
         code_command = CodeCommand(preprocessor=Preprocessor())
         code_command.generate_code(
             introspection_file_path=args.introspection,
-            dir=args.dir,
+            directory=args.dir,
         )
 
 

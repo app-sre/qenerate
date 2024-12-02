@@ -12,9 +12,9 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
 
 
 @pytest.mark.parametrize(
-    "input, expected",
+    ("gql_input", "expected"),
     [
-        [
+        (
             GraphQLScalarType(name="String"),
             UnwrapperResult(
                 wrapper_stack=[WrapperType.OPTIONAL],
@@ -22,8 +22,8 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
                 is_primitive=True,
                 enum_map={},
             ),
-        ],
-        [
+        ),
+        (
             GraphQLNonNull(GraphQLList(GraphQLObjectType(name="MyObject", fields={}))),
             UnwrapperResult(
                 wrapper_stack=[WrapperType.LIST, WrapperType.OPTIONAL],
@@ -31,8 +31,8 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
                 is_primitive=False,
                 enum_map={},
             ),
-        ],
-        [
+        ),
+        (
             GraphQLList(GraphQLNonNull(GraphQLScalarType(name="Integer"))),
             UnwrapperResult(
                 wrapper_stack=[WrapperType.OPTIONAL, WrapperType.LIST],
@@ -40,8 +40,8 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
                 is_primitive=True,
                 enum_map={},
             ),
-        ],
-        [
+        ),
+        (
             GraphQLList(GraphQLNonNull(GraphQLList(GraphQLScalarType(name="Integer")))),
             UnwrapperResult(
                 wrapper_stack=[
@@ -54,8 +54,8 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
                 is_primitive=True,
                 enum_map={},
             ),
-        ],
-        [
+        ),
+        (
             GraphQLList(
                 GraphQLNonNull(
                     GraphQLEnumType(name="Integer", values={"K": "V", "KK": "VV"})
@@ -75,12 +75,12 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
                     "KK": "VV",
                 },
             ),
-        ],
+        ),
     ],
 )
-def test_unwrapper(input: GraphQLOutputType, expected: UnwrapperResult) -> None:
-    result = Unwrapper.unwrap(input)
+def test_unwrapper(gql_input: GraphQLOutputType, expected: UnwrapperResult) -> None:
+    result = Unwrapper.unwrap(gql_input)
 
     assert result.is_primitive == expected.is_primitive
     assert result.wrapper_stack == expected.wrapper_stack
-    assert result.inner_gql_type.name == expected.inner_gql_type.name  # type: ignore
+    assert result.inner_gql_type.name == expected.inner_gql_type.name  # type: ignore[union-attr]

@@ -24,10 +24,9 @@ class UnwrapperResult:
 
 
 class Unwrapper:
-    """
+    """Unwrapper is responsible for unwrapping those lists and non-optionals.
+
     GraphQLOutputType can be nested in lists and non-optionals.
-    Unwrapper is responsible for unwrapping those lists and
-    non-optionals.
     """
 
     @staticmethod

@@ -9,9 +9,9 @@ from qenerate.core.feature_flag_parser import (
 
 
 @pytest.mark.parametrize(
-    "definition, expected_flags",
+    ("definition", "expected_flags"),
     [
-        [
+        (
             """
             # qenerate: plugin=PluginV1
             query {}
@@ -21,8 +21,8 @@ from qenerate.core.feature_flag_parser import (
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={},
             ),
-        ],
-        [
+        ),
+        (
             """
             # qenerate: plugin=PluginV1
             # qenerate: naming_collision_strategy=ENUMERATE
@@ -33,8 +33,8 @@ from qenerate.core.feature_flag_parser import (
                 collision_strategy=NamingCollisionStrategy.ENUMERATE,
                 gql_scalar_mappings={},
             ),
-        ],
-        [
+        ),
+        (
             """
             # qenerate: plugin=PluginV1
             # qenerate: naming_collision_strategy=PARENT_CONTEXT
@@ -45,8 +45,8 @@ from qenerate.core.feature_flag_parser import (
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={},
             ),
-        ],
-        [
+        ),
+        (
             """
             # qenerate: plugin=PluginV1
             # qenerate: map_gql_scalar=JSON -> str
@@ -57,8 +57,8 @@ from qenerate.core.feature_flag_parser import (
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={"JSON": "str"},
             ),
-        ],
-        [
+        ),
+        (
             """
             # qenerate: plugin=PluginV1
             # qenerate: map_gql_scalar=JSON -> str
@@ -70,7 +70,7 @@ from qenerate.core.feature_flag_parser import (
                 collision_strategy=NamingCollisionStrategy.PARENT_CONTEXT,
                 gql_scalar_mappings={"JSON": "str", "A": "B"},
             ),
-        ],
+        ),
     ],
 )
 def test_valid_feature_flags(definition: str, expected_flags: FeatureFlags) -> None:
@@ -82,9 +82,9 @@ def test_valid_feature_flags(definition: str, expected_flags: FeatureFlags) -> N
 
 
 @pytest.mark.parametrize(
-    "definition, expected_message",
+    ("definition", "expected_message"),
     [
-        [
+        (
             """
             query {}
             """,
@@ -92,15 +92,15 @@ def test_valid_feature_flags(definition: str, expected_flags: FeatureFlags) -> N
                 "Missing valid qenerate plugin flag in query file: "
                 "# qenerate: plugin=<plugin_id>"
             ),
-        ],
-        [
+        ),
+        (
             """
             # qenerate: plugin=PluginV1
             # qenerate: naming_collision_strategy=DOES_NOT_EXIST
             query {}
             """,
             ("Unknown naming_collision_strategy: DOES_NOT_EXIST"),
-        ],
+        ),
     ],
 )
 def test_feature_flags_exceptions(definition: str, expected_message: str) -> None:

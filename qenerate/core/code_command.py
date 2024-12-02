@@ -1,5 +1,4 @@
 import json
-import locale
 import os
 from pathlib import Path
 from typing import cast
@@ -21,29 +20,25 @@ plugins: dict[str, Plugin] = {
 class CodeCommand:
     def __init__(
         self, preprocessor: Preprocessor, plugins: dict[str, Plugin] = plugins
-    ):
+    ) -> None:
         self._preprocessor = preprocessor
         self._plugins = plugins
 
-    def _find_query_files(self, dir: str) -> list[str]:
+    @staticmethod
+    def _find_query_files(directory: str) -> list[str]:
         result: list[str] = []
-        for root, _, files in os.walk(dir):
-            for name in files:
-                if name.endswith(".gql"):
-                    result.append(os.path.join(root, name))
+        for root, _, files in os.walk(directory):
+            result.extend(
+                os.path.join(root, name) for name in files if name.endswith(".gql")
+            )
         return result
 
-    def _preprocess(self, dir: str, schema: GraphQLSchema) -> list[GQLDefinition]:
+    def _preprocess(self, directory: str, schema: GraphQLSchema) -> list[GQLDefinition]:
         definitions: list[GQLDefinition] = []
-        for file in self._find_query_files(dir):
+        for file in self._find_query_files(directory):
             try:
                 definitions.extend(self._preprocessor.process_file(Path(file)))
-            except FeatureFlagError:
-                print(
-                    f"[Skipping File] Query in {file} does not "
-                    "specify generator plugin via "
-                    '"# qenerate: plugin=<plugin_id>" set.'
-                )
+            except FeatureFlagError:  # noqa: PERF203
                 continue
         self._preprocessor.validate(
             definitions=definitions,
@@ -51,33 +46,28 @@ class CodeCommand:
         )
         return definitions
 
-    def generate_code(self, introspection_file_path: str, dir: str) -> None:
-        with open(
-            introspection_file_path, encoding=locale.getpreferredencoding(False)
-        ) as f:
-            introspection = json.loads(f.read())["data"]
+    def generate_code(self, introspection_file_path: str, directory: str) -> None:
+        introspection = json.loads(
+            Path(introspection_file_path).read_text(encoding="utf-8")
+        )["data"]
 
-        schema = build_client_schema(cast(IntrospectionQuery, introspection))
+        schema = build_client_schema(cast("IntrospectionQuery", introspection))
 
         definitions = self._preprocess(
-            dir=dir,
+            directory=directory,
             schema=schema,
         )
         operations_by_plugin: dict[str, list[GQLDefinition]] = {
-            plugin: [] for plugin in self._plugins.keys()
+            plugin: [] for plugin in self._plugins
         }
         fragments_by_plugin: dict[str, list[GQLDefinition]] = {
-            plugin: [] for plugin in self._plugins.keys()
+            plugin: [] for plugin in self._plugins
         }
 
         for definition in definitions:
             plugin_name = definition.feature_flags.plugin
-            if plugin_name not in self._plugins.keys():
+            if plugin_name not in self._plugins:
                 # TODO: proper logging
-                print(
-                    f"[WARNING] Unknown plugin: {plugin_name} "
-                    f"for {definition.source_file} - Skipping"
-                )
                 continue
 
             if definition.kind in {GQLDefinitionType.QUERY, GQLDefinitionType.MUTATION}:
@@ -86,7 +76,7 @@ class CodeCommand:
                 fragments_by_plugin[definition.feature_flags.plugin].append(definition)
 
         generated_files: list[GeneratedFile] = []
-        for plugin_name in self._plugins.keys():
+        for plugin_name in self._plugins:
             plugin = self._plugins[plugin_name]
 
             rendered_fragments = plugin.generate_fragments(

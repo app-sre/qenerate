@@ -1,5 +1,15 @@
 # Qenerate Changelog
 
+## 0.7.0
+
+ENHANCEMENTS:
+
+* Use [uv](https://docs.astral.sh/uv/) for project and dependency management
+
+Misc:
+
+* Dependency updates
+
 ## 0.6.5
 
 Misc:
