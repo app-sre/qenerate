@@ -8,12 +8,14 @@ from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
 from qenerate.core.feature_flag_parser import FeatureFlagError
 from qenerate.core.plugin import GeneratedFile, Plugin
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
-from qenerate.plugins.pydantic_v1.plugin import (
+from qenerate.plugins.pydantic.plugin import (
     PydanticV1Plugin,
+    PydanticV2Plugin,
 )
 
 plugins: dict[str, Plugin] = {
     "pydantic_v1": PydanticV1Plugin(),
+    "pydantic_v2": PydanticV2Plugin(),
 }
 
 

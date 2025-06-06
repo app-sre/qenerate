@@ -1,5 +1,11 @@
 # Qenerate Changelog
 
+## 0.8.0
+
+Features:
+
+* Add support for Pydantic v2
+
 ## 0.7.0
 
 ENHANCEMENTS:
