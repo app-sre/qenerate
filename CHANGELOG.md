@@ -1,5 +1,12 @@
 # Qenerate Changelog
 
+## 0.9.0
+
+Features:
+
+* Drop Python 3.9, 3.10, and Python 3.11 support.
+* Update documentation
+
 ## 0.8.1
 
 Chore:

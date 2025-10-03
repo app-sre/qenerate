@@ -1,6 +1,6 @@
-# Pydantic V1 Plugin
+# Pydantic V2 Plugin
 
-This plugin generates simple [pydantic](https://docs.pydantic.dev/1.10/) data classes for your queries and fragments.
+This plugin generates simple [pydantic](https://docs.pydantic.dev/) data classes for your queries and fragments.
 Pydantic is capable of mapping nested dictionaries to nested types.
 I.e., no data mapping functions need to be generated.
 
@@ -13,8 +13,8 @@ Supported definitions are:
 
 ## Opinionated Custom Scalars
 
-The `pydantic_v1` plugin has an opinionated approach towards some very common custom scalars
-defined in https://the-guild.dev/graphql/scalars/docs
+The `pydantic_v2` plugin has an opinionated approach towards some very common custom scalars
+defined in <https://the-guild.dev/graphql/scalars/docs>
 
 Currently it maps the following:
 
@@ -37,8 +37,9 @@ See section about `Custom Type Mapping` in README.
 ### Query with inline fragments
 
 **hero.gql:**
+
 ```graphql
-# qenerate: plugin=pydantic_v1
+# qenerate: plugin=pydantic_v2
 query HeroForEpisode {
   hero {
     name
@@ -53,13 +54,12 @@ query HeroForEpisode {
 ```
 
 **hero.py:**
+
 ```python
 class ConfiguredBaseModel(BaseModel):
-  # This is set so pydantic can properly match the data to union, i.e., properly infer the correct type
-  # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-  # https://stackoverflow.com/a/69705356/4478420
-  smart_union = True
-  extra = Extra.forbid
+    model_config = ConfigDict(
+        extra='forbid'
+    )
 
 
 class Hero(ConfiguredBaseModel):
@@ -81,8 +81,9 @@ class HeroForEpisodeData(ConfiguredBaseModel):
 ### Query with Fragments
 
 **hero.gql:**
+
 ```graphql
-# qenerate: plugin=pydantic_v1
+# qenerate: plugin=pydantic_v2
 query HeroForEpisode {
   hero {
     ... HeroName
@@ -93,34 +94,39 @@ query HeroForEpisode {
 ```
 
 **hero_name_fragment.gql:**
+
 ```graphql
-# qenerate: plugin=pydantic_v1
+# qenerate: plugin=pydantic_v2
 fragment HeroName on Hero {
   name
 }
 ```
 
 **hero_age_fragment.gql:**
+
 ```graphql
-# qenerate: plugin=pydantic_v1
+# qenerate: plugin=pydantic_v2
 fragment HeroAge on Hero {
   age
 }
 ```
 
 **hero_name_fragment.py:**
+
 ```python
 class HeroName(BaseModel):
     name: str = Field(..., alias="name")
 ```
 
 **hero_age_fragment.py:**
+
 ```python
 class HeroAge(BaseModel):
     age: int = Field(..., alias="age")
 ```
 
 **hero.py:**
+
 ```python
 from hero_age_fragment import HeroAge
 from hero_name_fragment import HeroName

@@ -70,10 +70,10 @@ in the [generated python file](demo/gql/queries/example2.py).
 
 `qenerate` follows a plugin based approach. I.e., multiple code generators are supported.
 Choosing a code generator is done inside the query file, e.g., the following example will
-generate data classes using the `pydantic_v1` plugin:
+generate data classes using the `pydantic_v2` plugin:
 
 ```graphql
-# qenerate: plugin=pydantic_v1
+# qenerate: plugin=pydantic_v2
 query {
     ...
 }
@@ -84,7 +84,8 @@ while at the same time keeping existing plugins stable and fully backwards compa
 
 Currently available plugins are:
 
-- [pydantic_v1](docs/plugins/pydantic_v1.md) for generating [Pydantic](https://docs.pydantic.dev/) data classes
+- [pydantic_v1](docs/plugins/pydantic_v1.md) for generating [Pydantic](https://docs.pydantic.dev/1.10/) data classes
+- [pydantic_v2](docs/plugins/pydantic_v2.md) for generating [Pydantic V2](https://docs.pydantic.dev/) data classes
 
 ## Feature Flags
 
