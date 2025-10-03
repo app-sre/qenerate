@@ -1,6 +1,6 @@
 [project]
 name = "qenerate"
-version = "0.8.0"
+version = "0.8.1"
 requires-python = ">=3.9"
 description = "Code Generator for GraphQL Query and Fragment Data Classes"
 readme = "README.md"
@@ -18,12 +18,12 @@ documentation = "https://github.com/app-sre/qenerate"
 
 [dependency-groups]
 dev = [
-    "mypy ~=1.16.0",
-    "pyfakefs ~=5.8.0",
-    "pytest ~=8.4.0",
-    "requests-mock ~=1.12.1",
-    "ruff ~=0.11.12",
-    "types-requests ~=2.32.0",
+    "mypy ==1.18.2",
+    "pyfakefs ==5.9.3",
+    "pytest ==8.4.2",
+    "requests-mock ==1.12.1",
+    "ruff ==0.13.3",
+    "types-requests ==2.32.4.20250913",
 ]
 
 [project.scripts]

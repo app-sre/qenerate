@@ -1,19 +1,9 @@
-# TWINE_USERNAME & TWINE_PASSWORD are available in the Jenkins job
-BUILD_ARGS := TWINE_USERNAME TWINE_PASSWORD
 CONTAINER_ENGINE ?= $(shell which podman >/dev/null 2>&1 && echo podman || echo docker)
-
-.EXPORT_ALL_VARIABLES:
-UV_PUBLISH_USERNAME = $(TWINE_USERNAME)
-UV_PUBLISH_PASSWORD = $(TWINE_PASSWORD)
 
 format:
 	uv run ruff check
 	uv run ruff format
 .PHONY: format
-
-pr-check:
-	$(CONTAINER_ENGINE) build --build-arg MAKE_TARGET=test $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
-.PHONY: pr-check
 
 test:
 	uv run ruff check --no-fix
@@ -37,11 +27,7 @@ test:
 	[ $$(unzip -l dist/qenerate-*.whl | wc -l) -eq 24 ] || (unzip -l dist/qenerate-*.whl && echo "dist/qenerate-*.whl has more or less than 24 files" && exit 1)
 .PHONY: test
 
-build-deploy:
-	$(CONTAINER_ENGINE) build --build-arg MAKE_TARGET=pypi $(foreach arg,$(BUILD_ARGS),--build-arg $(arg)) .
-.PHONY: build-deploy
-
 pypi:
 	uv build
-	uv publish
+	uv publish || true
 .PHONY: pypi

@@ -1,5 +1,12 @@
 # Qenerate Changelog
 
+## 0.8.1
+
+Chore:
+
+* Konflux migration
+* Update dependencies
+
 ## 0.8.0
 
 Features:

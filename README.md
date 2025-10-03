@@ -170,25 +170,22 @@ Work on this is being conducted in [#77](https://github.com/app-sre/qenerate/pul
 
 ### CI
 
-CI happens on an [app-sre](https://github.com/app-sre/) owned Jenkins instance.
-
-- [Releases](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-build-main/)
-- [PR Checks](https://ci.ext.devshift.net/job/app-sre-qenerate-gh-pr-check/)
+CI/CD is done via [Konflux](https://konflux-ui.apps.stone-prd-rh01.pg1f.p1.openshiftapps.com/ns/app-sre-tenant/applications)
 
 ### Build and Dependency Management
 
-`qenerate` uses [poetry](https://python-poetry.org/docs/) as build and dependency management system.
+`qenerate` uses [UV](https://docs.astral.sh/uv/) as build and dependency management system.
 
 ### Formatting
 
 `qenerate` uses [ruff](https://docs.astral.sh/ruff/) for code checking and formatting.
 
-### Generating setup.py
+### Release
 
-```sh
-pip install poetry2setup
-poetry2setup .
-```
+- Bump the version in `pyproject.toml`
+- Update `CHANGELOG.md`
+- Update the `uv.lock` file via `uv sync -U`
+- Create and merge a PR
 
 ### Architecture
 
