@@ -40,7 +40,7 @@ class CodeCommand:
         for file in self._find_query_files(directory):
             try:
                 definitions.extend(self._preprocessor.process_file(Path(file)))
-            except FeatureFlagError:  # noqa: PERF203
+            except FeatureFlagError:
                 continue
         self._preprocessor.validate(
             definitions=definitions,
