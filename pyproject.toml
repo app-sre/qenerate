@@ -19,7 +19,7 @@ documentation = "https://github.com/app-sre/qenerate"
 [dependency-groups]
 dev = [
     "mypy ==1.18.2",
-    "pyfakefs ==5.10.0",
+    "pyfakefs ==5.10.1",
     "pytest ==8.4.2",
     "requests-mock ==1.12.1",
     "ruff ==0.14.2",
