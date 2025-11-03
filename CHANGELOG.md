@@ -1,5 +1,11 @@
 # Qenerate Changelog
 
+## 0.9.1
+
+Chore:
+
+* Update dependencies
+
 ## 0.9.0
 
 Features:
