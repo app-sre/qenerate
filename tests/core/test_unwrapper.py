@@ -15,10 +15,10 @@ from qenerate.core.unwrapper import Unwrapper, UnwrapperResult, WrapperType
     ("gql_input", "expected"),
     [
         (
-            GraphQLScalarType(name="String"),
+            GraphQLScalarType(name="MyString"),
             UnwrapperResult(
                 wrapper_stack=[WrapperType.OPTIONAL],
-                inner_gql_type=GraphQLScalarType(name="String"),
+                inner_gql_type=GraphQLScalarType(name="MyString"),
                 is_primitive=True,
                 enum_map={},
             ),
