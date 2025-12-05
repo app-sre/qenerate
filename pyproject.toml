@@ -22,7 +22,7 @@ dev = [
     "pyfakefs ==5.10.2",
     "pytest ==9.0.1",
     "requests-mock ==1.12.1",
-    "ruff ==0.14.7",
+    "ruff ==0.14.8",
     "types-requests ==2.32.4.20250913",
 ]
 
