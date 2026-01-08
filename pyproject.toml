@@ -23,7 +23,7 @@ dev = [
     "pytest ==9.0.2",
     "requests-mock ==1.12.1",
     "ruff ==0.14.10",
-    "types-requests ==2.32.4.20250913",
+    "types-requests ==2.32.4.20260107",
 ]
 
 [project.scripts]
