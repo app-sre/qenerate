@@ -235,11 +235,11 @@ wheels = [
 
 [[package]]
 name = "pyfakefs"
-version = "6.1.2"
+version = "6.1.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cd/0f/4e12874058e9b41d3b0a6440db1eaad19847b53ea8b62af6d4adad1595c9/pyfakefs-6.1.2.tar.gz", hash = "sha256:9d01641b3f65bcfc4872b5f5c8bc57f4253e4b035aaea63c57ed901c9f2e0213", size = 225807, upload-time = "2026-02-22T17:59:05.647Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/61/8faa304523d40299a2e48d69a95a048b06494df92f26a8a9dca06f69899b/pyfakefs-6.1.3.tar.gz", hash = "sha256:8368ecd2bcdd126362b8900b26dd543afe881d5c396892dcb86e4dc561a39f0f", size = 226237, upload-time = "2026-03-01T08:03:30.778Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/54/dfc279eedcf372e753cd9b55b6d58be34470ac7d0215c818a03b8fa37eea/pyfakefs-6.1.2-py3-none-any.whl", hash = "sha256:f3bb5fa720b8418f5f6d5fdc15f011efbe0ef36fa9f389eadd764c5f67677971", size = 239098, upload-time = "2026-02-22T17:59:03.427Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/7c/6fc907f6f22a7f0a058c992fcef5ddb11f1b7a9dffe737ddf41a8b9a53e5/pyfakefs-6.1.3-py3-none-any.whl", hash = "sha256:8bf5fa4637ab7749891435c419f155be70fa0341e34b67b0a8a0364cd5e2249d", size = 239413, upload-time = "2026-03-01T08:03:28.492Z" },
 ]
 
 [[package]]
@@ -295,7 +295,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "mypy", specifier = "==1.19.1" },
-    { name = "pyfakefs", specifier = "==6.1.2" },
+    { name = "pyfakefs", specifier = "==6.1.3" },
     { name = "pytest", specifier = "==9.0.2" },
     { name = "requests-mock", specifier = "==1.12.1" },
     { name = "ruff", specifier = "==0.15.4" },
