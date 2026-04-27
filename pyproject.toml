@@ -18,12 +18,12 @@ documentation = "https://github.com/app-sre/qenerate"
 
 [dependency-groups]
 dev = [
-    "mypy ==1.19.1",
-    "pyfakefs ==6.1.6",
-    "pytest ==9.0.2",
+    "mypy ==1.20.2",
+    "pyfakefs ==6.2.0",
+    "pytest ==9.0.3",
     "requests-mock ==1.12.1",
-    "ruff ==0.15.8",
-    "types-requests ==2.33.0.20260327",
+    "ruff ==0.15.12",
+    "types-requests ==2.33.0.20260408",
 ]
 
 [project.scripts]
