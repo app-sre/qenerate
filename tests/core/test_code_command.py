@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock
 
+import pytest
 from graphql import GraphQLSchema
 from pyfakefs.fake_filesystem_unittest import FakeFilesystem
 
@@ -131,3 +132,46 @@ def test_dir_tree_with_different_operations(fs: FakeFilesystem) -> None:
     assert os.path.exists("/tmp/my_query.py")
     assert os.path.exists("/tmp/sub/my_query.py")
     assert os.path.exists("/tmp/sub/my_mutation.py")
+
+
+@pytest.mark.parametrize(
+    ("locations", "expected"),
+    [
+        pytest.param(
+            ["FIELD_DEFINITION", "ENUM_VALUE"],
+            ["FIELD_DEFINITION", "ENUM_VALUE"],
+            id="all-valid",
+        ),
+        pytest.param(
+            ["FIELD_DEFINITION", "DIRECTIVE_DEFINITION", "ENUM_VALUE"],
+            ["FIELD_DEFINITION", "ENUM_VALUE"],
+            id="strips-unsupported",
+        ),
+        pytest.param(
+            ["DIRECTIVE_DEFINITION"],
+            [],
+            id="all-unsupported",
+        ),
+        pytest.param(
+            [],
+            [],
+            id="empty-locations",
+        ),
+    ],
+)
+def test_sanitize_introspection(locations: list[str], expected: list[str]) -> None:
+    introspection: dict = {
+        "__schema": {
+            "directives": [
+                {"name": "deprecated", "locations": locations},
+            ],
+        },
+    }
+    result = CodeCommand.sanitize_introspection(introspection)
+    assert result["__schema"]["directives"][0]["locations"] == expected
+
+
+def test_sanitize_introspection_no_directives() -> None:
+    introspection: dict = {"__schema": {}}
+    result = CodeCommand.sanitize_introspection(introspection)
+    assert result == {"__schema": {}}

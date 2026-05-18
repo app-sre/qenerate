@@ -1,9 +1,10 @@
 import json
 import os
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
+from graphql.language import DirectiveLocation
 
 from qenerate.core.feature_flag_parser import FeatureFlagError
 from qenerate.core.plugin import GeneratedFile, Plugin
@@ -48,10 +49,34 @@ class CodeCommand:
         )
         return definitions
 
+    @staticmethod
+    def sanitize_introspection(introspection: dict[str, Any]) -> dict[str, Any]:
+        """Strip directive locations unknown to graphql-core.
+
+        graphql-js 16.14.0 added DIRECTIVE_DEFINITION to the DirectiveLocation
+        enum, but graphql-core (Python) does not support it yet (as of 3.2.x /
+        3.3.0-alpha). build_client_schema() raises a TypeError when it
+        encounters an unknown location.
+
+        This workaround filters unsupported locations from the introspection
+        data so qenerate can continue to work with newer GraphQL servers.
+
+        TODO: Remove once graphql-core supports DIRECTIVE_DEFINITION
+        (track https://github.com/graphql-python/graphql-core/issues).
+        """
+        valid_locations = {loc.name for loc in DirectiveLocation}
+        for directive in introspection.get("__schema", {}).get("directives", []):
+            original = directive.get("locations", [])
+            filtered = [loc for loc in original if loc in valid_locations]
+            if len(filtered) < len(original):
+                directive["locations"] = filtered
+        return introspection
+
     def generate_code(self, introspection_file_path: str, directory: str) -> None:
         introspection = json.loads(
             Path(introspection_file_path).read_text(encoding="utf-8")
         )["data"]
+        introspection = self.sanitize_introspection(introspection)
 
         schema = build_client_schema(cast("IntrospectionQuery", introspection))
 
