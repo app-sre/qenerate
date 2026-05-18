@@ -1,5 +1,13 @@
 # Qenerate Changelog
 
+## 0.9.2
+
+Fixes:
+
+* Handle unsupported directive locations (e.g. `DIRECTIVE_DEFINITION`) in
+  introspection data from newer graphql-js versions (>= 16.14.0) that are not
+  yet supported by graphql-core (Python).
+
 ## 0.9.1
 
 Chore:
