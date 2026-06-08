@@ -1,9 +1,12 @@
 from json import JSONDecodeError
+from typing import TYPE_CHECKING
 
 import pytest
-import requests_mock
 
 from qenerate.core.introspection_command import IntrospectionCommand
+
+if TYPE_CHECKING:
+    import requests_mock
 
 TEST_URL = "http://my-url.zzzzz"
 

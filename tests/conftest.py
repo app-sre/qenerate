@@ -1,12 +1,14 @@
 import json
-from collections.abc import Callable
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
 
 from qenerate.core.plugin import GeneratedFile
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @pytest.fixture

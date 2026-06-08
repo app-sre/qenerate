@@ -1,16 +1,19 @@
 # ruff: noqa: PLR6301,ARG002,S108,PTH110
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 import pytest
-from graphql import GraphQLSchema
-from pyfakefs.fake_filesystem_unittest import FakeFilesystem
 
 from qenerate.core.code_command import CodeCommand
 from qenerate.core.feature_flag_parser import FeatureFlags
 from qenerate.core.plugin import Fragment, GeneratedFile, Plugin
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
+
+if TYPE_CHECKING:
+    from graphql import GraphQLSchema
+    from pyfakefs.fake_filesystem_unittest import FakeFilesystem
 
 SCHEMA_DIR = "tests/generator"
 APP_INTERFACE_INTROSPECTION = "introspection-app-interface.json"

@@ -1,18 +1,20 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from graphql import GraphQLSchema, IntrospectionQuery, build_client_schema
 from graphql.language import DirectiveLocation
 
 from qenerate.core.feature_flag_parser import FeatureFlagError
-from qenerate.core.plugin import GeneratedFile, Plugin
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType, Preprocessor
 from qenerate.plugins.pydantic.plugin import (
     PydanticV1Plugin,
     PydanticV2Plugin,
 )
+
+if TYPE_CHECKING:
+    from qenerate.core.plugin import GeneratedFile, Plugin
 
 plugins: dict[str, Plugin] = {
     "pydantic_v1": PydanticV1Plugin(),

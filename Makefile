@@ -18,7 +18,7 @@ test:
 	[ -s dist/qenerate-*.tar.gz ] || (echo "dist/qenerate-*.tar.gz is empty" && exit 1)
 
 	# test dist/qenerate-*.tar.gz exactly has 19 files. We don't want to publish other files to pypi.
-	[ $$(tar -tzf dist/qenerate-*.tar.gz | wc -l) -eq 18 ] || (tar -tzf dist/qenerate-*.tar.gz && echo "dist/qenerate-*.tar.gz has more or less than 18 files" && exit 1)
+	[ $$(tar -tzf dist/qenerate-*.tar.gz | wc -l) -eq 19 ] || (tar -tzf dist/qenerate-*.tar.gz && echo "dist/qenerate-*.tar.gz has more or less than 19 files" && exit 1)
 
 	# test dist/qenerate-*.whl is not empty
 	[ -s dist/qenerate-*.whl ] || (echo "dist/qenerate-*.whl is empty" && exit 1)

@@ -1,5 +1,5 @@
-from collections.abc import Iterable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from graphql import GraphQLError, GraphQLSchema, GraphQLSyntaxError
@@ -11,6 +11,9 @@ from qenerate.core.preprocessor import (
     GQLDefinitionType,
     Preprocessor,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 def normalize_definition(definition: str) -> str:
