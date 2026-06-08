@@ -1,7 +1,10 @@
 import re
-from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
-from graphql import GraphQLOutputType
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from graphql import GraphQLOutputType
 
 
 def _keyword_sanitizer(s: str) -> str:

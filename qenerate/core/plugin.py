@@ -1,9 +1,12 @@
 from dataclasses import dataclass, field
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from graphql import GraphQLSchema
+if TYPE_CHECKING:
+    from pathlib import Path
 
-from qenerate.core.preprocessor import GQLDefinition
+    from graphql import GraphQLSchema
+
+    from qenerate.core.preprocessor import GQLDefinition
 
 
 @dataclass(eq=True, order=True)

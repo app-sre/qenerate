@@ -1,14 +1,18 @@
-from collections.abc import Callable, Mapping
 from enum import Enum
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from graphql import GraphQLSchema
 
 from qenerate.core.code_command import plugins
 from qenerate.core.feature_flag_parser import FeatureFlags, NamingCollisionStrategy
 from qenerate.core.plugin import GeneratedFile
 from qenerate.core.preprocessor import GQLDefinition, GQLDefinitionType
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Mapping
+
+    from graphql import GraphQLSchema
 
 
 class Schema(Enum):
