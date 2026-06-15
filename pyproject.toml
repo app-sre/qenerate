@@ -22,8 +22,8 @@ dev = [
     "pyfakefs ==6.2.0",
     "pytest ==9.0.3",
     "requests-mock ==1.12.1",
-    "ruff ==0.15.12",
-    "types-requests ==2.33.0.20260503",
+    "ruff ==0.15.15",
+    "types-requests ==2.33.0.20260518",
 ]
 
 [project.scripts]
