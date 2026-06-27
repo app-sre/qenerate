@@ -20,9 +20,9 @@ documentation = "https://github.com/app-sre/qenerate"
 dev = [
     "mypy ==2.1.0",
     "pyfakefs ==6.2.0",
-    "pytest ==9.1.0",
+    "pytest ==9.1.1",
     "requests-mock ==1.12.1",
-    "ruff ==0.15.18",
+    "ruff ==0.15.19",
     "types-requests ==2.33.0.20260518",
 ]
 
