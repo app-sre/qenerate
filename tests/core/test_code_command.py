@@ -146,12 +146,12 @@ def test_dir_tree_with_different_operations(fs: FakeFilesystem) -> None:
             id="all-valid",
         ),
         pytest.param(
-            ["FIELD_DEFINITION", "DIRECTIVE_DEFINITION", "ENUM_VALUE"],
+            ["FIELD_DEFINITION", "NOT_YET_SUPPORTED_LOCATION", "ENUM_VALUE"],
             ["FIELD_DEFINITION", "ENUM_VALUE"],
             id="strips-unsupported",
         ),
         pytest.param(
-            ["DIRECTIVE_DEFINITION"],
+            ["NOT_YET_SUPPORTED_LOCATION"],
             [],
             id="all-unsupported",
         ),
