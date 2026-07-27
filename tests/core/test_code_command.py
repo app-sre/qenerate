@@ -1,4 +1,4 @@
-# ruff: noqa: PLR6301,ARG002,S108,PTH110
+# ruff: file-ignore[no-self-use, unused-method-argument, hardcoded-temp-file, os-path-exists]
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING

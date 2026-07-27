@@ -57,47 +57,47 @@ preview = true
 select = ["ALL"]
 ignore = [
     "CPY",     # Missing copyright header
-    "D100",    # Missing docstring in public module
-    "D101",    # Missing docstring in public class
-    "D102",    # Missing docstring in public method
-    "D103",    # Missing docstring in public function
-    "D104",    # Missing docstring in public package
-    "D105",    # Missing docstring in magic method
-    "D107",    # Missing docstring in __init__
-    "D203",    # 1 blank line required before class docstring
-    "D211",    # No blank lines allowed before class docstring
-    "D212",    # multi-line-summary-first-line
-    "D213",    # multi-line-summary-second-line
+    "undocumented-public-module",    # Missing docstring in public module
+    "undocumented-public-class",    # Missing docstring in public class
+    "undocumented-public-method",    # Missing docstring in public method
+    "undocumented-public-function",    # Missing docstring in public function
+    "undocumented-public-package",    # Missing docstring in public package
+    "undocumented-magic-method",    # Missing docstring in magic method
+    "undocumented-public-init",    # Missing docstring in __init__
+    "incorrect-blank-line-before-class",    # 1 blank line required before class docstring
+    "blank-line-before-class",    # No blank lines allowed before class docstring
+    "multi-line-summary-first-line",    # multi-line-summary-first-line
+    "multi-line-summary-second-line",    # multi-line-summary-second-line
     "D4",      # Doc string style
-    "E501",    # Line too long
-    "G004",    # Logging statement uses f-string
-    "PD011",   # use to_numpy()
-    "PLR0904", # Too many public methods
-    "PLR0913", # Too many arguments
-    "PLR0917", # Too many positional arguments
-    "S101",    # Use of assert detected. Pytest uses assert
-    "S404",    # subprocess import
-    "EM101",   # Exception must not use a string literal, assign to variable first
-    "EM102",   # Exception must not use an f-string literal, assign to variable first
-    "TRY003",  # Avoid specifying long messages outside the exception class
-    "TRY300",  # try-consider-else
+    "line-too-long",    # Line too long
+    "logging-f-string",    # Logging statement uses f-string
+    "pandas-use-of-dot-values",   # use to_numpy()
+    "too-many-public-methods", # Too many public methods
+    "too-many-arguments", # Too many arguments
+    "too-many-positional-arguments", # Too many positional arguments
+    "assert",    # Use of assert detected. Pytest uses assert
+    "suspicious-subprocess-import",    # subprocess import
+    "raw-string-in-exception",   # Exception must not use a string literal, assign to variable first
+    "f-string-in-exception",   # Exception must not use an f-string literal, assign to variable first
+    "raise-vanilla-args",  # Avoid specifying long messages outside the exception class
+    "try-consider-else",  # try-consider-else
     # pydoclint
     "DOC",
     # May conflict with the formatter, https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
-    "W191",
-    "E111",
-    "E114",
-    "E117",
-    "D206",
-    "D300",
+    "tab-indentation",
+    "indentation-with-invalid-multiple",
+    "indentation-with-invalid-multiple-comment",
+    "over-indented",
+    "docstring-tab-indentation",
+    "triple-single-quotes",
     "Q",
-    "COM812",
-    "COM819",
-    "ISC001",
+    "missing-trailing-comma",
+    "prohibited-trailing-comma",
+    "single-line-implicit-string-concatenation",
     # Change in the future
-    "PTH118", # use pathlib.Path instead of os.path.join
+    "os-path-join", # use pathlib.Path instead of os.path.join
     "TD",     # TODOs
-    "FIX002", # TODOs
+    "line-contains-todo", # TODOs
 ]
 [tool.ruff.format]
 preview = true

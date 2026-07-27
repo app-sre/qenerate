@@ -267,7 +267,7 @@ def test_preprocessor_exception(
             feature_flags=FeatureFlags(plugin="fake", gql_scalar_mappings={}),
             fragment_dependencies=set(),
             kind=GQLDefinitionType.QUERY,
-            source_file=Path("/tmp"),  # noqa: S108
+            source_file=Path("/tmp"),  # ruff: ignore[hardcoded-temp-file]
             name="",
         )
         for definition in definitions

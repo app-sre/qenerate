@@ -55,27 +55,27 @@ query HeroForEpisode {
 **hero.py:**
 ```python
 class ConfiguredBaseModel(BaseModel):
-  # This is set so pydantic can properly match the data to union, i.e., properly infer the correct type
-  # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
-  # https://stackoverflow.com/a/69705356/4478420
-  smart_union = True
-  extra = Extra.forbid
+    # This is set so pydantic can properly match the data to union, i.e., properly infer the correct type
+    # https://pydantic-docs.helpmanual.io/usage/model_config/#smart-union
+    # https://stackoverflow.com/a/69705356/4478420
+    smart_union = True
+    extra = Extra.forbid
 
 
 class Hero(ConfiguredBaseModel):
-  name: str = Field(..., alias="name")
+    name: str = Field(..., alias="name")
 
 
 class Droid(Hero):  # Note that Droid implements Hero
-  primary_function: str = Field(..., alias="primaryFunction")
+    primary_function: str = Field(..., alias="primaryFunction")
 
 
 class Human(Hero):  # Note that Human implements Hero
-  height: str = Field(..., alias="height")
+    height: str = Field(..., alias="height")
 
 
 class HeroForEpisodeData(ConfiguredBaseModel):
-  hero: Optional[list[Union[Droid, Human, Hero]]] = Field(..., alias="hero")
+    hero: Optional[list[Union[Droid, Human, Hero]]] = Field(..., alias="hero")
 ```
 
 ### Query with Fragments
@@ -128,11 +128,11 @@ from hero_name_fragment import HeroName
 
 # Note, that Hero implements the fragments
 class Hero(HeroAge, HeroName):
-  number: int = Field(..., alias="number")
+    number: int = Field(..., alias="number")
 
 
 class HeroForEpisodeData(BaseModel):
-  hero: Optional[list[Hero]] = Field(..., alias="hero")
+    hero: Optional[list[Hero]] = Field(..., alias="hero")
 ```
 
 Note, that the python import path is relative to the directory
