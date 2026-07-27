@@ -10,6 +10,6 @@ class IntrospectionCommand:
         query = get_introspection_query()
         request = requests.post(url, json={"query": query}, timeout=30)
         if request.status_code == requests.codes.ok:
-            print(json.dumps(request.json(), indent=4))  # noqa: T201
+            print(json.dumps(request.json(), indent=4))  # ruff: ignore[print]
             return
-        raise Exception(f"Could not query {url}")  # noqa: TRY002
+        raise Exception(f"Could not query {url}")  # ruff: ignore[raise-vanilla-class]

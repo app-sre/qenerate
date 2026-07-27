@@ -15,7 +15,7 @@ class ParsedNode:
     fields: list[ParsedNode]
     parsed_type: ParsedFieldType
 
-    def class_code_string(self) -> str:  # noqa: PLR6301
+    def class_code_string(self) -> str:  # ruff: ignore[no-self-use]
         return ""
 
     def _needs_class_rendering(self) -> bool:
@@ -203,7 +203,7 @@ class ParsedFragmentDefinitionNode(ParsedNode):
 
 @dataclass
 class ParsedFragmentSpreadNode(ParsedNode):
-    def class_code_string(self) -> str:  # noqa: PLR6301
+    def class_code_string(self) -> str:  # ruff: ignore[no-self-use]
         return ""
 
 
