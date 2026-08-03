@@ -1,4 +1,4 @@
-# ruff: noqa: ANN401
+# ruff: file-ignore[any-type]
 from __future__ import annotations
 
 from dataclasses import dataclass

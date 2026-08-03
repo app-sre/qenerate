@@ -1,4 +1,4 @@
-# ruff: noqa: ANN401
+# ruff: file-ignore[any-type]
 from __future__ import annotations
 
 import operator
@@ -270,7 +270,7 @@ class FieldToTypeMatcherVisitor(Visitor):
                 self.feature_flags.collision_strategy
                 == NamingCollisionStrategy.ENUMERATE
             ):
-                if collision_enum_suffix == 2:  # noqa: PLR2004
+                if collision_enum_suffix == 2:  # ruff: ignore[magic-value-comparison]
                     class_name = f"{class_name}__{collision_enum_suffix}"
                 else:
                     idx = class_name.rfind("_") - 1
@@ -349,7 +349,7 @@ class PydanticBase(Plugin):
                 has_unrendered_dependencies = reduce(
                     operator.or_,
                     [dep not in processed for dep in definition.fragment_dependencies],
-                    False,  # noqa: FBT003
+                    False,  # ruff: ignore[boolean-positional-value-in-call]
                 )
                 if has_unrendered_dependencies:
                     # not all dependencies rendered yet. It will
