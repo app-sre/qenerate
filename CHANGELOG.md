@@ -1,5 +1,17 @@
 # Qenerate Changelog
 
+## 0.10.1
+
+Chore:
+
+* Update dependencies
+
+## 0.10.0
+
+Features:
+
+* Upgrade to Python 3.14
+
 ## 0.9.2
 
 Fixes:
