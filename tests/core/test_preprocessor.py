@@ -211,9 +211,16 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]) -> None:
     ("definitions", "raise_error"),
     [
         (
-            # Bad Syntax
+            # An empty selection is rejected by the parser in graphql-core 3.3.0
+            # and as an anonymous operation in 3.3.2.
             [
                 "{}",
+            ],
+            (GraphQLSyntaxError, AnonymousOperationError),
+        ),
+        (
+            # Bad syntax
+            [
                 "blub",
             ],
             GraphQLSyntaxError,
@@ -258,7 +265,7 @@ def test_preprocessor(file: Path, expected: Iterable[GQLDefinition]) -> None:
 )
 def test_preprocessor_exception(
     app_interface_schema: GraphQLSchema,
-    raise_error: type[Exception],
+    raise_error: type[Exception] | tuple[type[Exception], ...] | None,
     definitions: Iterable[str],
 ) -> None:
     definition_objects = [
